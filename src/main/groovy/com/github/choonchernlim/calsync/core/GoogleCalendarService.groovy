@@ -5,7 +5,11 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.googleapis.batch.BatchRequest
+import com.google.api.client.googleapis.batch.json.JsonBatchCallback
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.googleapis.json.GoogleJsonError
+import com.google.api.client.http.HttpHeaders
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -122,24 +126,63 @@ class GoogleCalendarService {
 //        return result
 //    }
 
+//    void addEvent(Calendar calendar, Event event) throws IOException {
+//        View.header('Add Event')
+//        Event result = client.events().insert(calendar.getId(), event).execute()
+//        View.display(result)
+//    }
 
-    void addEvent(Calendar calendar) throws IOException {
+    void addEvents(Calendar calendar, Event... events) throws IOException {
         View.header('Add Event')
-        Event event = newEvent()
-        Event result = client.events().insert(calendar.getId(), event).execute()
-        View.display(result)
+
+        BatchRequest batch = client.batch()
+        def calendarEvents = client.events()
+
+        events.each {
+            calendarEvents.insert(calendar.getId(), it).queue(batch, [
+                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
+                        System.out.println('Error Message: ' + googleJsonError.getMessage())
+                    },
+                    onSuccess: { Event event, HttpHeaders httpHeaders ->
+                        View.display(event)
+                    }
+            ] as JsonBatchCallback<Event>)
+        }
+
+        batch.execute()
     }
 
-    private static Event newEvent() {
-        Event event = new Event()
-        event.setSummary('New Event')
-        Date startDate = new Date()
-        Date endDate = new Date(startDate.getTime() + 3600000)
-        DateTime start = new DateTime(startDate, TimeZone.getTimeZone('UTC'))
-        event.setStart(new EventDateTime().setDateTime(start))
-        DateTime end = new DateTime(endDate, TimeZone.getTimeZone('UTC'))
-        event.setEnd(new EventDateTime().setDateTime(end))
-        return event
+//    void addEvent(Calendar calendar) throws IOException {
+//        View.header('Add Event')
+//        Event event = newEvent()
+//        Event result = client.events().insert(calendar.getId(), event).execute()
+//        View.display(result)
+//    }
+//
+//    private static Event newEvent() {
+//        Event event = new Event()
+//        event.setSummary('New Event')
+//        Date startDate = new Date()
+//        Date endDate = new Date(startDate.getTime() + 3600000)
+//        DateTime start = new DateTime(startDate, TimeZone.getTimeZone('UTC'))
+//        event.setStart(new EventDateTime().setDateTime(start))
+//        DateTime end = new DateTime(endDate, TimeZone.getTimeZone('UTC'))
+//        event.setEnd(new EventDateTime().setDateTime(end))
+//        return event
+//    }
+
+    static Event newEvent(
+            org.joda.time.DateTime startDateTime,
+            org.joda.time.DateTime endDateTime,
+            String summary,
+            String location) {
+
+        return new Event(
+                summary: summary,
+                start: new EventDateTime().setDateTime(new DateTime(startDateTime.getMillis())),
+                end: new EventDateTime().setDateTime(new DateTime(endDateTime.getMillis())),
+                location: location
+        )
     }
 
     void showEvents(Calendar calendar) throws IOException {

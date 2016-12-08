@@ -1,6 +1,8 @@
 package com.github.choonchernlim.calsync.core
 
 import com.google.api.services.calendar.model.Calendar
+import com.google.api.services.calendar.model.Event
+import org.joda.time.DateTime
 
 class Main {
 
@@ -20,10 +22,18 @@ class Main {
             Calendar calendar = service.getCalendar()
 
             //service.updateCalendar(calendar)
-            service.addEvent(calendar)
+            Event event = service.newEvent(
+                    new DateTime(2016, 12, 8, 8, 0),
+                    new DateTime(2016, 12, 8, 9, 0),
+                    'Subject3',
+                    'Location3')
+
+            // service.addEvent(calendar, event)
+
+            service.addEvents(calendar, event)
             service.showEvents(calendar)
             //service.deleteCalendarsUsingBatch()
-            service.deleteCalendar(calendar)
+            // service.deleteCalendar(calendar)
         }
         catch (Exception e) {
             e.printStackTrace()

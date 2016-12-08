@@ -47,11 +47,8 @@ class View {
     }
 
     static void display(Event event) {
-        if (event.getStart() != null) {
-            System.out.println("Start Time : " + event.getStart())
-        }
-        if (event.getEnd() != null) {
-            System.out.println("End Time   : " + event.getEnd())
-        }
+        System.out.println("Start Time : " + event.getStart())
+        System.out.println("End Time   : " + event.getEnd())
+        System.out.println("Summary    : " + event.getSummary())
     }
 }
