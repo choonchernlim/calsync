@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.choonchernlim</groupId>
+    <artifactId>google-calendar-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <jdk.version>1.7</jdk.version>
+
+        <groovy-all.version>2.4.6</groovy-all.version>
+        <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
+        <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
+
+        <!--<slf4j.version>1.7.21</slf4j.version>-->
+        <!--<log4j.version>1.2.17</log4j.version>-->
+        <!--<guava.version>19.0</guava.version>-->
+        <!--<spock.version>1.0-groovy-2.4</spock.version>-->
+
+        <project.http.version>1.19.0</project.http.version>
+        <project.oauth.version>1.19.0</project.oauth.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-calendar</artifactId>
+            <version>v3-rev87-1.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson2</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Use Groovy compiler. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>${groovy-eclipse-compiler.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>${groovy-eclipse-batch.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
