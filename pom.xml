@@ -11,7 +11,7 @@
     <properties>
         <jdk.version>1.7</jdk.version>
 
-        <groovy-all.version>2.4.6</groovy-all.version>
+        <groovy-all.version>2.4.7</groovy-all.version>
         <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
 
@@ -25,6 +25,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy-all.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-calendar</artifactId>
