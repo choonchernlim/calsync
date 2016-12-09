@@ -1,5 +1,7 @@
-package com.github.choonchernlim.calsync.core
+package com.github.choonchernlim.calsync.googlecalendar
 
+import com.github.choonchernlim.calsync.core.CalSyncEvent
+import com.github.choonchernlim.calsync.core.Constant
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
@@ -13,14 +15,16 @@ import com.google.api.client.http.HttpHeaders
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.DateTime
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.CalendarList
 import com.google.api.services.calendar.model.Event
-import com.google.api.services.calendar.model.EventDateTime
+import org.joda.time.DateTime
 
+/**
+ * Google Calendar client class.
+ */
 class GoogleCalendarService {
 
     /**
@@ -35,7 +39,10 @@ class GoogleCalendarService {
     }
 
     /**
-     * Authorizes app to access user's protected data and returns connected client.
+     * Performs app authorization and returns connected client.
+     *
+     * @param clientSecretJsonFilePath File path to client_secret.json
+     * @return Connected client
      */
     private static com.google.api.services.calendar.Calendar configure(String clientSecretJsonFilePath) {
         // initialize the transport
@@ -78,6 +85,12 @@ class GoogleCalendarService {
         View.display(feed)
     }
 
+    /**
+     * Returns the existing calendar or newly created calendar if not found.
+     *
+     * @param calendarName Calendar name
+     * @return Calendar
+     */
     Calendar getCalendar(String calendarName) {
         assert calendarName?.trim()
 
@@ -88,35 +101,14 @@ class GoogleCalendarService {
                 find { it.getSummary() == calendarName }?.
                 getId()
 
-        return calendarId ?
-                getCalendarById(calendarId) :
-                createCalendar(calendarName)
-    }
-
-    private Calendar getCalendarById(String calendarId) {
-        assert calendarId?.trim()
-
-        View.header("Get calendar by id [ ${calendarId} ]...")
-
-        return client.calendars().get(calendarId).execute()
-    }
-
-    /**
-     * Creates and returns a new calendar based on the user config.
-     *
-     * @param calendarName Name of the calendar to be created
-     * @return Calendar
-     */
-    private Calendar createCalendar(String calendarName) {
-        assert calendarName?.trim()
-
-        View.header('Creating new calendar...')
-
-        Calendar result = client.calendars().insert(new Calendar(summary: calendarName)).execute()
-
-        View.display(result)
-
-        return result
+        if (calendarId) {
+            View.header("Get calendar by id [ ${calendarId} ]...")
+            return client.calendars().get(calendarId).execute()
+        }
+        else {
+            View.header('Creating new calendar...')
+            return client.calendars().insert(new Calendar(summary: calendarName)).execute()
+        }
     }
 
     /**
@@ -186,17 +178,13 @@ class GoogleCalendarService {
      * @param location Location
      * @return {@link Event} object
      */
-    static Event newEvent(
-            org.joda.time.DateTime startDateTime,
-            org.joda.time.DateTime endDateTime,
-            String summary,
-            String location = null) {
+    static Event newEvent(DateTime startDateTime, DateTime endDateTime, String summary, String location = null) {
         assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
         assert summary?.trim()
 
         return new Event(
-                start: new EventDateTime(dateTime: new DateTime(startDateTime.getMillis())),
-                end: new EventDateTime(dateTime: new DateTime(endDateTime.getMillis())),
+                start: MapperUtils.toGoogleEventDateTime(startDateTime),
+                end: MapperUtils.toGoogleEventDateTime(endDateTime),
                 summary: summary,
                 location: location
         )
@@ -206,26 +194,34 @@ class GoogleCalendarService {
      * Returns calendar events from given date range.
      *
      * @param calendar Calendar
-     * @param startDatetime Start datetime
-     * @param endDatetime End datetime
+     * @param startDateTime Start datetime
+     * @param endDateTime End datetime
      * @return Events if found, otherwise empty list
      */
-    List<Event> getEvents(Calendar calendar, org.joda.time.DateTime startDatetime, org.joda.time.DateTime endDatetime) {
+    List<CalSyncEvent> getEvents(Calendar calendar, DateTime startDateTime, DateTime endDateTime) {
         assert calendar?.getId()?.trim()
-        assert startDatetime != null && endDatetime != null && startDatetime <= endDatetime
+        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
 
-        View.header("Getting Events from ${startDatetime} to ${endDatetime}...")
+        View.header("Getting Events from ${startDateTime} to ${endDateTime}...")
 
         return client.events().
                 list(calendar.getId()).
-                setTimeMin(new DateTime(startDatetime.getMillis())).
-                setTimeMax(new DateTime(endDatetime.getMillis())).
+                setTimeMin(MapperUtils.toGoogleDateTime(startDateTime)).
+                setTimeMax(MapperUtils.toGoogleDateTime(endDateTime)).
                 execute().
-                getItems() ?: []
+                getItems()?.collect { MapperUtils.toCalSyncEvent(it) } ?: []
     }
 
+    /**
+     * Deletes calendar.
+     *
+     * @param calendar Calendar to be deleted
+     */
     void deleteCalendar(Calendar calendar) {
+        assert calendar?.getId()?.trim()
+
         View.header('Delete Calendar')
+
         client.calendars().delete(calendar.getId()).execute()
     }
 }

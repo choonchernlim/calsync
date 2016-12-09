@@ -1,5 +1,7 @@
 package com.github.choonchernlim.calsync.core
 
+import com.github.choonchernlim.calsync.googlecalendar.GoogleCalendarService
+import com.github.choonchernlim.calsync.googlecalendar.View
 import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.Event
 import org.joda.time.DateTime
@@ -13,14 +15,13 @@ class Main {
         }
 
         String clientSecretJsonFilePath = args[0]
-        UserConfig userConfig = new UserConfig()
-        def calendarName = userConfig.getCalendarName()
+        String googleCalendarName = 'Outlook'
 
         GoogleCalendarService service = new GoogleCalendarService(clientSecretJsonFilePath)
 
         service.showCalendars()
 
-        Calendar calendar = service.getCalendar(calendarName)
+        Calendar calendar = service.getCalendar(googleCalendarName)
 
         Event event1 = service.newEvent(
                 new DateTime(2016, 12, 7, 8, 0, 0),
