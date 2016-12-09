@@ -141,7 +141,7 @@ class GoogleCalendarService {
 
             client.events().insert(calendarId, MapperUtils.toGoogleEvent(it)).queue(batch, [
                     onSuccess: { Event event, HttpHeaders httpHeaders ->
-                        LOGGER.info(MapperUtils.toString(event))
+                        LOGGER.info('Event is successfully added.')
                     },
                     onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
                         LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")
@@ -169,7 +169,7 @@ class GoogleCalendarService {
 
             client.events().delete(calendarId, it.getGoogleEventId()).queue(batch, [
                     onSuccess: { Void content, HttpHeaders httpHeaders ->
-                        LOGGER.info('Event is successfully deleted!')
+                        LOGGER.info('Event is successfully deleted.')
                     },
                     onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
                         LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")

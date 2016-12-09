@@ -102,20 +102,4 @@ class MapperUtils {
                 location: location
         )
     }
-
-    /**
-     * Maps Google Event to String
-     * @param event Google Event
-     * @return String
-     */
-    static String toString(Event event) {
-        assert event != null
-
-        return """
-Start Time : ${event.getStart()}
-  End Time : ${event.getEnd()}
-   Summary : ${event.getSummary()}
-  Location : ${event.getLocation()}
-"""
-    }
 }
