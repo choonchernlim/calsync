@@ -1,4 +1,4 @@
-package com.github.choonchernlim.calsync.googlecalendar
+package com.github.choonchernlim.calsync.google
 
 import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.google.api.client.util.DateTime

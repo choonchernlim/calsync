@@ -1,49 +1,65 @@
 package com.github.choonchernlim.calsync.core
 
-import com.github.choonchernlim.calsync.googlecalendar.GoogleCalendarService
-import com.github.choonchernlim.calsync.googlecalendar.MapperUtils
+import com.github.choonchernlim.calsync.exchange.ExchangeClient
+import com.github.choonchernlim.calsync.google.GoogleClient
 import org.joda.time.DateTime
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class Main {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(Main)
+
     static void main(String[] args) {
-        if (!args) {
-            System.err.println('ERROR: Please specify /file/path/to/client_secret.json on first argument.')
-            System.exit(1)
+        UserConfig userConfig = new UserConfig()
+
+        DateTime startDateTime = DateTime.now().withTimeAtStartOfDay()
+        DateTime endDateTime = startDateTime.plusDays(1).minusMillis(1)
+
+        ExchangeClient exchangeClient = new ExchangeClient(
+                userConfig.exchangeUserName,
+                userConfig.exchangePassword,
+                userConfig.exchangeUrl)
+
+        GoogleClient googleClient = new GoogleClient(userConfig.googleClientSecretJsonFilePath)
+
+        List<CalSyncEvent> exchangeEvents = exchangeClient.getEvents(startDateTime, endDateTime)
+
+        exchangeEvents.each {
+            LOGGER.info("Exchange events: ${it}")
         }
 
-        String clientSecretJsonFilePath = args[0]
-        String googleCalendarName = 'Outlook'
+        String calendarId = googleClient.getCalendarId(userConfig.googleCalendarName)
 
-        GoogleCalendarService service = new GoogleCalendarService(clientSecretJsonFilePath)
+        List<CalSyncEvent> googleEvents = googleClient.getEvents(calendarId, startDateTime, endDateTime)
 
-        String calendarId = service.getCalendarId(googleCalendarName)
+        googleEvents.each {
+            LOGGER.info("Google events: ${it}")
+        }
 
-        service.createEvents(calendarId, [
-                MapperUtils.toCalSyncEvent(
-                        new DateTime(2016, 12, 7, 8, 0, 0),
-                        new DateTime(2016, 12, 7, 9, 0, 0),
-                        'Subject3',
-                        'Location3'),
-                MapperUtils.toCalSyncEvent(
-                        new DateTime(2016, 12, 11, 8, 0, 0),
-                        new DateTime(2016, 12, 12, 9, 0, 0),
-                        'Subject4 from 2010 to 2020',
-                        'Location4')
-        ])
+        List<CalSyncEvent> outdatedGoogleEvents = googleEvents.findAll { !exchangeEvents.contains(it) }
+        if (outdatedGoogleEvents) {
+            outdatedGoogleEvents.each {
+                LOGGER.info("Deleting outdated Google events: ${it}")
+            }
 
-        List<CalSyncEvent> events = service.getEvents(
-                calendarId,
-                new DateTime(2016, 12, 7, 0, 0, 0),
-                new DateTime(2016, 12, 12, 23, 59, 59))
+            googleClient.deleteEvents(calendarId, outdatedGoogleEvents)
+        }
 
-        service.deleteEvents(calendarId, events)
+        List<CalSyncEvent> newGoogleEvents = exchangeEvents.findAll { !googleEvents.contains(it) }
 
-        service.getEvents(
-                calendarId,
-                new DateTime(2016, 12, 7, 0, 0, 0),
-                new DateTime(2016, 12, 12, 23, 59, 59))
+        if (newGoogleEvents) {
+            newGoogleEvents.each {
+                LOGGER.info("Creating new Google events: ${it}")
+            }
 
-        service.deleteCalendar(calendarId)
+            googleClient.createEvents(calendarId, newGoogleEvents)
+        }
+
+        //  googleClient.createEvents(calendarId, exchangeEvents)
+
+        // googleClient.deleteEvents(calendarId, events)
+
+        // googleClient.deleteCalendar(calendarId)
     }
 }

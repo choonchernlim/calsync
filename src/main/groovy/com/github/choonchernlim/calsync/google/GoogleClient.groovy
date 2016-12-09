@@ -1,4 +1,4 @@
-package com.github.choonchernlim.calsync.googlecalendar
+package com.github.choonchernlim.calsync.google
 
 import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.github.choonchernlim.calsync.core.Constant
@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory
 /**
  * Google Calendar client class.
  */
-class GoogleCalendarService {
-    private static Logger LOGGER = LoggerFactory.getLogger(GoogleCalendarService)
+class GoogleClient {
+    private static Logger LOGGER = LoggerFactory.getLogger(GoogleClient)
 
     /**
      * Directory to store user credentials.
@@ -37,7 +37,7 @@ class GoogleCalendarService {
 
     private final com.google.api.services.calendar.Calendar client
 
-    GoogleCalendarService(String clientSecretJsonFilePath) {
+    GoogleClient(String clientSecretJsonFilePath) {
         client = configure(clientSecretJsonFilePath)
     }
 
@@ -48,7 +48,7 @@ class GoogleCalendarService {
      * @return Connected client
      */
     private static com.google.api.services.calendar.Calendar configure(String clientSecretJsonFilePath) {
-        LOGGER.info('Performing app authorization...')
+        LOGGER.info('Authenticating against Google...')
 
         // initialize the transport
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport()
