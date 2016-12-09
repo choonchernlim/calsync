@@ -1,7 +1,7 @@
 package com.github.choonchernlim.calsync.google
 
+import com.github.choonchernlim.calsync.core.AppConfig
 import com.github.choonchernlim.calsync.core.CalSyncEvent
-import com.github.choonchernlim.calsync.core.Constant
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
@@ -33,7 +33,7 @@ class GoogleClient {
     /**
      * Directory to store user credentials.
      */
-    private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${Constant.PROJECT_ID}")
+    private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${AppConfig.PROJECT_ID}")
 
     private final com.google.api.services.calendar.Calendar client
 
@@ -80,7 +80,7 @@ class GoogleClient {
         Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize('user')
 
         return new com.google.api.services.calendar.Calendar.Builder(httpTransport, jsonFactory, credential).
-                setApplicationName(Constant.PROJECT_ID).
+                setApplicationName(AppConfig.PROJECT_ID).
                 build()
     }
 

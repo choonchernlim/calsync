@@ -61,7 +61,7 @@ class MapperUtils {
     }
 
     /**
-     * Maps CalSyncEvent to Google Event
+     * Maps CalSyncEvent to Google Event.
      *
      * @param calSyncEvent CalSyncEvent
      * @return Google Event
@@ -74,7 +74,11 @@ class MapperUtils {
                 start: toGoogleEventDateTime(calSyncEvent.startDateTime),
                 end: toGoogleEventDateTime(calSyncEvent.endDateTime),
                 summary: calSyncEvent.subject,
-                location: calSyncEvent.location
+                location: calSyncEvent.location,
+                reminders: new Event.Reminders(
+                        useDefault: true,
+
+                        )
         )
     }
 

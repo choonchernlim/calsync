@@ -1,6 +1,6 @@
 package com.github.choonchernlim.calsync.core
 
-final class Constant {
+final class AppConfig {
 
     /**
      * Project ID that uniquely identifies this app.
