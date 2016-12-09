@@ -18,14 +18,17 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Calendar
-import com.google.api.services.calendar.model.CalendarList
+import com.google.api.services.calendar.model.CalendarListEntry
 import com.google.api.services.calendar.model.Event
 import org.joda.time.DateTime
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Google Calendar client class.
  */
 class GoogleCalendarService {
+    private static Logger LOGGER = LoggerFactory.getLogger(GoogleCalendarService)
 
     /**
      * Directory to store user credentials.
@@ -45,6 +48,8 @@ class GoogleCalendarService {
      * @return Connected client
      */
     private static com.google.api.services.calendar.Calendar configure(String clientSecretJsonFilePath) {
+        LOGGER.info('Performing app authorization...')
+
         // initialize the transport
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport()
 
@@ -79,59 +84,67 @@ class GoogleCalendarService {
                 build()
     }
 
-    void showCalendars() {
-        View.header('Show Calendars')
-        CalendarList feed = client.calendarList().list().execute()
-        View.display(feed)
+    /**
+     * Returns all calendars found.
+     *
+     * @return All calendars
+     */
+    private List<CalendarListEntry> getCalendars() {
+        LOGGER.info("Retrieving all calendars...")
+
+        List<CalendarListEntry> calendarListEntries = client.calendarList().list().execute().getItems() ?: []
+
+        LOGGER.info(calendarListEntries.collect { it.getSummary() }?.join("; "))
+
+        return calendarListEntries
     }
 
     /**
-     * Returns the existing calendar or newly created calendar if not found.
+     * Returns ID of the existing calendar or newly created calendar if not found.
      *
      * @param calendarName Calendar name
-     * @return Calendar
+     * @return Calendar ID
      */
-    Calendar getCalendar(String calendarName) {
+    String getCalendarId(String calendarName) {
         assert calendarName?.trim()
 
-        View.header("Attempting to find calendar [ ${calendarName} ] ...")
+        LOGGER.info("Attempting to find calendar [${calendarName}]...")
 
-        String calendarId = client.calendarList().list().execute().
-                getItems()?.
-                find { it.getSummary() == calendarName }?.
-                getId()
+        String calendarId = getCalendars().find { it.getSummary() == calendarName }?.getId()
 
         if (calendarId) {
-            View.header("Get calendar by id [ ${calendarId} ]...")
-            return client.calendars().get(calendarId).execute()
+            LOGGER.info("Returning existing calendar [${calendarName}]...")
+
+            return calendarId
         }
         else {
-            View.header('Creating new calendar...')
-            return client.calendars().insert(new Calendar(summary: calendarName)).execute()
+            LOGGER.info("Creating new calendar [${calendarName}]...")
+
+            return client.calendars().insert(new Calendar(summary: calendarName)).execute().getId()
         }
     }
 
     /**
-     * Adds a list of events to the calendar.
+     * Creates a list of events for the calendar.
      *
-     * @param calendar Calendar
+     * @param calendarId Calendar ID
      * @param events Events to be added
      */
-    void addEvents(Calendar calendar, List<Event> events) {
-        assert calendar?.getId()?.trim()
+    void createEvents(String calendarId, List<CalSyncEvent> events) {
+        assert calendarId?.trim()
         assert !events?.isEmpty()
-
-        View.header('Adding events')
 
         BatchRequest batch = client.batch()
 
         events.each {
-            client.events().insert(calendar.getId(), it).queue(batch, [
+            LOGGER.info("Adding event [${it}]...")
+
+            client.events().insert(calendarId, MapperUtils.toGoogleEvent(it)).queue(batch, [
                     onSuccess: { Event event, HttpHeaders httpHeaders ->
-                        View.display(event)
+                        LOGGER.info(MapperUtils.toString(event))
                     },
                     onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
-                        System.out.println("Error Message: ${googleJsonError.getMessage()}")
+                        LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")
                     }
             ] as JsonBatchCallback<Event>)
         }
@@ -142,26 +155,24 @@ class GoogleCalendarService {
     /**
      * Deletes a list of events from calendar.
      *
-     * @param calendar Calendar
+     * @param calendarId Calendar ID
      * @param events Events to be deleted
      */
-    void deleteEvents(Calendar calendar, List<Event> events) {
-        assert calendar?.getId()?.trim()
+    void deleteEvents(String calendarId, List<CalSyncEvent> events) {
+        assert calendarId?.trim()
         assert !events?.isEmpty()
-
-        View.header('Deleting Events...')
 
         BatchRequest batch = client.batch()
 
         events.each {
-            View.display(it)
+            LOGGER.info("Deleting event [${it}]...")
 
-            client.events().delete(calendar.getId(), it.getId()).queue(batch, [
+            client.events().delete(calendarId, it.getGoogleEventId()).queue(batch, [
                     onSuccess: { Void content, HttpHeaders httpHeaders ->
-                        View.header("Event is successfully deleted!")
+                        LOGGER.info('Event is successfully deleted!')
                     },
                     onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
-                        System.out.println("Error Message: ${googleJsonError.getMessage()}")
+                        LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")
                     }
             ] as JsonBatchCallback<Void>)
         }
@@ -170,42 +181,21 @@ class GoogleCalendarService {
     }
 
     /**
-     * Creates new {@link Event} object.
-     *
-     * @param startDateTime Start datetime
-     * @param endDateTime End datetime
-     * @param summary Event title
-     * @param location Location
-     * @return {@link Event} object
-     */
-    static Event newEvent(DateTime startDateTime, DateTime endDateTime, String summary, String location = null) {
-        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
-        assert summary?.trim()
-
-        return new Event(
-                start: MapperUtils.toGoogleEventDateTime(startDateTime),
-                end: MapperUtils.toGoogleEventDateTime(endDateTime),
-                summary: summary,
-                location: location
-        )
-    }
-
-    /**
      * Returns calendar events from given date range.
      *
-     * @param calendar Calendar
+     * @param calendarId Calendar ID
      * @param startDateTime Start datetime
      * @param endDateTime End datetime
      * @return Events if found, otherwise empty list
      */
-    List<CalSyncEvent> getEvents(Calendar calendar, DateTime startDateTime, DateTime endDateTime) {
-        assert calendar?.getId()?.trim()
+    List<CalSyncEvent> getEvents(String calendarId, DateTime startDateTime, DateTime endDateTime) {
+        assert calendarId?.trim()
         assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
 
-        View.header("Getting Events from ${startDateTime} to ${endDateTime}...")
+        LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
         return client.events().
-                list(calendar.getId()).
+                list(calendarId).
                 setTimeMin(MapperUtils.toGoogleDateTime(startDateTime)).
                 setTimeMax(MapperUtils.toGoogleDateTime(endDateTime)).
                 execute().
@@ -215,13 +205,13 @@ class GoogleCalendarService {
     /**
      * Deletes calendar.
      *
-     * @param calendar Calendar to be deleted
+     * @param calendarID Calendar ID
      */
-    void deleteCalendar(Calendar calendar) {
-        assert calendar?.getId()?.trim()
+    void deleteCalendar(String calendarId) {
+        assert calendarId?.trim()
 
-        View.header('Delete Calendar')
+        LOGGER.info("Deleting calendar...")
 
-        client.calendars().delete(calendar.getId()).execute()
+        client.calendars().delete(calendarId).execute()
     }
 }

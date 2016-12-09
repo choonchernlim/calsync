@@ -1,9 +1,7 @@
 package com.github.choonchernlim.calsync.core
 
 import com.github.choonchernlim.calsync.googlecalendar.GoogleCalendarService
-import com.github.choonchernlim.calsync.googlecalendar.View
-import com.google.api.services.calendar.model.Calendar
-import com.google.api.services.calendar.model.Event
+import com.github.choonchernlim.calsync.googlecalendar.MapperUtils
 import org.joda.time.DateTime
 
 class Main {
@@ -19,44 +17,33 @@ class Main {
 
         GoogleCalendarService service = new GoogleCalendarService(clientSecretJsonFilePath)
 
-        service.showCalendars()
+        String calendarId = service.getCalendarId(googleCalendarName)
 
-        Calendar calendar = service.getCalendar(googleCalendarName)
+        service.createEvents(calendarId, [
+                MapperUtils.toCalSyncEvent(
+                        new DateTime(2016, 12, 7, 8, 0, 0),
+                        new DateTime(2016, 12, 7, 9, 0, 0),
+                        'Subject3',
+                        'Location3'),
+                MapperUtils.toCalSyncEvent(
+                        new DateTime(2016, 12, 11, 8, 0, 0),
+                        new DateTime(2016, 12, 12, 9, 0, 0),
+                        'Subject4 from 2010 to 2020',
+                        'Location4')
+        ])
 
-        Event event1 = service.newEvent(
-                new DateTime(2016, 12, 7, 8, 0, 0),
-                new DateTime(2016, 12, 7, 9, 0, 0),
-                'Subject3',
-                'Location3')
-
-        Event event2 = service.newEvent(
-                new DateTime(2016, 12, 11, 8, 0, 0),
-                new DateTime(2016, 12, 12, 9, 0, 0),
-                'Subject4 from 2010 to 2020',
-                'Location4')
-
-        service.addEvents(calendar, [event1, event2])
-
-        List<Event> events = service.getEvents(
-                calendar,
+        List<CalSyncEvent> events = service.getEvents(
+                calendarId,
                 new DateTime(2016, 12, 7, 0, 0, 0),
                 new DateTime(2016, 12, 12, 23, 59, 59))
 
-        events.each {
-            View.display(it)
-        }
+        service.deleteEvents(calendarId, events)
 
-        service.deleteEvents(calendar, events)
-
-        events = service.getEvents(
-                calendar,
+        service.getEvents(
+                calendarId,
                 new DateTime(2016, 12, 7, 0, 0, 0),
                 new DateTime(2016, 12, 12, 23, 59, 59))
 
-        events.each {
-            View.display(it)
-        }
-
-        service.deleteCalendar(calendar)
+        service.deleteCalendar(calendarId)
     }
 }

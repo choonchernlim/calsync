@@ -53,10 +53,69 @@ class MapperUtils {
 
         return new CalSyncEvent(
                 googleEventId: event.getId(),
-                startDatetime: toJodaDateTime(event.getStart()),
-                endDatetime: toJodaDateTime(event.getEnd()),
+                startDateTime: toJodaDateTime(event.getStart()),
+                endDateTime: toJodaDateTime(event.getEnd()),
                 subject: event.getSummary(),
                 location: event.getLocation()
         )
+    }
+
+    /**
+     * Maps CalSyncEvent to Google Event
+     *
+     * @param calSyncEvent CalSyncEvent
+     * @return Google Event
+     */
+    static Event toGoogleEvent(CalSyncEvent calSyncEvent) {
+        assert calSyncEvent != null
+
+        return new Event(
+                id: calSyncEvent.googleEventId,
+                start: toGoogleEventDateTime(calSyncEvent.startDateTime),
+                end: toGoogleEventDateTime(calSyncEvent.endDateTime),
+                summary: calSyncEvent.subject,
+                location: calSyncEvent.location
+        )
+    }
+
+    /**
+     * Creates new {@link CalSyncEvent} object.
+     *
+     * @param startDateTime Start datetime
+     * @param endDateTime End datetime
+     * @param summary Event title
+     * @param location Location
+     * @return CalSyncEvent
+     */
+    static CalSyncEvent toCalSyncEvent(
+            org.joda.time.DateTime startDateTime,
+            org.joda.time.DateTime endDateTime,
+            String subject,
+            String location = null) {
+        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
+        assert subject?.trim()
+
+        return new CalSyncEvent(
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+                subject: subject,
+                location: location
+        )
+    }
+
+    /**
+     * Maps Google Event to String
+     * @param event Google Event
+     * @return String
+     */
+    static String toString(Event event) {
+        assert event != null
+
+        return """
+Start Time : ${event.getStart()}
+  End Time : ${event.getEnd()}
+   Summary : ${event.getSummary()}
+  Location : ${event.getLocation()}
+"""
     }
 }

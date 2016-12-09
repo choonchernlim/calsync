@@ -5,23 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.choonchernlim</groupId>
-    <artifactId>google-calendar-test</artifactId>
+    <artifactId>calsync</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <jdk.version>1.7</jdk.version>
-
         <groovy-all.version>2.4.7</groovy-all.version>
         <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
-
-        <!--<slf4j.version>1.7.21</slf4j.version>-->
-        <!--<log4j.version>1.2.17</log4j.version>-->
-        <!--<guava.version>19.0</guava.version>-->
-        <!--<spock.version>1.0-groovy-2.4</spock.version>-->
-
-        <project.http.version>1.19.0</project.http.version>
-        <project.oauth.version>1.19.0</project.oauth.version>
     </properties>
 
     <dependencies>
@@ -29,6 +20,22 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>${groovy-all.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
         </dependency>
 
         <dependency>

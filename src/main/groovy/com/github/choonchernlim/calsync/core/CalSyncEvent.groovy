@@ -12,8 +12,8 @@ import org.joda.time.DateTime
 @EqualsAndHashCode(excludes = ['googleEventId'])
 @ToString
 class CalSyncEvent {
-    DateTime startDatetime
-    DateTime endDatetime
+    DateTime startDateTime
+    DateTime endDateTime
     String subject
     String location
 
