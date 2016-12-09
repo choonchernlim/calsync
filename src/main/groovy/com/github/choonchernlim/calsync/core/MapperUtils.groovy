@@ -1,9 +1,10 @@
-package com.github.choonchernlim.calsync.google
+package com.github.choonchernlim.calsync.core
 
-import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
+import com.google.api.services.calendar.model.EventReminder
+import microsoft.exchange.webservices.data.core.service.item.Appointment
 
 class MapperUtils {
     /**
@@ -56,7 +57,8 @@ class MapperUtils {
                 startDateTime: toJodaDateTime(event.getStart()),
                 endDateTime: toJodaDateTime(event.getEnd()),
                 subject: event.getSummary(),
-                location: event.getLocation()
+                location: event.getLocation(),
+                reminderMinutesBeforeStart: event.getReminders()?.getOverrides()?.get(0)?.getMinutes()
         )
     }
 
@@ -76,34 +78,32 @@ class MapperUtils {
                 summary: calSyncEvent.subject,
                 location: calSyncEvent.location,
                 reminders: new Event.Reminders(
-                        useDefault: true,
-
-                        )
+                        useDefault: false,
+                        overrides: [
+                                new EventReminder(
+                                        method: 'popup',
+                                        minutes: calSyncEvent.reminderMinutesBeforeStart
+                                )
+                        ]
+                )
         )
     }
 
     /**
-     * Creates new {@link CalSyncEvent} object.
+     * Maps Exchange Event to CalSyncEvent.
      *
-     * @param startDateTime Start datetime
-     * @param endDateTime End datetime
-     * @param summary Event title
-     * @param location Location
+     * @param appointment Exchange Event
      * @return CalSyncEvent
      */
-    static CalSyncEvent toCalSyncEvent(
-            org.joda.time.DateTime startDateTime,
-            org.joda.time.DateTime endDateTime,
-            String subject,
-            String location = null) {
-        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
-        assert subject?.trim()
+    static CalSyncEvent toCalSyncEvent(Appointment appointment) {
+        assert appointment != null
 
         return new CalSyncEvent(
-                startDateTime: startDateTime,
-                endDateTime: endDateTime,
-                subject: subject,
-                location: location
+                startDateTime: new org.joda.time.DateTime(appointment.start),
+                endDateTime: new org.joda.time.DateTime(appointment.end),
+                subject: appointment.subject,
+                location: appointment.location,
+                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart
         )
     }
 }

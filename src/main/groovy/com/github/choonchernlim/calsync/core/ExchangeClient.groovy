@@ -1,6 +1,5 @@
-package com.github.choonchernlim.calsync.exchange
+package com.github.choonchernlim.calsync.core
 
-import com.github.choonchernlim.calsync.core.CalSyncEvent
 import microsoft.exchange.webservices.data.core.ExchangeService
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName
 import microsoft.exchange.webservices.data.core.service.folder.CalendarFolder
@@ -40,14 +39,8 @@ class ExchangeClient {
 
         return CalendarFolder.bind(service, WellKnownFolderName.Calendar).
                 findAppointments(new CalendarView(startDateTime.toDate(), endDateTime.toDate())).
-                getItems()?.collect {
-            new CalSyncEvent(
-                    startDateTime: new DateTime(it.getStart()),
-                    endDateTime: new DateTime(it.getEnd()),
-                    subject: it.getSubject(),
-                    location: it.getLocation()
-            )
-        } ?: []
+                getItems()?.
+                collect { MapperUtils.toCalSyncEvent(it) } ?: []
     }
 }
 

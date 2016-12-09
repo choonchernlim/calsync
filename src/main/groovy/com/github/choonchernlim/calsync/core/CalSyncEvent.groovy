@@ -16,6 +16,7 @@ class CalSyncEvent {
     DateTime endDateTime
     String subject
     String location
+    Integer reminderMinutesBeforeStart
 
     String googleEventId
 }
