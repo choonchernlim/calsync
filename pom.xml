@@ -32,6 +32,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.choonchernlim</groupId>
+            <artifactId>better-preconditions</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.9.6</version>

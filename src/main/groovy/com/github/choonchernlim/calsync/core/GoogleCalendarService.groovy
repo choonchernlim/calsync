@@ -16,7 +16,10 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
-import com.google.api.services.calendar.model.*
+import com.google.api.services.calendar.model.Calendar
+import com.google.api.services.calendar.model.CalendarList
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
 
 class GoogleCalendarService {
 
@@ -27,15 +30,12 @@ class GoogleCalendarService {
 
     private final com.google.api.services.calendar.Calendar client
 
-    // TODO hardcode it here for now
-    private UserConfig userConfig = new UserConfig()
-
     GoogleCalendarService(String clientSecretJsonFilePath) {
         client = configure(clientSecretJsonFilePath)
     }
 
     /**
-     * Authorizes the installed application to access user's protected data.
+     * Authorizes app to access user's protected data and returns connected client.
      */
     private static com.google.api.services.calendar.Calendar configure(String clientSecretJsonFilePath) {
         // initialize the transport
@@ -53,7 +53,7 @@ class GoogleCalendarService {
 
         if (clientSecrets.getDetails().getClientId().startsWith('Enter')
                 || clientSecrets.getDetails().getClientSecret().startsWith('Enter ')) {
-            System.out.println('Enter Client ID and Secret from https://code.google.com/apis/console/?api=calendar ' +
+            System.err.println('Enter Client ID and Secret from https://code.google.com/apis/console/?api=calendar ' +
                                'into /path/to/client_secrets.json')
             System.exit(1)
         }
@@ -72,79 +72,74 @@ class GoogleCalendarService {
                 build()
     }
 
-    void showCalendars() throws IOException {
+    void showCalendars() {
         View.header('Show Calendars')
         CalendarList feed = client.calendarList().list().execute()
         View.display(feed)
     }
 
-    Calendar getCalendar() throws IOException {
-        View.header("Attempting to find calendar [ ${userConfig.calendarName} ] ...")
+    Calendar getCalendar(String calendarName) {
+        assert calendarName?.trim()
 
-        String calendarId = client.calendarList().
-                list().
-                execute().
-                getItems().
-                find { it.getSummary() == userConfig.calendarName }?.
+        View.header("Attempting to find calendar [ ${calendarName} ] ...")
+
+        String calendarId = client.calendarList().list().execute().
+                getItems()?.
+                find { it.getSummary() == calendarName }?.
                 getId()
 
         return calendarId ?
                 getCalendarById(calendarId) :
-                createCalendar()
+                createCalendar(calendarName)
     }
 
     private Calendar getCalendarById(String calendarId) {
+        assert calendarId?.trim()
+
         View.header("Get calendar by id [ ${calendarId} ]...")
+
         return client.calendars().get(calendarId).execute()
     }
 
-    private Calendar createCalendar() {
+    /**
+     * Creates and returns a new calendar based on the user config.
+     *
+     * @param calendarName Name of the calendar to be created
+     * @return Calendar
+     */
+    private Calendar createCalendar(String calendarName) {
+        assert calendarName?.trim()
+
         View.header('Creating new calendar...')
 
-        Calendar result = client.calendars().insert(new Calendar(summary: userConfig.calendarName)).execute()
+        Calendar result = client.calendars().insert(new Calendar(summary: calendarName)).execute()
 
         View.display(result)
 
         return result
     }
 
-//    Calendar addCalendar() throws IOException {
-//        View.header('Add Calendar')
-//        Calendar entry = new Calendar()
-//        entry.setSummary('Calendar for Testing 3')
-//        Calendar result = client.calendars().insert(entry).execute()
-//        View.display(result)
-//        return result
-//    }
+    /**
+     * Adds a list of events to the calendar.
+     *
+     * @param calendar Calendar
+     * @param events Events to be added
+     */
+    void addEvents(Calendar calendar, List<Event> events) {
+        assert calendar?.getId()?.trim()
+        assert !events?.isEmpty()
 
-//    Calendar updateCalendar(Calendar calendar) throws IOException {
-//        View.header('Update Calendar')
-//        Calendar entry = new Calendar()
-//        entry.setSummary('Updated Calendar for Testing')
-//        Calendar result = client.calendars().patch(calendar.getId(), entry).execute()
-//        View.display(result)
-//        return result
-//    }
-
-//    void addEvent(Calendar calendar, Event event) throws IOException {
-//        View.header('Add Event')
-//        Event result = client.events().insert(calendar.getId(), event).execute()
-//        View.display(result)
-//    }
-
-    void addEvents(Calendar calendar, Event... events) throws IOException {
-        View.header('Add Event')
+        View.header('Adding events')
 
         BatchRequest batch = client.batch()
-        def calendarEvents = client.events()
 
         events.each {
-            calendarEvents.insert(calendar.getId(), it).queue(batch, [
-                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
-                        System.out.println('Error Message: ' + googleJsonError.getMessage())
-                    },
+            client.events().insert(calendar.getId(), it).queue(batch, [
                     onSuccess: { Event event, HttpHeaders httpHeaders ->
                         View.display(event)
+                    },
+                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
+                        System.out.println("Error Message: ${googleJsonError.getMessage()}")
                     }
             ] as JsonBatchCallback<Event>)
         }
@@ -152,100 +147,85 @@ class GoogleCalendarService {
         batch.execute()
     }
 
-//    void addEvent(Calendar calendar) throws IOException {
-//        View.header('Add Event')
-//        Event event = newEvent()
-//        Event result = client.events().insert(calendar.getId(), event).execute()
-//        View.display(result)
-//    }
-//
-//    private static Event newEvent() {
-//        Event event = new Event()
-//        event.setSummary('New Event')
-//        Date startDate = new Date()
-//        Date endDate = new Date(startDate.getTime() + 3600000)
-//        DateTime start = new DateTime(startDate, TimeZone.getTimeZone('UTC'))
-//        event.setStart(new EventDateTime().setDateTime(start))
-//        DateTime end = new DateTime(endDate, TimeZone.getTimeZone('UTC'))
-//        event.setEnd(new EventDateTime().setDateTime(end))
-//        return event
-//    }
+    /**
+     * Deletes a list of events from calendar.
+     *
+     * @param calendar Calendar
+     * @param events Events to be deleted
+     */
+    void deleteEvents(Calendar calendar, List<Event> events) {
+        assert calendar?.getId()?.trim()
+        assert !events?.isEmpty()
 
+        View.header('Deleting Events...')
+
+        BatchRequest batch = client.batch()
+
+        events.each {
+            View.display(it)
+
+            client.events().delete(calendar.getId(), it.getId()).queue(batch, [
+                    onSuccess: { Void content, HttpHeaders httpHeaders ->
+                        View.header("Event is successfully deleted!")
+                    },
+                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
+                        System.out.println("Error Message: ${googleJsonError.getMessage()}")
+                    }
+            ] as JsonBatchCallback<Void>)
+        }
+
+        batch.execute()
+    }
+
+    /**
+     * Creates new {@link Event} object.
+     *
+     * @param startDateTime Start datetime
+     * @param endDateTime End datetime
+     * @param summary Event title
+     * @param location Location
+     * @return {@link Event} object
+     */
     static Event newEvent(
             org.joda.time.DateTime startDateTime,
             org.joda.time.DateTime endDateTime,
             String summary,
-            String location) {
+            String location = null) {
+        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
+        assert summary?.trim()
 
         return new Event(
+                start: new EventDateTime(dateTime: new DateTime(startDateTime.getMillis())),
+                end: new EventDateTime(dateTime: new DateTime(endDateTime.getMillis())),
                 summary: summary,
-                start: new EventDateTime().setDateTime(new DateTime(startDateTime.getMillis())),
-                end: new EventDateTime().setDateTime(new DateTime(endDateTime.getMillis())),
                 location: location
         )
     }
 
-    void showEvents(Calendar calendar) throws IOException {
-        View.header('Show Events')
-        Events feed = client.events().list(calendar.getId()).execute()
-        View.display(feed)
+    /**
+     * Returns calendar events from given date range.
+     *
+     * @param calendar Calendar
+     * @param startDatetime Start datetime
+     * @param endDatetime End datetime
+     * @return Events if found, otherwise empty list
+     */
+    List<Event> getEvents(Calendar calendar, org.joda.time.DateTime startDatetime, org.joda.time.DateTime endDatetime) {
+        assert calendar?.getId()?.trim()
+        assert startDatetime != null && endDatetime != null && startDatetime <= endDatetime
+
+        View.header("Getting Events from ${startDatetime} to ${endDatetime}...")
+
+        return client.events().
+                list(calendar.getId()).
+                setTimeMin(new DateTime(startDatetime.getMillis())).
+                setTimeMax(new DateTime(endDatetime.getMillis())).
+                execute().
+                getItems() ?: []
     }
 
-
-    void deleteCalendar(Calendar calendar) throws IOException {
+    void deleteCalendar(Calendar calendar) {
         View.header('Delete Calendar')
         client.calendars().delete(calendar.getId()).execute()
     }
-
-//    void addCalendarsUsingBatch() throws IOException {
-//        View.header('Add Calendars using Batch')
-//        BatchRequest batch = client.batch()
-//
-//        // Create the callback.
-//        JsonBatchCallback<Calendar> callback = new JsonBatchCallback<Calendar>() {
-//
-//            @Override
-//            void onSuccess(Calendar calendar, HttpHeaders responseHeaders) {
-//                View.display(calendar)
-//                addedCalendarsUsingBatch.add(calendar)
-//            }
-//
-//            @Override
-//            void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
-//                System.out.println('Error Message: ' + e.getMessage())
-//            }
-//        }
-//
-//        // Create 2 Calendar Entries to insert.
-//        Calendar entry1 = new Calendar().setSummary('Calendar for Testing 1')
-//        client.calendars().insert(entry1).queue(batch, callback)
-//
-//        Calendar entry2 = new Calendar().setSummary('Calendar for Testing 2')
-//        client.calendars().insert(entry2).queue(batch, callback)
-//
-//        batch.execute()
-//    }
-//
-//    void deleteCalendarsUsingBatch() throws IOException {
-//        View.header('Delete Calendars Using Batch')
-//        BatchRequest batch = client.batch()
-//        for (Calendar calendar : addedCalendarsUsingBatch) {
-//            client.calendars().delete(calendar.getId()).queue(batch, new JsonBatchCallback<Void>() {
-//
-//                @Override
-//                void onSuccess(Void content, HttpHeaders responseHeaders) {
-//                    System.out.println('Delete is successful!')
-//                }
-//
-//                @Override
-//                void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
-//                    System.out.println('Error Message: ' + e.getMessage())
-//                }
-//            })
-//        }
-//
-//        batch.execute()
-//    }
-
-
 }

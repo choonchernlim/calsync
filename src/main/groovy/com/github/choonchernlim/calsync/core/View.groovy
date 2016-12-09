@@ -50,5 +50,7 @@ class View {
         System.out.println("Start Time : " + event.getStart())
         System.out.println("End Time   : " + event.getEnd())
         System.out.println("Summary    : " + event.getSummary())
+        System.out.println("Location   : " + event.getLocation())
+        System.out.println()
     }
 }

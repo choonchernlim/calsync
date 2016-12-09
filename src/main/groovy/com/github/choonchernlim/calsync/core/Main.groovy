@@ -12,31 +12,50 @@ class Main {
             System.exit(1)
         }
 
-        try {
-            GoogleCalendarService service = new GoogleCalendarService(args[0])
+        String clientSecretJsonFilePath = args[0]
+        UserConfig userConfig = new UserConfig()
+        def calendarName = userConfig.getCalendarName()
 
-            service.showCalendars()
-            //service.addCalendarsUsingBatch()
-            //Calendar calendar = service.addCalendar()
+        GoogleCalendarService service = new GoogleCalendarService(clientSecretJsonFilePath)
 
-            Calendar calendar = service.getCalendar()
+        service.showCalendars()
 
-            //service.updateCalendar(calendar)
-            Event event = service.newEvent(
-                    new DateTime(2016, 12, 8, 8, 0),
-                    new DateTime(2016, 12, 8, 9, 0),
-                    'Subject3',
-                    'Location3')
+        Calendar calendar = service.getCalendar(calendarName)
 
-            // service.addEvent(calendar, event)
+        Event event1 = service.newEvent(
+                new DateTime(2016, 12, 7, 8, 0, 0),
+                new DateTime(2016, 12, 7, 9, 0, 0),
+                'Subject3',
+                'Location3')
 
-            service.addEvents(calendar, event)
-            service.showEvents(calendar)
-            //service.deleteCalendarsUsingBatch()
-            // service.deleteCalendar(calendar)
+        Event event2 = service.newEvent(
+                new DateTime(2016, 12, 11, 8, 0, 0),
+                new DateTime(2016, 12, 12, 9, 0, 0),
+                'Subject4 from 2010 to 2020',
+                'Location4')
+
+        service.addEvents(calendar, [event1, event2])
+
+        List<Event> events = service.getEvents(
+                calendar,
+                new DateTime(2016, 12, 7, 0, 0, 0),
+                new DateTime(2016, 12, 12, 23, 59, 59))
+
+        events.each {
+            View.display(it)
         }
-        catch (Exception e) {
-            e.printStackTrace()
+
+        service.deleteEvents(calendar, events)
+
+        events = service.getEvents(
+                calendar,
+                new DateTime(2016, 12, 7, 0, 0, 0),
+                new DateTime(2016, 12, 12, 23, 59, 59))
+
+        events.each {
+            View.display(it)
         }
+
+        service.deleteCalendar(calendar)
     }
 }
