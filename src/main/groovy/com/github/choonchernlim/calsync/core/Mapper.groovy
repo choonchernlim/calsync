@@ -14,7 +14,7 @@ class Mapper {
      * @return Joda DateTime
      */
     static org.joda.time.DateTime toJodaDateTime(EventDateTime eventDateTime) {
-        assert eventDateTime != null
+        assert eventDateTime
 
         return new org.joda.time.DateTime(eventDateTime.getDateTime().getValue())
     }
@@ -26,7 +26,7 @@ class Mapper {
      * @return Google EventDateTime
      */
     static EventDateTime toGoogleEventDateTime(org.joda.time.DateTime jodaDateTime) {
-        assert jodaDateTime != null
+        assert jodaDateTime
 
         return new EventDateTime(dateTime: toGoogleDateTime(jodaDateTime))
     }
@@ -38,7 +38,7 @@ class Mapper {
      * @return Google DateTime
      */
     static DateTime toGoogleDateTime(org.joda.time.DateTime jodaDateTime) {
-        assert jodaDateTime != null
+        assert jodaDateTime
 
         return new DateTime(jodaDateTime.millis)
     }
@@ -50,7 +50,7 @@ class Mapper {
      * @return CalSyncEvent
      */
     static CalSyncEvent toCalSyncEvent(Event event) {
-        assert event != null
+        assert event
 
         return new CalSyncEvent(
                 googleEventId: event.getId(),
@@ -63,13 +63,31 @@ class Mapper {
     }
 
     /**
+     * Maps Exchange Event to CalSyncEvent.
+     *
+     * @param appointment Exchange Event
+     * @return CalSyncEvent
+     */
+    static CalSyncEvent toCalSyncEvent(Appointment appointment) {
+        assert appointment
+
+        return new CalSyncEvent(
+                startDateTime: new org.joda.time.DateTime(appointment.start),
+                endDateTime: new org.joda.time.DateTime(appointment.end),
+                subject: appointment.subject,
+                location: appointment.location,
+                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart
+        )
+    }
+
+    /**
      * Maps CalSyncEvent to Google Event.
      *
      * @param calSyncEvent CalSyncEvent
      * @return Google Event
      */
     static Event toGoogleEvent(CalSyncEvent calSyncEvent) {
-        assert calSyncEvent != null
+        assert calSyncEvent
 
         return new Event(
                 id: calSyncEvent.googleEventId,
@@ -86,24 +104,6 @@ class Mapper {
                                 )
                         ]
                 )
-        )
-    }
-
-    /**
-     * Maps Exchange Event to CalSyncEvent.
-     *
-     * @param appointment Exchange Event
-     * @return CalSyncEvent
-     */
-    static CalSyncEvent toCalSyncEvent(Appointment appointment) {
-        assert appointment != null
-
-        return new CalSyncEvent(
-                startDateTime: new org.joda.time.DateTime(appointment.start),
-                endDateTime: new org.joda.time.DateTime(appointment.end),
-                subject: appointment.subject,
-                location: appointment.location,
-                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart
         )
     }
 }
