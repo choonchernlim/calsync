@@ -176,7 +176,7 @@ class GoogleClient {
         }
 
         events.each {
-            client.events().insert(calendarId, MapperUtils.toGoogleEvent(it)).queue(batch, [
+            client.events().insert(calendarId, Mapper.toGoogleEvent(it)).queue(batch, [
                     onSuccess: { Event event, HttpHeaders httpHeaders ->
                         LOGGER.info("\tEvent created: [event: ${event}]")
                     },
@@ -240,10 +240,10 @@ class GoogleClient {
         List<CalSyncEvent> events = client.events().
                 list(calendarId).
                 setMaxResults(2500).
-                setTimeMin(MapperUtils.toGoogleDateTime(startDateTime)).
-                setTimeMax(MapperUtils.toGoogleDateTime(endDateTime)).
+                setTimeMin(Mapper.toGoogleDateTime(startDateTime)).
+                setTimeMax(Mapper.toGoogleDateTime(endDateTime)).
                 execute().
-                getItems()?.collect { MapperUtils.toCalSyncEvent(it) } ?: []
+                getItems()?.collect { Mapper.toCalSyncEvent(it) } ?: []
 
         LOGGER.info("\tTotal events found: ${events.size()}...")
 

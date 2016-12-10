@@ -51,12 +51,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.choonchernlim</groupId>
-            <artifactId>better-preconditions</artifactId>
-            <version>0.1.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.9.6</version>
@@ -77,9 +71,18 @@
             <artifactId>google-oauth-client-jetty</artifactId>
             <version>1.22.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>1.1-groovy-2.4-rc-3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
+
         <plugins>
             <!-- Use Groovy compiler. -->
             <plugin>
@@ -106,6 +109,19 @@
             </plugin>
 
             <plugin>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-eclipse-compiler</artifactId>
+                <version>${groovy-eclipse-compiler.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
@@ -120,6 +136,7 @@
                 </executions>
             </plugin>
 
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -127,7 +144,7 @@
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
-                    <finalName>${project.artifactId}</finalName>
+                    <!--<finalName>${project.artifactId}</finalName>-->
                     <archive>
                         <manifest>
                             <mainClass>com.github.choonchernlim.calsync.core.Main</mainClass>
