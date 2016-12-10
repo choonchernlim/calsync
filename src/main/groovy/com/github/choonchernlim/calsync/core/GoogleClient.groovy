@@ -33,10 +33,18 @@ class GoogleClient {
      */
     private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${AppConfig.PROJECT_ID}")
 
-    private final com.google.api.services.calendar.Calendar client
+    /**
+     * Connected client.
+     */
+    com.google.api.services.calendar.Calendar client
+
+    /**
+     * Batch request to reduce HTTP overhead.
+     */
+    BatchRequest batch
 
     GoogleClient(String clientSecretJsonFilePath) {
-        client = configure(clientSecretJsonFilePath)
+        this.client = configure(clientSecretJsonFilePath)
     }
 
     /**
@@ -92,7 +100,8 @@ class GoogleClient {
 
         List<CalendarListEntry> calendarListEntries = client.calendarList().list().execute().getItems() ?: []
 
-        LOGGER.info(calendarListEntries.collect { it.getSummary() }?.join("; "))
+        List<String> calendars = calendarListEntries.collect { it.getSummary() }
+        LOGGER.info("\tTotal calendars found: ${calendarListEntries.size()}... [calendars: ${calendars}]")
 
         return calendarListEntries
     }
@@ -111,71 +120,105 @@ class GoogleClient {
         String calendarId = getCalendars().find { it.getSummary() == calendarName }?.getId()
 
         if (calendarId) {
-            LOGGER.info("Returning existing calendar [${calendarName}]...")
+            LOGGER.info("\tReturning existing calendar [${calendarName}]...")
 
             return calendarId
         }
         else {
-            LOGGER.info("Creating new calendar [${calendarName}]...")
+            LOGGER.info("\tCreating new calendar [${calendarName}]...")
 
             return client.calendars().insert(new Calendar(summary: calendarName)).execute().getId()
         }
     }
 
     /**
-     * Creates a list of events for the calendar.
+     * Creates a new batch.
+     *
+     * @return Same instance
+     */
+    GoogleClient createBatch() {
+        LOGGER.info("Creating new batch...")
+
+        batch = client.batch()
+
+        return this
+    }
+
+    /**
+     * Executes batch.
+     */
+    void executeBatch() {
+        assert batch != null
+
+        if (batch.size() > 0) {
+            LOGGER.info("Executing batch...")
+
+            batch.execute()
+        }
+    }
+
+    /**
+     * Adds a list of events to be created into existing batch.
      *
      * @param calendarId Calendar ID
-     * @param events Events to be added
+     * @param events Events to be created
+     * @return Same instance
      */
-    void createEvents(String calendarId, List<CalSyncEvent> events) {
+    GoogleClient batchNewEvents(String calendarId, List<CalSyncEvent> events) {
         assert calendarId?.trim()
-        assert !events?.isEmpty()
+        assert events != null
+        assert batch != null
 
-        BatchRequest batch = client.batch()
+        LOGGER.info("Total events to be created: ${events.size()}...")
+
+        if (events.isEmpty()) {
+            return this
+        }
 
         events.each {
-            LOGGER.info("Adding event [${it}]...")
-
             client.events().insert(calendarId, MapperUtils.toGoogleEvent(it)).queue(batch, [
                     onSuccess: { Event event, HttpHeaders httpHeaders ->
-                        LOGGER.info('Event is successfully added.')
+                        LOGGER.info("\tEvent created: [event: ${event}]")
                     },
-                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
-                        LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")
+                    onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
+                        LOGGER.error("\tError when creating event: [event: ${it}] [error: ${error.getMessage()}]")
                     }
             ] as JsonBatchCallback<Event>)
         }
 
-        batch.execute()
+        return this
     }
 
     /**
-     * Deletes a list of events from calendar.
+     * Adds a list of events to be deleted from the calendar into existing batch.
      *
      * @param calendarId Calendar ID
      * @param events Events to be deleted
+     * @return Same instance
      */
-    void deleteEvents(String calendarId, List<CalSyncEvent> events) {
+    GoogleClient batchDeletedEvents(String calendarId, List<CalSyncEvent> events) {
         assert calendarId?.trim()
-        assert !events?.isEmpty()
+        assert events != null
+        assert batch != null
 
-        BatchRequest batch = client.batch()
+        LOGGER.info("Total events to be deleted: ${events.size()}...")
+
+        if (events.isEmpty()) {
+            return this
+        }
 
         events.each {
-            LOGGER.info("Deleting event [${it}]...")
-
             client.events().delete(calendarId, it.getGoogleEventId()).queue(batch, [
                     onSuccess: { Void content, HttpHeaders httpHeaders ->
-                        LOGGER.info('Event is successfully deleted.')
+                        LOGGER.info("\tEvent deleted: [event: ${it}]")
                     },
-                    onFailure: { GoogleJsonError googleJsonError, HttpHeaders httpHeaders ->
-                        LOGGER.error("Error when adding event: ${googleJsonError.getMessage()}")
+                    onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
+                        LOGGER.error("\tError when deleting event: [event: ${it}] [error: ${error.getMessage()}]")
                     }
             ] as JsonBatchCallback<Void>)
         }
 
-        batch.execute()
+        return this
     }
 
     /**
@@ -192,12 +235,19 @@ class GoogleClient {
 
         LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
-        return client.events().
+        // The default max result is 250. However, if the query results more than that, nothing gets returned.
+        // Thus, set max result to 2500, which is the largest value allowed.
+        List<CalSyncEvent> events = client.events().
                 list(calendarId).
+                setMaxResults(2500).
                 setTimeMin(MapperUtils.toGoogleDateTime(startDateTime)).
                 setTimeMax(MapperUtils.toGoogleDateTime(endDateTime)).
                 execute().
                 getItems()?.collect { MapperUtils.toCalSyncEvent(it) } ?: []
+
+        LOGGER.info("\tTotal events found: ${events.size()}...")
+
+        return events
     }
 
     /**

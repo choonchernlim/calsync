@@ -37,10 +37,14 @@ class ExchangeClient {
 
         LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
-        return CalendarFolder.bind(service, WellKnownFolderName.Calendar).
+        List<CalSyncEvent> events = CalendarFolder.bind(service, WellKnownFolderName.Calendar).
                 findAppointments(new CalendarView(startDateTime.toDate(), endDateTime.toDate())).
                 getItems()?.
                 collect { MapperUtils.toCalSyncEvent(it) } ?: []
+
+        LOGGER.info("Total events found: ${events.size()}...")
+
+        return events
     }
 }
 
