@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.github.choonchernlim</groupId>
+        <artifactId>build-reports</artifactId>
+        <version>0.3.2</version>
+    </parent>
+
     <groupId>com.github.choonchernlim</groupId>
     <artifactId>calsync</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -59,17 +65,17 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-calendar</artifactId>
-            <version>v3-rev87-1.19.0</version>
+            <version>v3-rev225-1.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.19.0</version>
+            <version>1.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.19.0</version>
+            <version>1.22.0</version>
         </dependency>
     </dependencies>
 
@@ -79,7 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.6.0</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
                     <source>${jdk.version}</source>
@@ -102,13 +108,40 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>default-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
+                    <finalName>${project.artifactId}</finalName>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.github.choonchernlim.calsync.core.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
