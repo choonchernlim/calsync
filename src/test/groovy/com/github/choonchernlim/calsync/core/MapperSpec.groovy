@@ -31,7 +31,7 @@ class MapperSpec extends Specification {
         ]
     }
 
-    def 'toJodaDateTime - given valid value, should throw error'() {
+    def 'toJodaDateTime - given valid value, should joda datetime'() {
         given:
         def expected = org.joda.time.DateTime.now()
         def input = new EventDateTime(dateTime: new DateTime(expected.millis))
@@ -43,7 +43,7 @@ class MapperSpec extends Specification {
         actual == expected
     }
 
-    def 'toGoogleEventDateTime - given valid value, should throw error'() {
+    def 'toGoogleEventDateTime - given valid value, should return google event datetime'() {
         given:
         def expected = org.joda.time.DateTime.now()
 
@@ -54,7 +54,7 @@ class MapperSpec extends Specification {
         actual.getDateTime().getValue() == expected.millis
     }
 
-    def 'toGoogleDateTime - given valid value, should throw error'() {
+    def 'toGoogleDateTime - given valid value, should return google datetime'() {
         given:
         def expected = org.joda.time.DateTime.now()
 
@@ -65,7 +65,7 @@ class MapperSpec extends Specification {
         actual.getValue() == expected.millis
     }
 
-    def 'toCalSyncEvent - event - given valid value, should throw error'() {
+    def 'toCalSyncEvent - event - given valid value, should return calsync event'() {
         given:
         def startDateTime = org.joda.time.DateTime.now()
         def endDateTime = startDateTime.plusDays(1)
@@ -92,7 +92,7 @@ class MapperSpec extends Specification {
         actual.reminderMinutesBeforeStart == 15
     }
 
-    def 'toCalSyncEvent - appointment - given valid value, should throw error'() {
+    def 'toCalSyncEvent - appointment - given valid value, should return calsync event'() {
         given:
         def startDateTime = org.joda.time.DateTime.now()
         def endDateTime = startDateTime.plusDays(1)

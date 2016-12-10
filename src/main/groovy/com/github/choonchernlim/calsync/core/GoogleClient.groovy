@@ -31,7 +31,7 @@ class GoogleClient {
     /**
      * Directory to store user credentials.
      */
-    private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${AppConfig.PROJECT_ID}")
+    private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${Constant.PROJECT_ID}")
 
     /**
      * Connected client.
@@ -71,9 +71,9 @@ class GoogleClient {
 
         if (clientSecrets.getDetails().getClientId().startsWith('Enter')
                 || clientSecrets.getDetails().getClientSecret().startsWith('Enter ')) {
-            System.err.println('Enter Client ID and Secret from https://code.google.com/apis/console/?api=calendar ' +
-                               'into /path/to/client_secrets.json')
-            System.exit(1)
+            throw new CalSyncException(
+                    'Enter Client ID and Secret from https://code.google.com/apis/console/?api=calendar into ' +
+                    '/path/to/client_secrets.json')
         }
 
         // set up authorization code flow
@@ -86,7 +86,7 @@ class GoogleClient {
         Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize('user')
 
         return new com.google.api.services.calendar.Calendar.Builder(httpTransport, jsonFactory, credential).
-                setApplicationName(AppConfig.PROJECT_ID).
+                setApplicationName(Constant.PROJECT_ID).
                 build()
     }
 
