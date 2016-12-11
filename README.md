@@ -4,6 +4,10 @@ Syncs events from Exchange calendar to Google calendar.
 
 ## Getting Started
 
+* Prerequisites:-
+    * Java 1.7
+    * Maven
+    
 * Enable Google Calendar API (steps provided by Google):-
     * Use [this wizard](https://console.developers.google.com/start/api?id=calendar) to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
     * On the **Add credentials to your project** page, click the **Cancel** button.
@@ -13,9 +17,18 @@ Syncs events from Exchange calendar to Google calendar.
     * Click **OK** to dismiss the resulting dialog.
     * Click the "Download JSON" button to the right of the client ID.
     * Rename it `client_secret.json`.
+    
+* Create environment variables defined in "Environment Variables" section below.
+    
+* Download CalSync source code to `/path/to/calsync`.
 
+* Navigate to `/path/to/calsync`.
 
-# Environment Variables
+* Run `mvn clean package`. This will create `calsync.jar` under `/path/to/calsync/target/` directory.
+
+* Run `java -jar calsync.jar`.
+
+## Environment Variables
 
 |Name                                         | Description                                                               |
 |---------------------------------------------|---------------------------------------------------------------------------|
@@ -26,12 +39,12 @@ Syncs events from Exchange calendar to Google calendar.
 | CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH | Path to the downloaded `client_secret.json`.                              |
 | CALSYNC_TOTAL_SYNC_DAYS                     | Total days to sync from current day.                                      |
 
-## Windows
+### Windows
 
 * Press `Windows` + `Break`
 * `Advanced system settings` → `Environment Variables`.
 
-## Mac
+### Mac
 
 * Create or open `~/Library/LaunchAgents/environment.plist`:-
 
