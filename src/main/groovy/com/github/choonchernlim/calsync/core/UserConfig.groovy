@@ -2,7 +2,6 @@ package com.github.choonchernlim.calsync.core
 
 import groovy.transform.ToString
 
-// TODO Need to figure out how to display exception thrown nicely
 @ToString
 class UserConfig {
     String exchangeUserName
@@ -21,18 +20,15 @@ class UserConfig {
 
         String totalSyncDaysString = System.getenv(Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS)?.trim()
 
-        try {
-            assert exchangeUserName
-            assert exchangePassword
-            assert exchangeUrl
-            assert googleClientSecretJsonFilePath
-            assert googleCalendarName
-            assert totalSyncDaysString
-            assert totalSyncDaysString.isInteger()
-            assert totalSyncDaysString.toInteger() > 0
-        }
-        // Must define type because Groovy assert throws Throwable instead of Exception
-        catch (Throwable e) {
+        if (!exchangeUserName ||
+            !exchangePassword ||
+            !exchangeUrl ||
+            !googleClientSecretJsonFilePath ||
+            !googleCalendarName ||
+            !totalSyncDaysString ||
+            !totalSyncDaysString.isInteger() ||
+            totalSyncDaysString.toInteger() <= 0) {
+
             throw new CalSyncException("""
 The following environment variables must exist with valid values:
 - CALSYNC_EXCHANGE_USERNAME
