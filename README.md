@@ -2,12 +2,15 @@
 
 Syncs events from Exchange calendar to Google calendar.
 
+## Prerequisites:-
+
+* Exchange account
+* Google account
+* Java 1.7
+* Maven
+
 ## Getting Started
 
-* Prerequisites:-
-    * Java 1.7
-    * Maven
-    
 * Enable Google Calendar API (steps provided by Google):-
     * Use [this wizard](https://console.developers.google.com/start/api?id=calendar) to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
     * On the **Add credentials to your project** page, click the **Cancel** button.
