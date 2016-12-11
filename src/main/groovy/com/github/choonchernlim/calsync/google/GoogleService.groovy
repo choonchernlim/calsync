@@ -1,5 +1,7 @@
-package com.github.choonchernlim.calsync.core
+package com.github.choonchernlim.calsync.google
 
+import com.github.choonchernlim.calsync.core.CalSyncEvent
+import com.github.choonchernlim.calsync.core.Mapper
 import com.google.api.services.calendar.model.CalendarListEntry
 import com.google.inject.Inject
 import org.joda.time.DateTime
@@ -17,7 +19,10 @@ class GoogleService {
      */
     final GoogleClient googleClient
 
-    List<EventAction> eventActions
+    /**
+     * Event actions to be executed as one big batch.
+     */
+    final List<EventAction> eventActions
 
     @Inject
     GoogleService(GoogleClient googleClient) {
@@ -74,7 +79,7 @@ class GoogleService {
     GoogleService createBatch() {
         LOGGER.info("Creating a new batch...")
 
-        eventActions = []
+        eventActions.clear()
 
         return this
     }
@@ -107,7 +112,7 @@ class GoogleService {
             return this
         }
 
-        eventActions.addAll(events.collect { new EventAction(action: 'INSERT', event: it) })
+        eventActions.addAll(events.collect { new EventAction(action: EventAction.Action.INSERT, event: it) })
 
         return this
     }
@@ -127,7 +132,7 @@ class GoogleService {
             return this
         }
 
-        eventActions.addAll(events.collect { new EventAction(action: 'DELETE', event: it) })
+        eventActions.addAll(events.collect { new EventAction(action: EventAction.Action.DELETE, event: it) })
 
         return this
     }

@@ -1,5 +1,7 @@
-package com.github.choonchernlim.calsync.core
+package com.github.choonchernlim.calsync.exchange
 
+import com.github.choonchernlim.calsync.core.CalSyncEvent
+import com.github.choonchernlim.calsync.core.Mapper
 import microsoft.exchange.webservices.data.core.ExchangeService
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName
 import microsoft.exchange.webservices.data.core.service.folder.CalendarFolder

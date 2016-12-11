@@ -1,5 +1,6 @@
 package com.github.choonchernlim.calsync.core
 
+import com.github.choonchernlim.calsync.google.GoogleService
 import com.google.inject.Inject
 import org.joda.time.DateTime
 

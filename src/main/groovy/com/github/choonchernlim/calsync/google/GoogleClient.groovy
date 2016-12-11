@@ -1,5 +1,9 @@
-package com.github.choonchernlim.calsync.core
+package com.github.choonchernlim.calsync.google
 
+import com.github.choonchernlim.calsync.core.CalSyncException
+import com.github.choonchernlim.calsync.core.Constant
+import com.github.choonchernlim.calsync.core.Mapper
+import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
@@ -20,6 +24,7 @@ import com.google.api.services.calendar.model.CalendarList
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.Events
 import com.google.inject.Inject
+import groovy.transform.PackageScope
 import org.joda.time.DateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,6 +32,7 @@ import org.slf4j.LoggerFactory
 /**
  * Google Calendar client class.
  */
+@PackageScope
 class GoogleClient {
     private static Logger LOGGER = LoggerFactory.getLogger(GoogleClient)
 
@@ -87,17 +93,39 @@ class GoogleClient {
                 build()
     }
 
+    /**
+     * Returns all calendars.
+     *
+     * @return Calendars.
+     */
     CalendarList getCalendarList() {
         return client.calendarList().list().execute()
     }
 
+    /**
+     * Creates a calendar for this app.
+     *
+     * @return Created calendar
+     */
     Calendar createCalendar() {
         return client.calendars().
                 insert(new Calendar(summary: userConfig.googleCalendarName)).
                 execute()
     }
 
+    /**
+     * Returns events based on the given datetime range.
+     *
+     * @param calendarId Calendar ID
+     * @param startDateTime Start datetime
+     * @param endDateTime End datetime
+     * @return Events
+     */
     Events getEvents(String calendarId, DateTime startDateTime, DateTime endDateTime) {
+        assert calendarId?.trim()
+        assert startDateTime
+        assert endDateTime
+
         // The default max result is 250. However, if the query results more than that, nothing gets returned.
         // Thus, set max result to 2500, which is the largest value allowed.
         return client.events().
@@ -108,44 +136,65 @@ class GoogleClient {
                 execute()
     }
 
+    /**
+     * Deletes an existing calendar.
+     *
+     * @param calendarId Calendar ID
+     */
     void deleteCalendar(String calendarId) {
+        assert calendarId?.trim()
+
         client.calendars().delete(calendarId).execute()
     }
 
+    /**
+     * Executes all event actions as one big batch.
+     *
+     * @param calendarId Calendar ID
+     * @param eventActions Event actions
+     */
     void executeActions(String calendarId, List<EventAction> eventActions) {
+        assert calendarId?.trim()
+        assert eventActions != null
+
+        if (eventActions.isEmpty()) {
+            return
+        }
+
         BatchRequest batch = client.batch()
         com.google.api.services.calendar.Calendar.Events events = client.events()
 
-        eventActions.each {
-            def action = it.action
-            def event = it.event
+        // Deletes outdated events first
+        eventActions.
+                findAll { it.action == EventAction.Action.DELETE }.
+                collect { it.event }.
+                each { event ->
+                    events.delete(calendarId, event.googleEventId).queue(batch, [
+                            onSuccess: { Void content, HttpHeaders httpHeaders ->
+                                LOGGER.info("\tEvent deleted: [event: ${event}]")
+                            },
+                            onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
+                                LOGGER.error("\tError when deleting event: [event: ${event}] [error: ${error}]")
+                            }
+                    ] as JsonBatchCallback<Void>)
+                }
 
-            if (action == 'INSERT') {
-                events.insert(calendarId, Mapper.toGoogleEvent(event)).
-                        queue(batch, [
-                                onSuccess: { Event googleEvent, HttpHeaders httpHeaders ->
-                                    LOGGER.info("\tEvent created: [event: ${event}]")
-                                },
-                                onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
-                                    LOGGER.error(
-                                            "\tError when creating event: [event: ${event}] [error: ${error}]")
-                                }
-                        ] as JsonBatchCallback<Event>)
-            }
-            else if (action == 'DELETE') {
-                events.delete(calendarId, it.event.googleEventId).queue(batch, [
-                        onSuccess: { Void content, HttpHeaders httpHeaders ->
-                            LOGGER.info("\tEvent deleted: [event: ${event}]")
-                        },
-                        onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
-                            LOGGER.error("\tError when deleting event: [event: ${event}] [error: ${error}]")
-                        }
-                ] as JsonBatchCallback<Void>)
-            }
-            else {
-                throw new CalSyncException("Invalid action [${action}]")
-            }
-        }
+        // Adds new events later
+        eventActions.
+                findAll { it.action == EventAction.Action.INSERT }.
+                collect { it.event }.
+                each { event ->
+                    events.insert(calendarId, Mapper.toGoogleEvent(event)).
+                            queue(batch, [
+                                    onSuccess: { Event googleEvent, HttpHeaders httpHeaders ->
+                                        LOGGER.info("\tEvent created: [event: ${event}]")
+                                    },
+                                    onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
+                                        LOGGER.error(
+                                                "\tError when creating event: [event: ${event}] [error: ${error}]")
+                                    }
+                            ] as JsonBatchCallback<Event>)
+                }
 
         batch.execute()
     }
