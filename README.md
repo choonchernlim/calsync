@@ -2,7 +2,7 @@
 
 Syncs events from Exchange calendar to Google calendar.
 
-## Prerequisites:-
+## Prerequisites
 
 * Exchange account
 * Google account
