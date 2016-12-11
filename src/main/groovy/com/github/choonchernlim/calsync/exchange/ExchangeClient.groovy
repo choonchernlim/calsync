@@ -2,7 +2,6 @@ package com.github.choonchernlim.calsync.exchange
 
 import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.inject.Inject
-import groovy.transform.PackageScope
 import microsoft.exchange.webservices.data.core.ExchangeService
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName
 import microsoft.exchange.webservices.data.core.service.folder.CalendarFolder
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory
 /**
  * Exchange client class.
  */
-@PackageScope
 class ExchangeClient {
     private static Logger LOGGER = LoggerFactory.getLogger(ExchangeClient)
 

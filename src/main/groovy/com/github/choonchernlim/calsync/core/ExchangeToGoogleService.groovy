@@ -13,16 +13,22 @@ class ExchangeToGoogleService {
     UserConfig userConfig
     ExchangeService exchangeService
     GoogleService googleService
+    DateTimeNowSupplier dateTimeNowSupplier
 
     @Inject
-    ExchangeToGoogleService(UserConfig userConfig, ExchangeService exchangeService, GoogleService googleService) {
+    ExchangeToGoogleService(
+            UserConfig userConfig,
+            ExchangeService exchangeService,
+            GoogleService googleService,
+            DateTimeNowSupplier dateTimeNowSupplier) {
         this.userConfig = userConfig
         this.exchangeService = exchangeService
         this.googleService = googleService
+        this.dateTimeNowSupplier = dateTimeNowSupplier
     }
 
     void run() {
-        DateTime startDateTime = DateTime.now().withTimeAtStartOfDay()
+        DateTime startDateTime = dateTimeNowSupplier.get().withTimeAtStartOfDay()
         DateTime endDateTime = startDateTime.plusDays(userConfig.totalSyncDays).minusMillis(1)
 
         // retrieve exchange events

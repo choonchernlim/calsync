@@ -12,9 +12,7 @@ class Main {
 
     static void main(String[] args) {
         try {
-            Guice.createInjector(new AppModule()).
-                    getInstance(ExchangeToGoogleService).
-                    run()
+            Guice.createInjector().getInstance(ExchangeToGoogleService).run()
         }
         catch (e) {
             LOGGER.error('Unexpected error occurred', e)

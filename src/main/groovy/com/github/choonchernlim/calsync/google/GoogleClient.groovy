@@ -24,15 +24,12 @@ import com.google.api.services.calendar.model.CalendarList
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.Events
 import com.google.inject.Inject
-import groovy.transform.PackageScope
 import org.joda.time.DateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 /**
  * Google Calendar client class.
  */
-@PackageScope
 class GoogleClient {
     private static Logger LOGGER = LoggerFactory.getLogger(GoogleClient)
 
