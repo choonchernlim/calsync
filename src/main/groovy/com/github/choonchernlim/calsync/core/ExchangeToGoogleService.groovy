@@ -25,25 +25,14 @@ class ExchangeToGoogleService {
         this.googleService = googleService
     }
 
-//    ExchangeToGoogleService(UserConfig userConfig) {
-//        this.userConfig = userConfig
-//
-//        // connecting to exchange
-////        this.exchangeClient = new ExchangeClient(
-////                userConfig.exchangeUserName,
-////                userConfig.exchangePassword,
-////                userConfig.exchangeUrl)
-//
-//        // connecting to google
-//        this.googleService = new GoogleService(userConfig.googleClientSecretJsonFilePath)
-//    }
-
     void run() {
         DateTime startDateTime = DateTime.now().withTimeAtStartOfDay()
         DateTime endDateTime = startDateTime.plusDays(userConfig.totalSyncDays).minusMillis(1)
 
         // retrieve exchange events
         // List<CalSyncEvent> exchangeEvents = exchangeClient.getEvents(startDateTime, endDateTime)
+
+        // TODO test
         List<CalSyncEvent> exchangeEvents = (0..5).collect {
             new CalSyncEvent(
                     startDateTime: startDateTime,
@@ -65,8 +54,8 @@ class ExchangeToGoogleService {
         // - execute batch
         googleService.
                 createBatch().
-                batchDeletedEvents(calendarId, googleEvents.findAll { !exchangeEvents.contains(it) }).
-                batchNewEvents(calendarId, exchangeEvents.findAll { !googleEvents.contains(it) }).
-                executeBatch()
+                batchDeletedEvents(googleEvents.findAll { !exchangeEvents.contains(it) }).
+                batchNewEvents(exchangeEvents.findAll { !googleEvents.contains(it) }).
+                executeBatch(calendarId)
     }
 }
