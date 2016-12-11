@@ -90,6 +90,8 @@ class GoogleService {
      * @param calendarId Calendar ID
      */
     void executeBatch(String calendarId) {
+        assert calendarId?.trim()
+
         if (!eventActions.isEmpty()) {
             LOGGER.info("Executing batch...")
 
@@ -147,7 +149,7 @@ class GoogleService {
      */
     List<CalSyncEvent> getEvents(String calendarId, DateTime startDateTime, DateTime endDateTime) {
         assert calendarId?.trim()
-        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
+        assert startDateTime && endDateTime && startDateTime <= endDateTime
 
         LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
