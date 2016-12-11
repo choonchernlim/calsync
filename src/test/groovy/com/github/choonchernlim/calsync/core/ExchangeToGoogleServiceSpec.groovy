@@ -9,24 +9,31 @@ class ExchangeToGoogleServiceSpec extends Specification {
 
     def googleCalendarId = 'googleCalendarId'
     def googleCalendarName = 'googleCalendarName'
-    def userConfig = new UserConfig(
-            exchangeUserName: 'exchangeUserName',
-            exchangePassword: 'exchangePassword',
-            exchangeUrl: 'exchangeUrl',
-            googleCalendarName: googleCalendarName,
-            googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
-            totalSyncDays: 1
-    )
 
     def exchangeService = Mock ExchangeService
     def googleService = Mock GoogleService
     def dateTimeNowSupplier = Mock DateTimeNowSupplier
 
-    def service = new ExchangeToGoogleService(userConfig, exchangeService, googleService, dateTimeNowSupplier)
-
     def dateTime = new DateTime(2016, 12, 1, 3, 4, 5, 6)
     def startDateTime = new DateTime(2016, 12, 1, 0, 0, 0, 0)
     def endDateTime = new DateTime(2016, 12, 1, 23, 59, 59, 999)
+
+    def service
+
+    def setup() {
+        System.metaClass.'static'.getenv = { String var ->
+            switch (var) {
+                case Constant.ENV_CALSYNC_EXCHANGE_USERNAME: return 'exchangeUserName'
+                case Constant.ENV_CALSYNC_EXCHANGE_PASSWORD: return 'exchangePassword'
+                case Constant.ENV_CALSYNC_EXCHANGE_URL: return 'exchangeUrl'
+                case Constant.ENV_CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH: return 'googleClientSecretJsonFilePath'
+                case Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME: return googleCalendarName
+                case Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS: return '1'
+            }
+        }
+
+        service = new ExchangeToGoogleService(new UserConfig(), exchangeService, googleService, dateTimeNowSupplier)
+    }
 
     def 'run - given no exchange events and no existing google events, should do nothing'() {
         when:
