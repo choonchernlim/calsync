@@ -28,7 +28,7 @@ class ExchangeService {
      * @return Events if there's any, otherwise empty list
      */
     List<CalSyncEvent> getEvents(DateTime startDateTime, DateTime endDateTime) {
-        assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
+        assert startDateTime && endDateTime && startDateTime <= endDateTime
 
         LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
