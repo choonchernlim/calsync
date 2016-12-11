@@ -11,6 +11,7 @@ class UserConfigSpec extends Specification {
     static String CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH = 'filepath'
     static String CALSYNC_GOOGLE_CALENDAR_NAME = 'calendar'
     static String CALSYNC_TOTAL_SYNC_DAYS = '1'
+    static String CALSYNC_NEXT_SYNC_IN_MINUTES = '2'
 
     def setEnvs() {
         System.metaClass.'static'.getenv = { String var ->
@@ -21,6 +22,7 @@ class UserConfigSpec extends Specification {
                 case Constant.ENV_CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH: return CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
                 case Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME: return CALSYNC_GOOGLE_CALENDAR_NAME
                 case Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS: return CALSYNC_TOTAL_SYNC_DAYS
+                case Constant.ENV_CALSYNC_NEXT_SYNC_IN_MINUTES: return CALSYNC_NEXT_SYNC_IN_MINUTES
             }
         }
     }
@@ -40,6 +42,7 @@ class UserConfigSpec extends Specification {
         userConfig.googleClientSecretJsonFilePath == CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
         userConfig.googleCalendarName == CALSYNC_GOOGLE_CALENDAR_NAME
         userConfig.totalSyncDays == CALSYNC_TOTAL_SYNC_DAYS.toInteger()
+        userConfig.nextSyncInMinutes == CALSYNC_NEXT_SYNC_IN_MINUTES.toInteger()
     }
 
     @Unroll
@@ -70,5 +73,8 @@ class UserConfigSpec extends Specification {
         'blank'       | 'CALSYNC_TOTAL_SYNC_DAYS'                     | ' '
         'not integer' | 'CALSYNC_TOTAL_SYNC_DAYS'                     | 'val'
         'zero'        | 'CALSYNC_TOTAL_SYNC_DAYS'                     | '0'
+        'null'        | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | null
+        'blank'       | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | ' '
+        'not integer' | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | 'val'
     }
 }

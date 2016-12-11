@@ -29,6 +29,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
                 case Constant.ENV_CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH: return 'googleClientSecretJsonFilePath'
                 case Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME: return googleCalendarName
                 case Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS: return '1'
+                case Constant.ENV_CALSYNC_NEXT_SYNC_IN_MINUTES: return '15'
             }
         }
 

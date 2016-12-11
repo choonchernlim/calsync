@@ -41,6 +41,7 @@ Syncs events from Exchange calendar to Google calendar.
 | CALSYNC_GOOGLE_CALENDAR_NAME                | One-word calendar name. If the name matches your existing Google calendars, it will use that. Otherwise, a new calendar will be created. |
 | CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH | Path to the downloaded `client_secret.json`.                              |
 | CALSYNC_TOTAL_SYNC_DAYS                     | Total days to sync from current day.                                      |
+| CALSYNC_NEXT_SYNC_IN_MINUTES                | Next sync in minutes, or `0` to disable next run.                         |
 
 ### Windows
 
@@ -71,6 +72,7 @@ Syncs events from Exchange calendar to Google calendar.
 	launchctl setenv CALSYNC_GOOGLE_CALENDAR_NAME [YOUR_VALUE]
 	launchctl setenv CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH [YOUR_VALUE]
 	launchctl setenv CALSYNC_TOTAL_SYNC_DAYS [YOUR_VALUE]
+    launchctl setenv CALSYNC_NEXT_SYNC_IN_MINUTES [YOUR_VALUE]
     </string>
   </array>
   <key>RunAtLoad</key>

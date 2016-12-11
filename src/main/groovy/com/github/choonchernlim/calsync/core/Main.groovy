@@ -1,21 +1,28 @@
 package com.github.choonchernlim.calsync.core
 
 import com.google.inject.Guice
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.google.inject.Injector
 
 /**
- * Runner class.
+ * Main runner class. Based on the user config, configure the task to either run just once or at fixed rate.
  */
 class Main {
-    private static Logger LOGGER = LoggerFactory.getLogger(Main)
-
     static void main(String[] args) {
-        try {
-            Guice.createInjector().getInstance(ExchangeToGoogleService).run()
+        Injector injector = Guice.createInjector()
+
+        UserConfig userConfig = injector.getInstance(UserConfig)
+        ExchangeToGoogleService service = injector.getInstance(ExchangeToGoogleService)
+
+        if (userConfig.nextSyncInMinutes > 0) {
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                void run() {
+                    service.run()
+                }
+            }, 0, userConfig.nextSyncInMinutes * 60000)
         }
-        catch (e) {
-            LOGGER.error('Unexpected error occurred', e)
+        else {
+            service.run()
         }
     }
 }

@@ -10,6 +10,7 @@ class UserConfig {
     String googleClientSecretJsonFilePath
     String googleCalendarName
     Integer totalSyncDays
+    Integer nextSyncInMinutes
 
     UserConfig() {
         exchangeUserName = System.getenv(Constant.ENV_CALSYNC_EXCHANGE_USERNAME)?.trim()
@@ -19,6 +20,7 @@ class UserConfig {
         googleCalendarName = System.getenv(Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME)?.trim()
 
         String totalSyncDaysString = System.getenv(Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS)?.trim()
+        String nextSyncInMinutesString = System.getenv(Constant.ENV_CALSYNC_NEXT_SYNC_IN_MINUTES)?.trim()
 
         if (!exchangeUserName ||
             !exchangePassword ||
@@ -27,8 +29,11 @@ class UserConfig {
             !googleCalendarName ||
             !totalSyncDaysString ||
             !totalSyncDaysString.isInteger() ||
-            totalSyncDaysString.toInteger() <= 0) {
+            totalSyncDaysString.toInteger() <= 0 ||
 
+            !nextSyncInMinutesString ||
+            !nextSyncInMinutesString.isInteger()
+        ) {
             throw new CalSyncException("""
 The following environment variables must exist with valid values:
 - CALSYNC_EXCHANGE_USERNAME
@@ -37,9 +42,11 @@ The following environment variables must exist with valid values:
 - CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
 - CALSYNC_GOOGLE_CALENDAR_NAME
 - CALSYNC_TOTAL_SYNC_DAYS
+- CALSYNC_NEXT_SYNC_IN_MINUTES
 """)
         }
 
         totalSyncDays = totalSyncDaysString.toInteger()
+        nextSyncInMinutes = nextSyncInMinutesString.toInteger()
     }
 }

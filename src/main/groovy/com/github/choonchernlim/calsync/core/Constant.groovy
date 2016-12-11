@@ -36,4 +36,9 @@ final class Constant {
      * Environment variable key – Total days to sync.
      */
     static final String ENV_CALSYNC_TOTAL_SYNC_DAYS = 'CALSYNC_TOTAL_SYNC_DAYS'
+
+    /**
+     * Environment variable key – Next sync in minutes.
+     */
+    static final String ENV_CALSYNC_NEXT_SYNC_IN_MINUTES = 'CALSYNC_NEXT_SYNC_IN_MINUTES'
 }
