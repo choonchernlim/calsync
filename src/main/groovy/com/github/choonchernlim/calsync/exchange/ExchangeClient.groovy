@@ -1,10 +1,12 @@
 package com.github.choonchernlim.calsync.exchange
 
-import com.github.choonchernlim.calsync.core.CalSyncEvent
-import com.github.choonchernlim.calsync.core.Mapper
+import com.github.choonchernlim.calsync.core.UserConfig
+import com.google.inject.Inject
+import groovy.transform.PackageScope
 import microsoft.exchange.webservices.data.core.ExchangeService
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName
 import microsoft.exchange.webservices.data.core.service.folder.CalendarFolder
+import microsoft.exchange.webservices.data.core.service.item.Appointment
 import microsoft.exchange.webservices.data.credential.WebCredentials
 import microsoft.exchange.webservices.data.search.CalendarView
 import org.joda.time.DateTime
@@ -14,17 +16,19 @@ import org.slf4j.LoggerFactory
 /**
  * Exchange client class.
  */
+@PackageScope
 class ExchangeClient {
     private static Logger LOGGER = LoggerFactory.getLogger(ExchangeClient)
 
-    ExchangeService service
+    final ExchangeService service
 
-    ExchangeClient(String userName, String password, String url) {
+    @Inject
+    ExchangeClient(UserConfig userConfig) {
         LOGGER.info('Authenticating against Exchange...')
 
         this.service = new ExchangeService()
-        this.service.setCredentials(new WebCredentials(userName, password))
-        this.service.setUrl(new URI(url))
+        this.service.setCredentials(new WebCredentials(userConfig.exchangeUserName, userConfig.exchangePassword))
+        this.service.setUrl(new URI(userConfig.exchangeUrl))
     }
 
     /**
@@ -32,21 +36,14 @@ class ExchangeClient {
      *
      * @param startDateTime Start datetime
      * @param endDateTime End datetime
-     * @return Events if there's any, otherwise empty list
+     * @return Events
      */
-    List<CalSyncEvent> getEvents(DateTime startDateTime, DateTime endDateTime) {
+    List<Appointment> getEvents(DateTime startDateTime, DateTime endDateTime) {
         assert startDateTime != null && endDateTime != null && startDateTime <= endDateTime
 
-        LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
-
-        List<CalSyncEvent> events = CalendarFolder.bind(service, WellKnownFolderName.Calendar).
+        return CalendarFolder.bind(service, WellKnownFolderName.Calendar).
                 findAppointments(new CalendarView(startDateTime.toDate(), endDateTime.toDate())).
-                getItems()?.
-                collect { Mapper.toCalSyncEvent(it) } ?: []
-
-        LOGGER.info("Total events found: ${events.size()}...")
-
-        return events
+                getItems()
     }
 }
 

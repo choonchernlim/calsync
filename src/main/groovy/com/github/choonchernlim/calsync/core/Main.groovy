@@ -11,8 +11,6 @@ class Main {
     private static Logger LOGGER = LoggerFactory.getLogger(Main)
 
     static void main(String[] args) {
-        // new ExchangeToGoogleService(new UserConfig()).run()
-
         try {
             Guice.createInjector(new AppModule()).
                     getInstance(ExchangeToGoogleService).

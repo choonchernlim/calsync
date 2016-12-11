@@ -1,5 +1,6 @@
 package com.github.choonchernlim.calsync.core
 
+import com.github.choonchernlim.calsync.exchange.ExchangeService
 import com.github.choonchernlim.calsync.google.GoogleService
 import com.google.inject.Inject
 import org.joda.time.DateTime
@@ -10,19 +11,13 @@ import org.joda.time.DateTime
 class ExchangeToGoogleService {
 
     UserConfig userConfig
-    // ExchangeClient exchangeClient
+    ExchangeService exchangeService
     GoogleService googleService
 
     @Inject
-    ExchangeToGoogleService(UserConfig userConfig, GoogleService googleService) {
+    ExchangeToGoogleService(UserConfig userConfig, ExchangeService exchangeService, GoogleService googleService) {
         this.userConfig = userConfig
-
-        // connecting to exchange
-//        this.exchangeClient = new ExchangeClient(
-//                userConfig.exchangeUserName,
-//                userConfig.exchangePassword,
-//                userConfig.exchangeUrl)
-
+        this.exchangeService = exchangeService
         this.googleService = googleService
     }
 
@@ -31,17 +26,17 @@ class ExchangeToGoogleService {
         DateTime endDateTime = startDateTime.plusDays(userConfig.totalSyncDays).minusMillis(1)
 
         // retrieve exchange events
-        // List<CalSyncEvent> exchangeEvents = exchangeClient.getEvents(startDateTime, endDateTime)
+        List<CalSyncEvent> exchangeEvents = exchangeService.getEvents(startDateTime, endDateTime)
 
         // TODO test
-        List<CalSyncEvent> exchangeEvents = (0..5).collect {
-            new CalSyncEvent(
-                    startDateTime: startDateTime,
-                    endDateTime: startDateTime.plusHours(it + 1),
-                    subject: 'subject ' + it,
-                    location: 'location ' + it
-            )
-        }
+//        List<CalSyncEvent> exchangeEvents = (0..5).collect {
+//            new CalSyncEvent(
+//                    startDateTime: startDateTime,
+//                    endDateTime: startDateTime.plusHours(it + 1),
+//                    subject: 'subject ' + it,
+//                    location: 'location ' + it
+//            )
+//        }
 
         // retrieve google calendar
         String calendarId = googleService.getCalendarId(userConfig.googleCalendarName)
