@@ -34,16 +34,6 @@ class ExchangeToGoogleService {
         // retrieve exchange events
         List<CalSyncEvent> exchangeEvents = exchangeService.getEvents(startDateTime, endDateTime)
 
-        // TODO test
-//        List<CalSyncEvent> exchangeEvents = (0..5).collect {
-//            new CalSyncEvent(
-//                    startDateTime: startDateTime,
-//                    endDateTime: startDateTime.plusHours(it + 1),
-//                    subject: 'subject ' + it,
-//                    location: 'location ' + it
-//            )
-//        }
-
         // retrieve google calendar
         String calendarId = googleService.getCalendarId(userConfig.googleCalendarName)
 

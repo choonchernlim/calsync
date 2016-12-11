@@ -6,6 +6,9 @@ import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.EventReminder
 import microsoft.exchange.webservices.data.core.service.item.Appointment
 
+/**
+ * Utility class to map one object type to another.
+ */
 class Mapper {
     /**
      * Maps Google EventDateTime to Joda DateTime.
