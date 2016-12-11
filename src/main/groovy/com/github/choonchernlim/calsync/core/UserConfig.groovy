@@ -2,6 +2,7 @@ package com.github.choonchernlim.calsync.core
 
 import groovy.transform.ToString
 
+// TODO Need to figure out how to display exception thrown nicely
 @ToString
 class UserConfig {
     String exchangeUserName
@@ -21,11 +22,11 @@ class UserConfig {
         String totalSyncDaysString = System.getenv(Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS)?.trim()
 
         try {
-            assert googleClientSecretJsonFilePath
-            assert googleCalendarName
             assert exchangeUserName
             assert exchangePassword
             assert exchangeUrl
+            assert googleClientSecretJsonFilePath
+            assert googleCalendarName
             assert totalSyncDaysString
             assert totalSyncDaysString.isInteger()
             assert totalSyncDaysString.toInteger() > 0
@@ -40,7 +41,7 @@ The following environment variables must exist with valid values:
 - CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
 - CALSYNC_GOOGLE_CALENDAR_NAME
 - CALSYNC_TOTAL_SYNC_DAYS
-""", e)
+""")
         }
 
         totalSyncDays = totalSyncDaysString.toInteger()

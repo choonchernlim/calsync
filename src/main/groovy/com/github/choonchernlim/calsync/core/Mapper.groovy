@@ -89,13 +89,10 @@ class Mapper {
     static Event toGoogleEvent(CalSyncEvent calSyncEvent) {
         assert calSyncEvent
 
-        return new Event(
-                id: calSyncEvent.googleEventId,
-                start: toGoogleEventDateTime(calSyncEvent.startDateTime),
-                end: toGoogleEventDateTime(calSyncEvent.endDateTime),
-                summary: calSyncEvent.subject,
-                location: calSyncEvent.location,
-                reminders: new Event.Reminders(
+        // TODO test this!
+        // only create reminder if there's one
+        def reminders = calSyncEvent.reminderMinutesBeforeStart ?
+                new Event.Reminders(
                         useDefault: false,
                         overrides: [
                                 new EventReminder(
@@ -103,7 +100,15 @@ class Mapper {
                                         minutes: calSyncEvent.reminderMinutesBeforeStart
                                 )
                         ]
-                )
+                ) : null
+
+        return new Event(
+                id: calSyncEvent.googleEventId,
+                start: toGoogleEventDateTime(calSyncEvent.startDateTime),
+                end: toGoogleEventDateTime(calSyncEvent.endDateTime),
+                summary: calSyncEvent.subject,
+                location: calSyncEvent.location,
+                reminders: reminders
         )
     }
 }

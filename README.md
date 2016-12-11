@@ -51,4 +51,4 @@ https://developers.google.com/google-apps/calendar/quickstart/java
 </plist>
 ```
 
-* Restart machine.
+* Log out and log back in to load the environment variables.
