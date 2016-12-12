@@ -7,7 +7,6 @@ Syncs events from Exchange calendar to Google calendar.
 * Exchange account
 * Google account
 * Java 1.7
-* Maven
 
 ## Getting Started
 
@@ -23,11 +22,7 @@ Syncs events from Exchange calendar to Google calendar.
     
 * Create environment variables defined in "Environment Variables" section below.
     
-* Download CalSync source code to `/path/to/calsync`.
-
-* Navigate to `/path/to/calsync`.
-
-* Run `mvn clean package`. This will create `calsync.jar` under `/path/to/calsync/target/` directory.
+* [Download latest calsync.jar](https://github.com/choonchernlim/calsync/releases).
 
 * Run `java -jar calsync.jar`.
 
