@@ -10,6 +10,8 @@ Syncs events from Exchange calendar to Google calendar.
 
 ## Getting Started
 
+* [Download latest calsync.jar](https://github.com/choonchernlim/calsync/releases).
+
 * Enable Google Calendar API (steps provided by Google):-
     * Use [this wizard](https://console.developers.google.com/start/api?id=calendar) to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
     * On the **Add credentials to your project** page, click the **Cancel** button.
@@ -19,61 +21,19 @@ Syncs events from Exchange calendar to Google calendar.
     * Click **OK** to dismiss the resulting dialog.
     * Click the "Download JSON" button to the right of the client ID.
     * Rename it `client_secret.json`.
+    * Place it besides the downloaded `calsync.jar`.
     
-* Create environment variables defined in "Environment Variables" section below.
-    
-* [Download latest calsync.jar](https://github.com/choonchernlim/calsync/releases).
+* Run `java -jar calsync.jar` once to create `calsync.conf`.
 
-* Run `java -jar calsync.jar`.
-
-## Environment Variables
-
-|Name                                         | Description                                                               |
-|---------------------------------------------|---------------------------------------------------------------------------|
-| CALSYNC_EXCHANGE_USERNAME                   | Exchange user name.                                                       |
-| CALSYNC_EXCHANGE_PASSWORD                   | Exchange password.                                                        |
-| CALSYNC_EXCHANGE_URL                        | Exchange web service URL, ex: `https://institution.com/ews/exchange.asmx`.|
-| CALSYNC_GOOGLE_CALENDAR_NAME                | One-word calendar name. If the name matches your existing Google calendars, it will use that. Otherwise, a new calendar will be created. |
-| CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH | Path to the downloaded `client_secret.json`.                              |
-| CALSYNC_TOTAL_SYNC_DAYS                     | Total days to sync from current day.                                      |
-| CALSYNC_NEXT_SYNC_IN_MINUTES                | Next sync in minutes, or `0` to disable next run.                         |
-
-### Windows
-
-* Press `Windows` + `Break`
-* `Advanced system settings` → `Environment Variables`.
-
-### Mac
-
-* Create or open `~/Library/LaunchAgents/environment.plist`:-
-
-* Enter the following environment variables:-
+* Your working directory should now have the following files:-
 
 ```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>my.startup</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>sh</string>
-    <string>-c</string>
-    <string>
-	launchctl setenv CALSYNC_EXCHANGE_USERNAME [YOUR_VALUE]
-	launchctl setenv CALSYNC_EXCHANGE_PASSWORD [YOUR_VALUE]
-	launchctl setenv CALSYNC_EXCHANGE_URL [YOUR_VALUE]
-	launchctl setenv CALSYNC_GOOGLE_CALENDAR_NAME [YOUR_VALUE]
-	launchctl setenv CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH [YOUR_VALUE]
-	launchctl setenv CALSYNC_TOTAL_SYNC_DAYS [YOUR_VALUE]
-    launchctl setenv CALSYNC_NEXT_SYNC_IN_MINUTES [YOUR_VALUE]
-    </string>
-  </array>
-  <key>RunAtLoad</key>
-  <true/>
-</dict>
-</plist>
+calsync/
+   ├──  calsync.conf
+   ├──  calsync.jar
+   └──  client_secret.json
 ```
 
-* Log out and log back in to load the environment variables.
+* Edit `calsync.conf`.
+  
+* Run `java -jar calsync.jar` again.
