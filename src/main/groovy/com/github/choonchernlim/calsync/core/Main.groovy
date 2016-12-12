@@ -14,21 +14,24 @@ class Main {
     static void main(String[] args) {
         Injector injector = Guice.createInjector()
 
-        UserConfig userConfig = injector.getInstance(UserConfig)
+        UserConfigReader userConfigReader = injector.getInstance(UserConfigReader)
+
+        UserConfig userConfig = userConfigReader.getUserConfig()
+
         ExchangeToGoogleService service = injector.getInstance(ExchangeToGoogleService)
 
         if (userConfig.nextSyncInMinutes > 0) {
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
                 void run() {
-                    service.run()
+                    service.run(userConfig)
 
                     LOGGER.info("Next run in ${userConfig.nextSyncInMinutes} minutes...")
                 }
             }, 0, userConfig.nextSyncInMinutes * 60000)
         }
         else {
-            service.run()
+            service.run(userConfig)
         }
     }
 }

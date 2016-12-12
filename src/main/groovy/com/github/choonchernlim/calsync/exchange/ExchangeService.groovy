@@ -2,6 +2,7 @@ package com.github.choonchernlim.calsync.exchange
 
 import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.github.choonchernlim.calsync.core.Mapper
+import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.inject.Inject
 import org.joda.time.DateTime
 import org.slf4j.Logger
@@ -18,6 +19,12 @@ class ExchangeService {
     @Inject
     ExchangeService(ExchangeClient exchangeClient) {
         this.exchangeClient = exchangeClient
+    }
+
+    void init(UserConfig userConfig) {
+        assert userConfig
+
+        exchangeClient.init(userConfig)
     }
 
     /**

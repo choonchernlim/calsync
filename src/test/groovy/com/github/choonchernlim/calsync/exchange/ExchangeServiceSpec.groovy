@@ -1,5 +1,6 @@
 package com.github.choonchernlim.calsync.exchange
 
+import com.github.choonchernlim.calsync.core.UserConfig
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion
 import microsoft.exchange.webservices.data.core.service.item.Appointment
 import org.joda.time.DateTime
@@ -10,6 +11,28 @@ class ExchangeServiceSpec extends Specification {
 
     def exchangeClient = Mock ExchangeClient
     def service = new ExchangeService(exchangeClient)
+
+    def 'init - given null config, should throw exception'() {
+        when:
+        service.init(null)
+
+        then:
+        0 * _
+
+        thrown AssertionError
+    }
+
+    def 'init - given config, should pass config to client'() {
+        given:
+        def userConfig = new UserConfig()
+
+        when:
+        service.init(userConfig)
+
+        then:
+        1 * exchangeClient.init(userConfig)
+        0 * _
+    }
 
     @Unroll
     def 'getEvents - given #label, should throw exception'() {

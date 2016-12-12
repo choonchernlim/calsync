@@ -18,30 +18,26 @@ class ExchangeToGoogleServiceSpec extends Specification {
     def startDateTime = new DateTime(2016, 12, 1, 0, 0, 0, 0)
     def endDateTime = new DateTime(2016, 12, 1, 23, 59, 59, 999)
 
-    def service
+    ExchangeToGoogleService service = new ExchangeToGoogleService(exchangeService, googleService, dateTimeNowSupplier)
 
-    def setup() {
-        System.metaClass.'static'.getenv = { String var ->
-            switch (var) {
-                case Constant.ENV_CALSYNC_EXCHANGE_USERNAME: return 'exchangeUserName'
-                case Constant.ENV_CALSYNC_EXCHANGE_PASSWORD: return 'exchangePassword'
-                case Constant.ENV_CALSYNC_EXCHANGE_URL: return 'exchangeUrl'
-                case Constant.ENV_CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH: return 'googleClientSecretJsonFilePath'
-                case Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME: return googleCalendarName
-                case Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS: return '1'
-                case Constant.ENV_CALSYNC_NEXT_SYNC_IN_MINUTES: return '15'
-            }
-        }
-
-        service = new ExchangeToGoogleService(new UserConfig(), exchangeService, googleService, dateTimeNowSupplier)
-    }
+    def userConfig = new UserConfig(
+            exchangeUserName: 'exchangeUserName',
+            exchangePassword: 'exchangePassword',
+            exchangeUrl: 'exchangeUrl',
+            googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
+            googleCalendarName: googleCalendarName,
+            totalSyncDays: 1,
+            nextSyncInMinutes: 15
+    )
 
     def 'run - given no exchange events and no existing google events, should do nothing'() {
         when:
-        service.run()
+        service.run(userConfig)
 
         then:
         1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
         1 * exchangeService.getEvents(startDateTime, endDateTime) >> []
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
@@ -57,10 +53,12 @@ class ExchangeToGoogleServiceSpec extends Specification {
         def googleEvents = [new CalSyncEvent(subject: 'subject1'), new CalSyncEvent(subject: 'subject2')]
 
         when:
-        service.run()
+        service.run(userConfig)
 
         then:
         1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
         1 * exchangeService.getEvents(startDateTime, endDateTime) >> []
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents
@@ -76,10 +74,12 @@ class ExchangeToGoogleServiceSpec extends Specification {
         def exchangeEvents = [new CalSyncEvent(subject: 'subject1'), new CalSyncEvent(subject: 'subject2')]
 
         when:
-        service.run()
+        service.run(userConfig)
 
         then:
         1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
         1 * exchangeService.getEvents(startDateTime, endDateTime) >> exchangeEvents
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
@@ -102,10 +102,12 @@ class ExchangeToGoogleServiceSpec extends Specification {
         def googleEventsToBeAdded = [event2]
 
         when:
-        service.run()
+        service.run(userConfig)
 
         then:
         1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
         1 * exchangeService.getEvents(startDateTime, endDateTime) >> exchangeEvents
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents

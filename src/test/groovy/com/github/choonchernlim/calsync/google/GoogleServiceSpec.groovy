@@ -1,6 +1,7 @@
 package com.github.choonchernlim.calsync.google
 
 import com.github.choonchernlim.calsync.core.CalSyncEvent
+import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.api.services.calendar.model.*
 import org.joda.time.DateTime
 import spock.lang.Specification
@@ -10,6 +11,28 @@ class GoogleServiceSpec extends Specification {
 
     def googleClient = Mock GoogleClient
     def service = new GoogleService(googleClient)
+
+    def 'init - given null config, should throw exception'() {
+        when:
+        service.init(null)
+
+        then:
+        0 * _
+
+        thrown AssertionError
+    }
+
+    def 'init - given config, should pass config to client'() {
+        given:
+        def userConfig = new UserConfig()
+
+        when:
+        service.init(userConfig)
+
+        then:
+        1 * googleClient.init(userConfig)
+        0 * _
+    }
 
     @Unroll
     def 'getCalendarId - given #label calendar name, should throw exception'() {

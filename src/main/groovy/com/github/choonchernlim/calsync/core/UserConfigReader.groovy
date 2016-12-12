@@ -1,0 +1,182 @@
+package com.github.choonchernlim.calsync.core
+
+import groovy.transform.PackageScope
+
+/**
+ * Class to read user config or create a default config file if not exist.
+ */
+class UserConfigReader {
+
+    static final String EXCHANGE_USERNAME_ENV_KEY = 'exchange.username.env'
+    static final String EXCHANGE_PASSWORD_ENV_KEY = 'exchange.password.env'
+    static final String EXCHANGE_URL_KEY = 'exchange.url'
+    static final String GOOGLE_CLIENT_SECRET_JSON_KEY = 'google.client.secret.json.file.path'
+    static final String GOOGLE_CALENDAR_NAME_KEY = 'google.calendar.name'
+    static final String TOTAL_SYNC_IN_DAYS_KEY = 'total.sync.in.days'
+    static final String NEXT_SYNC_IN_MINUTES_KEY = 'next.sync.in.minutes'
+
+    /**
+     * Returns user config.
+     *
+     * @return User config
+     */
+    UserConfig getUserConfig() {
+        return validate(loadProps())
+    }
+
+    /**
+     * Loads properties by attempting to read the config file. If file doesn't exist, then
+     * create one before throwing exception.
+     *
+     * @return Properties
+     */
+    @PackageScope
+    @SuppressWarnings("GrMethodMayBeStatic")
+    Properties loadProps() {
+        Properties props = new Properties()
+        File propsFile = new File(Constant.CONFIG_FILE_PATH)
+
+        if (propsFile.exists()) {
+            propsFile.withInputStream { props.load(it) }
+            return props
+        }
+
+        propsFile.write('''
+# Environment variable name containing Exchange user name value.
+exchange.username.env=CALSYNC_EXCHANGE_USERNAME
+
+# Environment variable name containing Exchange password value.
+exchange.password.env=CALSYNC_EXCHANGE_PASSWORD
+
+# Exchange web service URL.
+exchange.url=https://[EXCHANGE_SERVER]/ews/exchange.asmx
+
+# Google client_secret.json.
+google.client.secret.json.file.path=client_secret.json
+
+# Google calendar name. If calendar name matches existing Google calendar names, that will be used. 
+# Otherwise, a new calendar of that name will be created first.  
+google.calendar.name=Outlook
+
+# Total days to sync events from current day.
+total.sync.in.days=7
+
+# Next sync in minutes, or 0 to disable next run.
+next.sync.in.minutes=15
+''')
+
+        throw new CalSyncException(
+                "${Constant.CONFIG_FILE_PATH} not found... creating one at ${propsFile.getAbsoluteFile()}. " +
+                "Please edit this file, then run it again.")
+    }
+
+    /**
+     * Validates the properties before creating the user config object.
+     *
+     * @param props Properties
+     * @return User config
+     */
+    @PackageScope
+    @SuppressWarnings("GrMethodMayBeStatic")
+    UserConfig validate(Properties props) {
+        List<String> errors = []
+
+        String exchangeUserName = validatePropEnv(props, errors, EXCHANGE_USERNAME_ENV_KEY)
+        String exchangePassword = validatePropEnv(props, errors, EXCHANGE_PASSWORD_ENV_KEY)
+
+        String exchangeUrl = validatePropString(props, errors, EXCHANGE_URL_KEY)
+        String googleClientSecretJsonFilePath = validatePropString(props, errors, GOOGLE_CLIENT_SECRET_JSON_KEY)
+        String googleCalendarName = validatePropString(props, errors, GOOGLE_CALENDAR_NAME_KEY)
+
+        Integer totalSyncDays = validatePropInteger(props, errors, TOTAL_SYNC_IN_DAYS_KEY)
+
+        if (totalSyncDays != null && totalSyncDays <= 0) {
+            errors.add("${TOTAL_SYNC_IN_DAYS_KEY}: Must be greater than 0.")
+        }
+
+        Integer nextSyncInMinutes = validatePropInteger(props, errors, NEXT_SYNC_IN_MINUTES_KEY)
+
+        if (!errors.isEmpty()) {
+            throw new CalSyncException(
+                    "The configuration is invalid. Please fix the errors below, then run it again:-" +
+                    "\n- ${errors.join('\n- ')}")
+        }
+
+        return new UserConfig(
+                exchangeUserName: exchangeUserName,
+                exchangePassword: exchangePassword,
+                exchangeUrl: exchangeUrl,
+                googleClientSecretJsonFilePath: googleClientSecretJsonFilePath,
+                googleCalendarName: googleCalendarName,
+                totalSyncDays: totalSyncDays,
+                nextSyncInMinutes: nextSyncInMinutes
+        )
+    }
+
+    /**
+     * Ensure environment variable property exist with non-blank value.
+     *
+     * @param props Properties
+     * @param errors Error list
+     * @param propKey Property key
+     * @return Environment variable value if valid, otherwise null
+     */
+    private String validatePropEnv(Properties props, List<String> errors, String propKey) {
+        String env = validatePropString(props, errors, propKey)
+
+        if (!env) {
+            return null
+        }
+
+        String value = System.getenv(env)?.trim()
+
+        if (!value) {
+            errors.add("${propKey}: Environment variable does not have a value.")
+            return null
+        }
+
+        return value
+    }
+
+    /**
+     * Ensures property has integer value.
+     *
+     * @param props Properties
+     * @param errors Error list
+     * @param propKey Property key
+     * @return Integer value if valid, otherwise null
+     */
+    private Integer validatePropInteger(Properties props, List<String> errors, String propKey) {
+        String value = validatePropString(props, errors, propKey)
+
+        if (!value) {
+            return null
+        }
+
+        if (!value.isInteger()) {
+            errors.add("${propKey}: Must be an integer.")
+            return null
+        }
+
+        return value.toInteger()
+    }
+
+    /**
+     * Ensures property has string value.
+     *
+     * @param props Properties
+     * @param errors Error list
+     * @param propKey Property key
+     * @return String value if valid, otherwise null
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    private String validatePropString(Properties props, List<String> errors, String propKey) {
+        String value = props.getProperty(propKey)?.trim()
+
+        if (!value) {
+            errors.add("${propKey}: Missing value.")
+        }
+
+        return value
+    }
+}

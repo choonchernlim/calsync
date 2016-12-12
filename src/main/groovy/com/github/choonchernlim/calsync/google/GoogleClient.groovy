@@ -23,7 +23,6 @@ import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.CalendarList
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.Events
-import com.google.inject.Inject
 import groovy.transform.PackageScope
 import org.joda.time.DateTime
 import org.slf4j.Logger
@@ -41,12 +40,13 @@ class GoogleClient {
      */
     private static final File DATA_STORE_DIR = new File(System.getProperty('user.home'), ".${Constant.PROJECT_ID}")
 
-    final UserConfig userConfig
+    UserConfig userConfig
 
-    final com.google.api.services.calendar.Calendar client
+    com.google.api.services.calendar.Calendar client
 
-    @Inject
-    GoogleClient(UserConfig userConfig) {
+    void init(UserConfig userConfig) {
+        assert userConfig
+
         this.userConfig = userConfig
         this.client = getClient()
     }

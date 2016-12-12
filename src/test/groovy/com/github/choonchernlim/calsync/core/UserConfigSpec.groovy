@@ -1,80 +1,50 @@
 package com.github.choonchernlim.calsync.core
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class UserConfigSpec extends Specification {
 
-    static String CALSYNC_EXCHANGE_USERNAME = 'username'
-    static String CALSYNC_EXCHANGE_PASSWORD = 'password'
-    static String CALSYNC_EXCHANGE_URL = 'url'
-    static String CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH = 'filepath'
-    static String CALSYNC_GOOGLE_CALENDAR_NAME = 'calendar'
-    static String CALSYNC_TOTAL_SYNC_DAYS = '1'
-    static String CALSYNC_NEXT_SYNC_IN_MINUTES = '2'
-
-    def setEnvs() {
-        System.metaClass.'static'.getenv = { String var ->
-            switch (var) {
-                case Constant.ENV_CALSYNC_EXCHANGE_USERNAME: return CALSYNC_EXCHANGE_USERNAME
-                case Constant.ENV_CALSYNC_EXCHANGE_PASSWORD: return CALSYNC_EXCHANGE_PASSWORD
-                case Constant.ENV_CALSYNC_EXCHANGE_URL: return CALSYNC_EXCHANGE_URL
-                case Constant.ENV_CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH: return CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
-                case Constant.ENV_CALSYNC_GOOGLE_CALENDAR_NAME: return CALSYNC_GOOGLE_CALENDAR_NAME
-                case Constant.ENV_CALSYNC_TOTAL_SYNC_DAYS: return CALSYNC_TOTAL_SYNC_DAYS
-                case Constant.ENV_CALSYNC_NEXT_SYNC_IN_MINUTES: return CALSYNC_NEXT_SYNC_IN_MINUTES
-            }
-        }
-    }
-
-    def 'userConfig - given valid envs, should return object'() {
-        given:
-        setEnvs()
-
+    def 'userConfig - given no params, should return no values'() {
         when:
-        def userConfig = new UserConfig()
+        def userConfig = new UserConfig(
+                exchangeUserName: null,
+                exchangePassword: null,
+                exchangeUrl: null,
+                googleClientSecretJsonFilePath: null,
+                googleCalendarName: null,
+                totalSyncDays: null,
+                nextSyncInMinutes: null
+        )
 
         then:
-        userConfig != null
-        userConfig.exchangeUserName == CALSYNC_EXCHANGE_USERNAME
-        userConfig.exchangePassword == CALSYNC_EXCHANGE_PASSWORD
-        userConfig.exchangeUrl == CALSYNC_EXCHANGE_URL
-        userConfig.googleClientSecretJsonFilePath == CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH
-        userConfig.googleCalendarName == CALSYNC_GOOGLE_CALENDAR_NAME
-        userConfig.totalSyncDays == CALSYNC_TOTAL_SYNC_DAYS.toInteger()
-        userConfig.nextSyncInMinutes == CALSYNC_NEXT_SYNC_IN_MINUTES.toInteger()
+        userConfig.exchangeUserName == null
+        userConfig.exchangePassword == null
+        userConfig.exchangeUrl == null
+        userConfig.googleClientSecretJsonFilePath == null
+        userConfig.googleCalendarName == null
+        userConfig.totalSyncDays == null
+        userConfig.nextSyncInMinutes == null
     }
 
-    @Unroll
-    def 'userConfig - #var - given #label, should thrown exception'() {
-        given:
-        this."${var}" = value
-        setEnvs()
-
+    def 'userConfig - given valid params, should return valid values'() {
         when:
-        new UserConfig()
+        def userConfig = new UserConfig(
+                exchangeUserName: 'exchangeUserName',
+                exchangePassword: 'exchangePassword',
+                exchangeUrl: 'exchangeUrl',
+                googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
+                googleCalendarName: 'googleCalendarName',
+                totalSyncDays: 1,
+                nextSyncInMinutes: 2
+        )
 
         then:
-        thrown CalSyncException
-
-        where:
-        label         | var                                           | value
-        'null'        | 'CALSYNC_EXCHANGE_USERNAME'                   | null
-        'blank'       | 'CALSYNC_EXCHANGE_USERNAME'                   | ' '
-        'null'        | 'CALSYNC_EXCHANGE_PASSWORD'                   | null
-        'blank'       | 'CALSYNC_EXCHANGE_PASSWORD'                   | ' '
-        'null'        | 'CALSYNC_EXCHANGE_URL'                        | null
-        'blank'       | 'CALSYNC_EXCHANGE_URL'                        | ' '
-        'null'        | 'CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH' | null
-        'blank'       | 'CALSYNC_GOOGLE_CLIENT_SECRET_JSON_FILE_PATH' | ' '
-        'null'        | 'CALSYNC_GOOGLE_CALENDAR_NAME'                | null
-        'blank'       | 'CALSYNC_GOOGLE_CALENDAR_NAME'                | ' '
-        'null'        | 'CALSYNC_TOTAL_SYNC_DAYS'                     | null
-        'blank'       | 'CALSYNC_TOTAL_SYNC_DAYS'                     | ' '
-        'not integer' | 'CALSYNC_TOTAL_SYNC_DAYS'                     | 'val'
-        'zero'        | 'CALSYNC_TOTAL_SYNC_DAYS'                     | '0'
-        'null'        | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | null
-        'blank'       | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | ' '
-        'not integer' | 'CALSYNC_NEXT_SYNC_IN_MINUTES'                | 'val'
+        userConfig.exchangeUserName == 'exchangeUserName'
+        userConfig.exchangePassword == 'exchangePassword'
+        userConfig.exchangeUrl == 'exchangeUrl'
+        userConfig.googleClientSecretJsonFilePath == 'googleClientSecretJsonFilePath'
+        userConfig.googleCalendarName == 'googleCalendarName'
+        userConfig.totalSyncDays == 1
+        userConfig.nextSyncInMinutes == 2
     }
 }

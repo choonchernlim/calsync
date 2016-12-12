@@ -1,7 +1,6 @@
 package com.github.choonchernlim.calsync.exchange
 
 import com.github.choonchernlim.calsync.core.UserConfig
-import com.google.inject.Inject
 import groovy.transform.PackageScope
 import microsoft.exchange.webservices.data.core.ExchangeService
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName
@@ -22,11 +21,15 @@ class ExchangeClient {
 
     final ExchangeService service
 
-    @Inject
-    ExchangeClient(UserConfig userConfig) {
+    ExchangeClient() {
+        this.service = new ExchangeService()
+    }
+
+    void init(UserConfig userConfig) {
+        assert userConfig
+
         LOGGER.info('Authenticating against Exchange...')
 
-        this.service = new ExchangeService()
         this.service.setCredentials(new WebCredentials(userConfig.exchangeUserName, userConfig.exchangePassword))
         this.service.setUrl(new URI(userConfig.exchangeUrl))
     }

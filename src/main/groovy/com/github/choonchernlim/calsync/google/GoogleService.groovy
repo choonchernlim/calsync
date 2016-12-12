@@ -2,6 +2,7 @@ package com.github.choonchernlim.calsync.google
 
 import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.github.choonchernlim.calsync.core.Mapper
+import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.api.services.calendar.model.CalendarListEntry
 import com.google.inject.Inject
 import org.joda.time.DateTime
@@ -28,6 +29,12 @@ class GoogleService {
     GoogleService(GoogleClient googleClient) {
         this.googleClient = googleClient
         this.eventActions = []
+    }
+
+    void init(UserConfig userConfig) {
+        assert userConfig
+
+        googleClient.init(userConfig)
     }
 
     /**

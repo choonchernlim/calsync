@@ -10,26 +10,28 @@ import org.joda.time.DateTime
  */
 class ExchangeToGoogleService {
 
-    UserConfig userConfig
     ExchangeService exchangeService
     GoogleService googleService
     DateTimeNowSupplier dateTimeNowSupplier
 
     @Inject
     ExchangeToGoogleService(
-            UserConfig userConfig,
             ExchangeService exchangeService,
             GoogleService googleService,
             DateTimeNowSupplier dateTimeNowSupplier) {
-        this.userConfig = userConfig
         this.exchangeService = exchangeService
         this.googleService = googleService
         this.dateTimeNowSupplier = dateTimeNowSupplier
     }
 
-    void run() {
+    void run(UserConfig userConfig) {
+        assert userConfig
+
         DateTime startDateTime = dateTimeNowSupplier.get().withTimeAtStartOfDay()
         DateTime endDateTime = startDateTime.plusDays(userConfig.totalSyncDays).minusMillis(1)
+
+        exchangeService.init(userConfig)
+        googleService.init(userConfig)
 
         // retrieve exchange events
         List<CalSyncEvent> exchangeEvents = exchangeService.getEvents(startDateTime, endDateTime)
