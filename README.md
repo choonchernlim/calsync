@@ -45,7 +45,7 @@ calsync/
 If `calsync.conf` is missing (ie: you are running it for the first time), the configuration file will be 
 generated for you.
 
-```
+```properties
 # Environment variable name containing Exchange user name value.
 #
 # Accepted value: string.
