@@ -1,9 +1,6 @@
 package com.github.choonchernlim.calsync.google
 
-import com.github.choonchernlim.calsync.core.CalSyncException
-import com.github.choonchernlim.calsync.core.Constant
-import com.github.choonchernlim.calsync.core.Mapper
-import com.github.choonchernlim.calsync.core.UserConfig
+import com.github.choonchernlim.calsync.core.*
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
@@ -57,8 +54,6 @@ class GoogleClient {
      * @return Connected client
      */
     com.google.api.services.calendar.Calendar getClient() {
-        LOGGER.info('Authenticating against Google...')
-
         // initialize the transport
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport()
 
@@ -169,12 +164,14 @@ class GoogleClient {
                 findAll { it.action == EventAction.Action.DELETE }.
                 collect { it.event }.
                 each { event ->
+                    String eventSummary = prettyPrintEvent(event)
+
                     events.delete(calendarId, event.googleEventId).queue(batch, [
                             onSuccess: { Void content, HttpHeaders httpHeaders ->
-                                LOGGER.info("\tEvent deleted: [event: ${event}]")
+                                LOGGER.info("\tEvent deleted: [${eventSummary}]")
                             },
                             onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
-                                LOGGER.error("\tError when deleting event: [event: ${event}] [error: ${error}]")
+                                LOGGER.error("\tError when deleting event: [${eventSummary}] [error: ${error}]")
                             }
                     ] as JsonBatchCallback<Void>)
                 }
@@ -184,18 +181,24 @@ class GoogleClient {
                 findAll { it.action == EventAction.Action.INSERT }.
                 collect { it.event }.
                 each { event ->
+                    String eventSummary = prettyPrintEvent(event)
+
                     events.insert(calendarId, Mapper.toGoogleEvent(event)).
                             queue(batch, [
                                     onSuccess: { Event googleEvent, HttpHeaders httpHeaders ->
-                                        LOGGER.info("\tEvent created: [event: ${event}]")
+                                        LOGGER.info("\tEvent created: [${eventSummary}]")
                                     },
                                     onFailure: { GoogleJsonError error, HttpHeaders httpHeaders ->
                                         LOGGER.error(
-                                                "\tError when creating event: [event: ${event}] [error: ${error}]")
+                                                "\tError when creating event: [${eventSummary}] [error: ${error}]")
                                     }
                             ] as JsonBatchCallback<Event>)
                 }
 
         batch.execute()
+    }
+
+    private static String prettyPrintEvent(CalSyncEvent event) {
+        return "${Mapper.humanReadableDateTime(event.startDateTime)} - ${event.subject}"
     }
 }

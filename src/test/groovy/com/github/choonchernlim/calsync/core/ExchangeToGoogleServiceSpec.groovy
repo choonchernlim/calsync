@@ -27,7 +27,9 @@ class ExchangeToGoogleServiceSpec extends Specification {
             googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
             googleCalendarName: googleCalendarName,
             totalSyncDays: 1,
-            nextSyncInMinutes: 15
+            nextSyncInMinutes: 15,
+            includeCanceledEvents: true,
+            includeEventBody: true
     )
 
     def 'run - given no exchange events and no existing google events, should do nothing'() {
@@ -38,7 +40,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * dateTimeNowSupplier.get() >> dateTime
         1 * exchangeService.init(userConfig)
         1 * googleService.init(userConfig)
-        1 * exchangeService.getEvents(startDateTime, endDateTime) >> []
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> []
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
         1 * googleService.createBatch() >> googleService
@@ -59,7 +61,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * dateTimeNowSupplier.get() >> dateTime
         1 * exchangeService.init(userConfig)
         1 * googleService.init(userConfig)
-        1 * exchangeService.getEvents(startDateTime, endDateTime) >> []
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> []
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents
         1 * googleService.createBatch() >> googleService
@@ -80,7 +82,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * dateTimeNowSupplier.get() >> dateTime
         1 * exchangeService.init(userConfig)
         1 * googleService.init(userConfig)
-        1 * exchangeService.getEvents(startDateTime, endDateTime) >> exchangeEvents
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> exchangeEvents
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
         1 * googleService.createBatch() >> googleService
@@ -108,7 +110,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * dateTimeNowSupplier.get() >> dateTime
         1 * exchangeService.init(userConfig)
         1 * googleService.init(userConfig)
-        1 * exchangeService.getEvents(startDateTime, endDateTime) >> exchangeEvents
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> exchangeEvents
         1 * googleService.getCalendarId(googleCalendarName) >> googleCalendarId
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents
         1 * googleService.createBatch() >> googleService

@@ -48,7 +48,7 @@ class GoogleService {
         List<CalendarListEntry> calendarListEntries = googleClient.getCalendarList().getItems() ?: []
 
         List<String> calendars = calendarListEntries.collect { it.getSummary() }
-        LOGGER.info("\tTotal calendars found: ${calendarListEntries.size()}... [calendars: ${calendars}]")
+        LOGGER.info("\tTotal calendars found: ${calendarListEntries.size()}... ${calendars}")
 
         return calendarListEntries
     }
@@ -158,7 +158,8 @@ class GoogleService {
         assert calendarId?.trim()
         assert startDateTime && endDateTime && startDateTime <= endDateTime
 
-        LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
+        LOGGER.info(
+                "Retrieving events from ${Mapper.humanReadableDateTime(startDateTime)} to ${Mapper.humanReadableDateTime(endDateTime)}...")
 
         List<CalSyncEvent> events = googleClient.
                 getEvents(calendarId, startDateTime, endDateTime).

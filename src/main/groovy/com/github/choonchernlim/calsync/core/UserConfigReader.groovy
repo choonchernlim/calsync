@@ -7,6 +7,8 @@ import groovy.transform.PackageScope
  */
 class UserConfigReader {
 
+    static final String SAMPLE_CONF = 'calsync-sample.conf'
+
     static final String EXCHANGE_USERNAME_ENV_KEY = 'exchange.username.env'
     static final String EXCHANGE_PASSWORD_ENV_KEY = 'exchange.password.env'
     static final String EXCHANGE_URL_KEY = 'exchange.url'
@@ -14,6 +16,8 @@ class UserConfigReader {
     static final String GOOGLE_CALENDAR_NAME_KEY = 'google.calendar.name'
     static final String TOTAL_SYNC_IN_DAYS_KEY = 'total.sync.in.days'
     static final String NEXT_SYNC_IN_MINUTES_KEY = 'next.sync.in.minutes'
+    static final String INCLUDE_CANCELED_EVENTS_KEY = 'include.canceled.events'
+    static final String INCLUDE_EVENT_BODY_KEY = 'include.event.body'
 
     /**
      * Returns user config.
@@ -41,29 +45,7 @@ class UserConfigReader {
             return props
         }
 
-        propsFile.write('''
-# Environment variable name containing Exchange user name value.
-exchange.username.env=CALSYNC_EXCHANGE_USERNAME
-
-# Environment variable name containing Exchange password value.
-exchange.password.env=CALSYNC_EXCHANGE_PASSWORD
-
-# Exchange web service URL.
-exchange.url=https://[EXCHANGE_SERVER]/ews/exchange.asmx
-
-# Google client_secret.json.
-google.client.secret.json.file.path=client_secret.json
-
-# Google calendar name. If calendar name matches existing Google calendar names, that will be used. 
-# Otherwise, a new calendar of that name will be created first.  
-google.calendar.name=Outlook
-
-# Total days to sync events from current day.
-total.sync.in.days=7
-
-# Next sync in minutes, or 0 to disable next run.
-next.sync.in.minutes=15
-''')
+        propsFile.write(this.class.classLoader.getResource(SAMPLE_CONF).text)
 
         throw new CalSyncException(
                 "${Constant.CONFIG_FILE_PATH} not found... creating one at ${propsFile.getAbsoluteFile()}. " +
@@ -96,6 +78,9 @@ next.sync.in.minutes=15
 
         Integer nextSyncInMinutes = validatePropInteger(props, errors, NEXT_SYNC_IN_MINUTES_KEY)
 
+        Boolean includeCanceledEvents = validatePropBoolean(props, errors, INCLUDE_CANCELED_EVENTS_KEY)
+        Boolean includeEventBody = validatePropBoolean(props, errors, INCLUDE_EVENT_BODY_KEY)
+
         if (!errors.isEmpty()) {
             throw new CalSyncException(
                     "The configuration is invalid. Please fix the errors below, then run it again:-" +
@@ -109,7 +94,9 @@ next.sync.in.minutes=15
                 googleClientSecretJsonFilePath: googleClientSecretJsonFilePath,
                 googleCalendarName: googleCalendarName,
                 totalSyncDays: totalSyncDays,
-                nextSyncInMinutes: nextSyncInMinutes
+                nextSyncInMinutes: nextSyncInMinutes,
+                includeCanceledEvents: includeCanceledEvents,
+                includeEventBody: includeEventBody
         )
     }
 
@@ -159,6 +146,29 @@ next.sync.in.minutes=15
         }
 
         return value.toInteger()
+    }
+
+    /**
+     * Ensures property has boolean value.
+     *
+     * @param props Properties
+     * @param errors Error list
+     * @param propKey Property key
+     * @return Boolean value if valid, otherwise null
+     */
+    private Boolean validatePropBoolean(Properties props, List<String> errors, String propKey) {
+        String value = validatePropString(props, errors, propKey)
+
+        if (!value) {
+            return null
+        }
+
+        if (!value.toLowerCase().matches(/true|false/)) {
+            errors.add("${propKey}: Must be true or false.")
+            return null
+        }
+
+        return Boolean.valueOf(value)
     }
 
     /**

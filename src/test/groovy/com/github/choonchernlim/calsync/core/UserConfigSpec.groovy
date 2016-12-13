@@ -13,7 +13,8 @@ class UserConfigSpec extends Specification {
                 googleClientSecretJsonFilePath: null,
                 googleCalendarName: null,
                 totalSyncDays: null,
-                nextSyncInMinutes: null
+                nextSyncInMinutes: null,
+                includeCanceledEvents: null
         )
 
         then:
@@ -24,6 +25,7 @@ class UserConfigSpec extends Specification {
         userConfig.googleCalendarName == null
         userConfig.totalSyncDays == null
         userConfig.nextSyncInMinutes == null
+        userConfig.includeCanceledEvents == null
     }
 
     def 'userConfig - given valid params, should return valid values'() {
@@ -35,7 +37,8 @@ class UserConfigSpec extends Specification {
                 googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
                 googleCalendarName: 'googleCalendarName',
                 totalSyncDays: 1,
-                nextSyncInMinutes: 2
+                nextSyncInMinutes: 2,
+                includeCanceledEvents: true
         )
 
         then:
@@ -46,5 +49,6 @@ class UserConfigSpec extends Specification {
         userConfig.googleCalendarName == 'googleCalendarName'
         userConfig.totalSyncDays == 1
         userConfig.nextSyncInMinutes == 2
+        userConfig.includeCanceledEvents
     }
 }

@@ -32,20 +32,32 @@ class ExchangeService {
      *
      * @param startDateTime Start datetime
      * @param endDateTime End datetime
+     * @param includeCanceledEvents Whether to include canceled events or not
+     * @param includeEventBody Whether to include event body or not
      * @return Events if there's any, otherwise empty list
      */
-    List<CalSyncEvent> getEvents(DateTime startDateTime, DateTime endDateTime) {
+    List<CalSyncEvent> getEvents(
+            DateTime startDateTime,
+            DateTime endDateTime,
+            Boolean includeCanceledEvents,
+            Boolean includeEventBody) {
         assert startDateTime && endDateTime && startDateTime <= endDateTime
+        assert includeCanceledEvents != null
+        assert includeEventBody != null
 
-        LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
+        LOGGER.info(
+                "Retrieving events from ${Mapper.humanReadableDateTime(startDateTime)} to ${Mapper.humanReadableDateTime(endDateTime)}...")
 
-        List<CalSyncEvent> events = exchangeClient.
-                getEvents(startDateTime, endDateTime)?.
-                collect { Mapper.toCalSyncEvent(it) } ?: []
+        List<ExchangeEvent> exchangeEvents = exchangeClient.getEvents(startDateTime, endDateTime) ?: []
 
-        LOGGER.info("Total events found: ${events.size()}...")
+        LOGGER.info("\tTotal events found: ${exchangeEvents.size()}...")
 
-        return events
+        if (!includeCanceledEvents) {
+            exchangeEvents = exchangeEvents.findAll { !it.isCanceled }
+            LOGGER.info("\tTotal events after excluding canceled events: ${exchangeEvents.size()}...")
+        }
+
+        return exchangeEvents.collect { Mapper.toCalSyncEvent(it, includeEventBody) }
     }
 }
 
