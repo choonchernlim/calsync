@@ -15,4 +15,5 @@ class UserConfig {
     Integer totalSyncDays
     Integer nextSyncInMinutes
     Boolean includeCanceledEvents
+    Boolean includeEventBody
 }

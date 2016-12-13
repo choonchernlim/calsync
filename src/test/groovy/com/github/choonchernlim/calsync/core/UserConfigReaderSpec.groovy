@@ -17,6 +17,8 @@ class UserConfigReaderSpec extends Specification {
         properties.setProperty(UserConfigReader.GOOGLE_CALENDAR_NAME_KEY, 'CALENDAR_NAME')
         properties.setProperty(UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY, '1')
         properties.setProperty(UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY, '15')
+        properties.setProperty(UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY, 'true')
+        properties.setProperty(UserConfigReader.INCLUDE_EVENT_BODY_KEY, 'true')
 
         System.metaClass.'static'.getenv = { String var ->
             switch (var) {
@@ -61,6 +63,8 @@ google.client.secret.json.file.path=CLIENT_JSON
 google.calendar.name=CALENDAR_NAME
 total.sync.in.days=1
 next.sync.in.minutes=15
+include.canceled.events=true
+include.event.body=false
 ''')
 
         when:
@@ -74,6 +78,8 @@ next.sync.in.minutes=15
         userConfig.googleCalendarName == 'CALENDAR_NAME'
         userConfig.totalSyncDays == 1
         userConfig.nextSyncInMinutes == 15
+        userConfig.includeCanceledEvents
+        !userConfig.includeEventBody
 
         cleanup:
         assert file.delete()
@@ -118,6 +124,10 @@ next.sync.in.minutes=15
         'zero'        | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY        | '0'
         'blank'       | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY      | ' '
         'not integer' | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY      | 'val'
+        'blank'       | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY   | ' '
+        'not boolean' | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY   | 'val'
+        'blank'       | UserConfigReader.INCLUDE_EVENT_BODY_KEY        | ' '
+        'not boolean' | UserConfigReader.INCLUDE_EVENT_BODY_KEY        | 'val'
     }
 
     @Unroll

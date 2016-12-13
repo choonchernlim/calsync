@@ -38,3 +38,59 @@ calsync/
 * Edit `calsync.conf`.
   
 * Run `java -jar calsync.jar` again.
+
+
+## calsync.conf
+
+If `calsync.conf` is missing (ie: you are running it for the first time), the configuration file will be 
+generated for you.
+
+```
+# Environment variable name containing Exchange user name value.
+#
+# Accepted value: string.
+exchange.username.env=CALSYNC_EXCHANGE_USERNAME
+
+# Environment variable name containing Exchange password value.
+#
+# Accepted value: string.
+exchange.password.env=CALSYNC_EXCHANGE_PASSWORD
+
+# Exchange web service URL.
+#
+# Accepted value: string.
+exchange.url=https://[EXCHANGE_SERVER]/ews/exchange.asmx
+
+# File path to Google client_secret.json.
+#
+# Accepted value: string.
+google.client.secret.json.file.path=client_secret.json
+
+# A new Google calendar name that DOESN'T MATCH any existing Google calendar names.
+# Because CalSync performs one-way sync from Exchange calendar to Google calendar, it will wipe
+# any existing events in Google calendar if they don't match events from Exchange calendar.
+#
+# Accepted value: string.
+google.calendar.name=Outlook
+
+# Total days to sync events from current day.
+#
+# Accepted value: integer greater than 0.
+total.sync.in.days=7
+
+# Next sync in minutes, or 0 to disable next run.
+#
+# Accepted value: integer.
+next.sync.in.minutes=15
+
+# Whether to include events marked as "canceled" or not.
+#
+# Accepted value: true, false.
+include.canceled.events=false
+
+# Whether to include event body or not. When syncing from work Exchange calendar, sometimes it's
+# safer NOT to copy the event body, which may include sensitive information, or due to work policy.
+#
+# Accepted value: true, false.
+include.event.body=false
+```
