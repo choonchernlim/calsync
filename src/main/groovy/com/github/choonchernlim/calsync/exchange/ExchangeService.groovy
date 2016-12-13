@@ -4,6 +4,7 @@ import com.github.choonchernlim.calsync.core.CalSyncEvent
 import com.github.choonchernlim.calsync.core.Mapper
 import com.github.choonchernlim.calsync.core.UserConfig
 import com.google.inject.Inject
+import microsoft.exchange.webservices.data.core.service.item.Appointment
 import org.joda.time.DateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,20 +33,25 @@ class ExchangeService {
      *
      * @param startDateTime Start datetime
      * @param endDateTime End datetime
+     * @param includeCanceledEvents Whether to include canceled events or not
      * @return Events if there's any, otherwise empty list
      */
-    List<CalSyncEvent> getEvents(DateTime startDateTime, DateTime endDateTime) {
+    List<CalSyncEvent> getEvents(DateTime startDateTime, DateTime endDateTime, Boolean includeCanceledEvents) {
         assert startDateTime && endDateTime && startDateTime <= endDateTime
+        assert includeCanceledEvents != null
 
         LOGGER.info("Retrieving events from ${startDateTime} to ${endDateTime}...")
 
-        List<CalSyncEvent> events = exchangeClient.
-                getEvents(startDateTime, endDateTime)?.
-                collect { Mapper.toCalSyncEvent(it) } ?: []
+        List<Appointment> exchangeEvents = exchangeClient.getEvents(startDateTime, endDateTime) ?: []
 
-        LOGGER.info("Total events found: ${events.size()}...")
+        LOGGER.info("\tTotal events found: ${exchangeEvents.size()}...")
 
-        return events
+        if (!includeCanceledEvents) {
+            exchangeEvents = exchangeEvents.findAll { !it.isCancelled }
+            LOGGER.info("\tTotal events after excluding canceled events: ${exchangeEvents.size()}...")
+        }
+
+        return exchangeEvents.collect { Mapper.toCalSyncEvent(it) }
     }
 }
 

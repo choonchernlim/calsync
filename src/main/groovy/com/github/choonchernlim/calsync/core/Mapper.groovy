@@ -79,9 +79,7 @@ class Mapper {
                 endDateTime: new org.joda.time.DateTime(appointment.end),
                 subject: appointment.subject,
                 location: appointment.location,
-                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart,
-                // TODO test this!
-                body: appointment.getBody().toString()
+                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart
         )
     }
 

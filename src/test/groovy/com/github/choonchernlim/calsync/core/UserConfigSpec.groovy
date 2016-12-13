@@ -14,8 +14,7 @@ class UserConfigSpec extends Specification {
                 googleCalendarName: null,
                 totalSyncDays: null,
                 nextSyncInMinutes: null,
-                includeCanceledEvent: null,
-                includeEventBody: null
+                includeCanceledEvents: null
         )
 
         then:
@@ -26,8 +25,7 @@ class UserConfigSpec extends Specification {
         userConfig.googleCalendarName == null
         userConfig.totalSyncDays == null
         userConfig.nextSyncInMinutes == null
-        userConfig.includeCanceledEvent == null
-        userConfig.includeEventBody == null
+        userConfig.includeCanceledEvents == null
     }
 
     def 'userConfig - given valid params, should return valid values'() {
@@ -40,8 +38,7 @@ class UserConfigSpec extends Specification {
                 googleCalendarName: 'googleCalendarName',
                 totalSyncDays: 1,
                 nextSyncInMinutes: 2,
-                includeCanceledEvent: true,
-                includeEventBody: false
+                includeCanceledEvents: true
         )
 
         then:
@@ -52,7 +49,6 @@ class UserConfigSpec extends Specification {
         userConfig.googleCalendarName == 'googleCalendarName'
         userConfig.totalSyncDays == 1
         userConfig.nextSyncInMinutes == 2
-        userConfig.includeCanceledEvent
-        !userConfig.includeEventBody
+        userConfig.includeCanceledEvents
     }
 }
