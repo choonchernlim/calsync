@@ -5,8 +5,12 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.EventReminder
 import microsoft.exchange.webservices.data.core.ExchangeService
+import microsoft.exchange.webservices.data.core.PropertySet
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion
+import microsoft.exchange.webservices.data.core.response.ServiceResponse
+import microsoft.exchange.webservices.data.core.response.ServiceResponseCollection
 import microsoft.exchange.webservices.data.core.service.item.Appointment
+import microsoft.exchange.webservices.data.property.complex.ItemId
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -97,9 +101,12 @@ class MapperSpec extends Specification {
         def startDateTime = org.joda.time.DateTime.now()
         def endDateTime = startDateTime.plusDays(1)
 
-        def appointment = new Appointment(Mock(ExchangeService) {
+        def exchangeService = Mock(ExchangeService) {
             getRequestedServerVersion() >> ExchangeVersion.Exchange2010_SP2
-        })
+        }
+        def appointment = new Appointment(exchangeService)
+
+        // TODO fix this!
 
         appointment.start = startDateTime.toDate()
         appointment.end = endDateTime.toDate()

@@ -14,4 +14,6 @@ class UserConfig {
     String googleCalendarName
     Integer totalSyncDays
     Integer nextSyncInMinutes
+    Boolean includeCanceledEvent
+    Boolean includeEventBody
 }

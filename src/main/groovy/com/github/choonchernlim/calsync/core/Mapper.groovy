@@ -79,7 +79,9 @@ class Mapper {
                 endDateTime: new org.joda.time.DateTime(appointment.end),
                 subject: appointment.subject,
                 location: appointment.location,
-                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart
+                reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart,
+                // TODO test this!
+                body: appointment.getBody().toString()
         )
     }
 
@@ -92,7 +94,6 @@ class Mapper {
     static Event toGoogleEvent(CalSyncEvent calSyncEvent) {
         assert calSyncEvent
 
-        // TODO test this!
         // only create reminder if there's one
         def reminders = calSyncEvent.reminderMinutesBeforeStart ?
                 new Event.Reminders(
