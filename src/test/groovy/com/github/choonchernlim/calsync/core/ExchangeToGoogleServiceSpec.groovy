@@ -18,6 +18,13 @@ class ExchangeToGoogleServiceSpec extends Specification {
     def startDateTime = new DateTime(2016, 12, 1, 0, 0, 0, 0)
     def endDateTime = new DateTime(2016, 12, 1, 23, 59, 59, 999)
 
+    def lastSyncEvent = new CalSyncEvent(
+            subject: "CalSync - Last Sync: ${Mapper.humanReadableDateTime(dateTime)}",
+            startDateTime: startDateTime,
+            endDateTime: startDateTime.plusDays(1),
+            isAllDayEvent: true
+    )
+
     ExchangeToGoogleService service = new ExchangeToGoogleService(exchangeService, googleService, dateTimeNowSupplier)
 
     def userConfig = new UserConfig(
@@ -45,7 +52,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
         1 * googleService.createBatch() >> googleService
         1 * googleService.batchDeletedEvents([]) >> googleService
-        1 * googleService.batchNewEvents([]) >> googleService
+        1 * googleService.batchNewEvents([lastSyncEvent]) >> googleService
         1 * googleService.executeBatch(googleCalendarId)
         0 * _
     }
@@ -66,7 +73,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents
         1 * googleService.createBatch() >> googleService
         1 * googleService.batchDeletedEvents(googleEvents) >> googleService
-        1 * googleService.batchNewEvents([]) >> googleService
+        1 * googleService.batchNewEvents([lastSyncEvent]) >> googleService
         1 * googleService.executeBatch(googleCalendarId)
         0 * _
     }
@@ -87,7 +94,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> []
         1 * googleService.createBatch() >> googleService
         1 * googleService.batchDeletedEvents([]) >> googleService
-        1 * googleService.batchNewEvents(exchangeEvents) >> googleService
+        1 * googleService.batchNewEvents(exchangeEvents.collect() << lastSyncEvent) >> googleService
         1 * googleService.executeBatch(googleCalendarId)
         0 * _
     }
@@ -115,7 +122,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * googleService.getEvents(googleCalendarId, startDateTime, endDateTime) >> googleEvents
         1 * googleService.createBatch() >> googleService
         1 * googleService.batchDeletedEvents(googleEventsToBeDeleted) >> googleService
-        1 * googleService.batchNewEvents(googleEventsToBeAdded) >> googleService
+        1 * googleService.batchNewEvents(googleEventsToBeAdded << lastSyncEvent) >> googleService
         1 * googleService.executeBatch(googleCalendarId)
         0 * _
     }

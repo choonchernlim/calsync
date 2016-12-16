@@ -29,19 +29,41 @@ class Mapper {
     static org.joda.time.DateTime toJodaDateTime(EventDateTime eventDateTime) {
         assert eventDateTime
 
-        return new org.joda.time.DateTime(eventDateTime.getDateTime().getValue())
+        // Google uses `datetime` for non-all-day event and `date` (YYYY-MM-DD) for all-day event
+        return eventDateTime.getDateTime() ?
+                new org.joda.time.DateTime(eventDateTime.getDateTime().getValue()) :
+
+                // Need to parse string instead of using new DateTime(long).
+                // Otherwise, 2016-12-15 becomes 2016-12-14T18:00:00.000-06:00
+                org.joda.time.DateTime.parse(eventDateTime.getDate().toString())
     }
 
     /**
      * Maps Joda DateTime to Google EventDateTime.
      *
+     * @param isAllDayEvent Whether it is all-day event or not
      * @param jodaDateTime Joda DateTime
      * @return Google EventDateTime
      */
-    static EventDateTime toGoogleEventDateTime(org.joda.time.DateTime jodaDateTime) {
+    static EventDateTime toGoogleEventDateTime(Boolean isAllDayEvent, org.joda.time.DateTime jodaDateTime) {
+        assert isAllDayEvent != null
         assert jodaDateTime
 
-        return new EventDateTime(dateTime: toGoogleDateTime(jodaDateTime))
+        return isAllDayEvent ?
+                new EventDateTime(date: toAllDayGoogleDateTime(jodaDateTime)) :
+                new EventDateTime(dateTime: toGoogleDateTime(jodaDateTime))
+    }
+
+    /**
+     * Maps Joda DateTime to all-day Google DateTime.
+     *
+     * @param jodaDateTime Joda DateTime
+     * @return All-day Google DateTime
+     */
+    static DateTime toAllDayGoogleDateTime(org.joda.time.DateTime jodaDateTime) {
+        assert jodaDateTime
+
+        return new DateTime(true, jodaDateTime.withTimeAtStartOfDay().millis, null)
     }
 
     /**
@@ -72,8 +94,21 @@ class Mapper {
                 subject: event.getSummary(),
                 location: event.getLocation(),
                 reminderMinutesBeforeStart: event.getReminders()?.getOverrides()?.get(0)?.getMinutes(),
-                body: event.getDescription() ?: null
+                body: event.getDescription() ?: null,
+                isAllDayEvent: isAllDayEvent(event)
         )
+    }
+
+    /**
+     * Returns true if both event start and end contains just date portion.
+     *
+     * @param event Google Event
+     * @return true if all day event, otherwise fall
+     */
+    static Boolean isAllDayEvent(Event event) {
+        assert event
+
+        return event.getStart().getDate() && event.getEnd().getDate()
     }
 
     /**
@@ -93,7 +128,8 @@ class Mapper {
                 subject: exchangeEvent.subject,
                 location: exchangeEvent.location,
                 reminderMinutesBeforeStart: exchangeEvent.reminderMinutesBeforeStart,
-                body: includeEventBody ? exchangeEvent.body : null
+                body: includeEventBody ? exchangeEvent.body : null,
+                isAllDayEvent: exchangeEvent.isAllDayEvent
         )
     }
 
@@ -120,8 +156,8 @@ class Mapper {
 
         return new Event(
                 id: calSyncEvent.googleEventId,
-                start: toGoogleEventDateTime(calSyncEvent.startDateTime),
-                end: toGoogleEventDateTime(calSyncEvent.endDateTime),
+                start: toGoogleEventDateTime(calSyncEvent.isAllDayEvent, calSyncEvent.startDateTime),
+                end: toGoogleEventDateTime(calSyncEvent.isAllDayEvent, calSyncEvent.endDateTime),
                 summary: calSyncEvent.subject,
                 location: calSyncEvent.location,
                 reminders: reminders,
@@ -146,7 +182,8 @@ class Mapper {
                 location: appointment.location,
                 reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart,
                 body: toPlainText(MessageBody.getStringFromMessageBody(appointment.body)),
-                isCanceled: appointment.isCancelled
+                isCanceled: appointment.isCancelled,
+                isAllDayEvent: appointment.isAllDayEvent
         )
     }
 
