@@ -12,4 +12,5 @@ class ExchangeEvent {
     Integer reminderMinutesBeforeStart
     String body
     Boolean isCanceled
+    Boolean isAllDayEvent
 }
