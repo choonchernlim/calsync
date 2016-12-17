@@ -3,12 +3,17 @@ package com.github.choonchernlim.calsync.core
 import com.github.choonchernlim.calsync.exchange.ExchangeService
 import com.github.choonchernlim.calsync.google.GoogleService
 import com.google.inject.Inject
+import microsoft.exchange.webservices.data.core.exception.service.remote.ServiceRequestException
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.joda.time.DateTime
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Class to sync events Exchange to Google Calendar.
  */
 class ExchangeToGoogleService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangeToGoogleService)
 
     ExchangeService exchangeService
     GoogleService googleService
@@ -34,12 +39,26 @@ class ExchangeToGoogleService {
         exchangeService.init(userConfig)
         googleService.init(userConfig)
 
-        // retrieve exchange events
-        List<CalSyncEvent> exchangeEvents = exchangeService.getEvents(
-                startDateTime,
-                endDateTime,
-                userConfig.includeCanceledEvents,
-                userConfig.includeEventBody)
+        List<CalSyncEvent> exchangeEvents = []
+        try {
+            // retrieve exchange events
+            exchangeEvents = exchangeService.getEvents(
+                    startDateTime,
+                    endDateTime,
+                    userConfig.includeCanceledEvents,
+                    userConfig.includeEventBody)
+        }
+        catch (ServiceRequestException e) {
+            // on connection exception, suppress exception if user says so
+            if (ExceptionUtils.getStackTrace(e).contains('java.net.ConnectException') &&
+                userConfig.exchangeSleepOnConnectionError) {
+                LOGGER.error(e.getMessage())
+                return
+            }
+
+            // otherwise, throw exception
+            throw e
+        }
 
         // retrieve google calendar
         String calendarId = googleService.getCalendarId(userConfig.googleCalendarName)

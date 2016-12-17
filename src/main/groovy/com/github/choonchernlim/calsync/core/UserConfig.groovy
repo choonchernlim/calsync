@@ -10,6 +10,7 @@ class UserConfig {
     String exchangeUserName
     String exchangePassword
     String exchangeUrl
+    Boolean exchangeSleepOnConnectionError
     String googleClientSecretJsonFilePath
     String googleCalendarName
     Integer totalSyncDays

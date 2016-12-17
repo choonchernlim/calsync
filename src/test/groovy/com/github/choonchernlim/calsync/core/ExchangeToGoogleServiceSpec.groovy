@@ -2,6 +2,7 @@ package com.github.choonchernlim.calsync.core
 
 import com.github.choonchernlim.calsync.exchange.ExchangeService
 import com.github.choonchernlim.calsync.google.GoogleService
+import microsoft.exchange.webservices.data.core.exception.service.remote.ServiceRequestException
 import org.joda.time.DateTime
 import spock.lang.Specification
 
@@ -31,6 +32,7 @@ class ExchangeToGoogleServiceSpec extends Specification {
             exchangeUserName: 'exchangeUserName',
             exchangePassword: 'exchangePassword',
             exchangeUrl: 'exchangeUrl',
+            exchangeSleepOnConnectionError: false,
             googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
             googleCalendarName: googleCalendarName,
             totalSyncDays: 1,
@@ -125,5 +127,43 @@ class ExchangeToGoogleServiceSpec extends Specification {
         1 * googleService.batchNewEvents(googleEventsToBeAdded << lastSyncEvent) >> googleService
         1 * googleService.executeBatch(googleCalendarId)
         0 * _
+    }
+
+    def 'run - given exchange connection error and exchangeSleepOnConnectionError == false, should throw exception'() {
+        given:
+        userConfig.exchangeSleepOnConnectionError = false
+
+        when:
+        service.run(userConfig)
+
+        then:
+        1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> {
+            throw new ServiceRequestException('test', new ConnectException('connection error'))
+        }
+        0 * _
+
+        thrown ServiceRequestException
+    }
+
+    def 'run - given exchange connection error and exchangeSleepOnConnectionError == true, should not throw exception'() {
+        given:
+        userConfig.exchangeSleepOnConnectionError = true
+
+        when:
+        service.run(userConfig)
+
+        then:
+        1 * dateTimeNowSupplier.get() >> dateTime
+        1 * exchangeService.init(userConfig)
+        1 * googleService.init(userConfig)
+        1 * exchangeService.getEvents(startDateTime, endDateTime, true, true) >> {
+            throw new ServiceRequestException('test', new ConnectException('connection error'))
+        }
+        0 * _
+
+        notThrown Exception
     }
 }

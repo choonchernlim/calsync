@@ -10,6 +10,7 @@ class UserConfigSpec extends Specification {
                 exchangeUserName: null,
                 exchangePassword: null,
                 exchangeUrl: null,
+                exchangeSleepOnConnectionError: null,
                 googleClientSecretJsonFilePath: null,
                 googleCalendarName: null,
                 totalSyncDays: null,
@@ -21,6 +22,7 @@ class UserConfigSpec extends Specification {
         userConfig.exchangeUserName == null
         userConfig.exchangePassword == null
         userConfig.exchangeUrl == null
+        userConfig.exchangeSleepOnConnectionError == null
         userConfig.googleClientSecretJsonFilePath == null
         userConfig.googleCalendarName == null
         userConfig.totalSyncDays == null
@@ -34,6 +36,7 @@ class UserConfigSpec extends Specification {
                 exchangeUserName: 'exchangeUserName',
                 exchangePassword: 'exchangePassword',
                 exchangeUrl: 'exchangeUrl',
+                exchangeSleepOnConnectionError: true,
                 googleClientSecretJsonFilePath: 'googleClientSecretJsonFilePath',
                 googleCalendarName: 'googleCalendarName',
                 totalSyncDays: 1,
@@ -45,6 +48,7 @@ class UserConfigSpec extends Specification {
         userConfig.exchangeUserName == 'exchangeUserName'
         userConfig.exchangePassword == 'exchangePassword'
         userConfig.exchangeUrl == 'exchangeUrl'
+        userConfig.exchangeSleepOnConnectionError
         userConfig.googleClientSecretJsonFilePath == 'googleClientSecretJsonFilePath'
         userConfig.googleCalendarName == 'googleCalendarName'
         userConfig.totalSyncDays == 1
