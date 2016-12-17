@@ -15,7 +15,7 @@
     <version>0.1.0</version>
 
     <properties>
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
         <groovy-all.version>2.4.7</groovy-all.version>
         <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
@@ -48,12 +48,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
+            <version>1.7.22</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
+            <version>1.7.22</version>
         </dependency>
 
         <dependency>
@@ -141,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2</version>
             </plugin>
 
             <plugin>
@@ -184,6 +184,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.7.0</version>
+                <configuration>
+                    <mainClass>com.github.choonchernlim.testJavaFx.main.Main</mainClass>
+                    <vendor>Choon-Chern Lim</vendor>
+                    <verbose>true</verbose>
+                    <appName>${project.artifactId}</appName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

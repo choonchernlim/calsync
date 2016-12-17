@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import java.net.URL?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:id="main"
+            fx:controller="com.github.choonchernlim.testJavaFx.controller.MainController">
+    <stylesheets>
+        <URL value="@../css/app.css"/>
+    </stylesheets>
+
+    <top>
+        <fx:include source="menu.fxml"/>
+    </top>
+    <left>
+        <fx:include source="left-pane.fxml"/>
+    </left>
+    <center>
+        <fx:include source="center-pane.fxml"/>
+    </center>
+    <right>
+        <fx:include source="right-pane.fxml"/>
+    </right>
+    <bottom>
+        <fx:include source="bottom-pane.fxml"/>
+    </bottom>
+</BorderPane>

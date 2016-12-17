@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<GridPane xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10"
+          prefWidth="200" fx:controller="com.github.choonchernlim.testJavaFx.controller.LeftPaneController">
+
+    <VBox>
+        <Text text="Left Side"/>
+        <Button text="Hide Right Side" onAction="#hideRightSide"/>
+        <Button text="Show Right Side" onAction="#showRightSide"/>
+    </VBox>
+</GridPane>
+
