@@ -13,6 +13,7 @@ class UserConfigReaderSpec extends Specification {
         properties.setProperty(UserConfigReader.EXCHANGE_USERNAME_ENV_KEY, 'EXCHANGE_USERNAME_ENV')
         properties.setProperty(UserConfigReader.EXCHANGE_PASSWORD_ENV_KEY, 'EXCHANGE_PASSWORD_ENV')
         properties.setProperty(UserConfigReader.EXCHANGE_URL_KEY, 'URL')
+        properties.setProperty(UserConfigReader.EXCHANGE_SLEEP_ON_CONNECTION_ERROR, 'true')
         properties.setProperty(UserConfigReader.GOOGLE_CLIENT_SECRET_JSON_KEY, 'CLIENT_JSON')
         properties.setProperty(UserConfigReader.GOOGLE_CALENDAR_NAME_KEY, 'CALENDAR_NAME')
         properties.setProperty(UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY, '1')
@@ -59,6 +60,7 @@ class UserConfigReaderSpec extends Specification {
 exchange.username.env=EXCHANGE_USERNAME_ENV
 exchange.password.env=EXCHANGE_PASSWORD_ENV
 exchange.url=URL
+exchange.sleep.on.connection.error=true
 google.client.secret.json.file.path=CLIENT_JSON
 google.calendar.name=CALENDAR_NAME
 total.sync.in.days=1
@@ -74,6 +76,7 @@ include.event.body=false
         userConfig.exchangeUserName == 'EXCHANGE_USERNAME'
         userConfig.exchangePassword == 'EXCHANGE_PASSWORD'
         userConfig.exchangeUrl == 'URL'
+        userConfig.exchangeSleepOnConnectionError
         userConfig.googleClientSecretJsonFilePath == 'CLIENT_JSON'
         userConfig.googleCalendarName == 'CALENDAR_NAME'
         userConfig.totalSyncDays == 1
@@ -113,21 +116,23 @@ include.event.body=false
         thrown CalSyncException
 
         where:
-        label         | key                                            | value
-        'blank'       | UserConfigReader.EXCHANGE_USERNAME_ENV_KEY     | ' '
-        'blank'       | UserConfigReader.EXCHANGE_PASSWORD_ENV_KEY     | ' '
-        'blank'       | UserConfigReader.EXCHANGE_URL_KEY              | ' '
-        'blank'       | UserConfigReader.GOOGLE_CLIENT_SECRET_JSON_KEY | ' '
-        'blank'       | UserConfigReader.GOOGLE_CALENDAR_NAME_KEY      | ' '
-        'blank'       | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY        | ' '
-        'not integer' | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY        | 'val'
-        'zero'        | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY        | '0'
-        'blank'       | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY      | ' '
-        'not integer' | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY      | 'val'
-        'blank'       | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY   | ' '
-        'not boolean' | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY   | 'val'
-        'blank'       | UserConfigReader.INCLUDE_EVENT_BODY_KEY        | ' '
-        'not boolean' | UserConfigReader.INCLUDE_EVENT_BODY_KEY        | 'val'
+        label         | key                                                 | value
+        'blank'       | UserConfigReader.EXCHANGE_USERNAME_ENV_KEY          | ' '
+        'blank'       | UserConfigReader.EXCHANGE_PASSWORD_ENV_KEY          | ' '
+        'blank'       | UserConfigReader.EXCHANGE_URL_KEY                   | ' '
+        'blank'       | UserConfigReader.GOOGLE_CLIENT_SECRET_JSON_KEY      | ' '
+        'blank'       | UserConfigReader.GOOGLE_CALENDAR_NAME_KEY           | ' '
+        'blank'       | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY             | ' '
+        'not integer' | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY             | 'val'
+        'zero'        | UserConfigReader.TOTAL_SYNC_IN_DAYS_KEY             | '0'
+        'blank'       | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY           | ' '
+        'not integer' | UserConfigReader.NEXT_SYNC_IN_MINUTES_KEY           | 'val'
+        'blank'       | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY        | ' '
+        'not boolean' | UserConfigReader.INCLUDE_CANCELED_EVENTS_KEY        | 'val'
+        'blank'       | UserConfigReader.INCLUDE_EVENT_BODY_KEY             | ' '
+        'not boolean' | UserConfigReader.INCLUDE_EVENT_BODY_KEY             | 'val'
+        'blank'       | UserConfigReader.EXCHANGE_SLEEP_ON_CONNECTION_ERROR | ' '
+        'not boolean' | UserConfigReader.EXCHANGE_SLEEP_ON_CONNECTION_ERROR | 'val'
     }
 
     @Unroll

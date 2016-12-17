@@ -12,6 +12,7 @@ class UserConfigReader {
     static final String EXCHANGE_USERNAME_ENV_KEY = 'exchange.username.env'
     static final String EXCHANGE_PASSWORD_ENV_KEY = 'exchange.password.env'
     static final String EXCHANGE_URL_KEY = 'exchange.url'
+    static final String EXCHANGE_SLEEP_ON_CONNECTION_ERROR = 'exchange.sleep.on.connection.error'
     static final String GOOGLE_CLIENT_SECRET_JSON_KEY = 'google.client.secret.json.file.path'
     static final String GOOGLE_CALENDAR_NAME_KEY = 'google.calendar.name'
     static final String TOTAL_SYNC_IN_DAYS_KEY = 'total.sync.in.days'
@@ -65,8 +66,9 @@ class UserConfigReader {
 
         String exchangeUserName = validatePropEnv(props, errors, EXCHANGE_USERNAME_ENV_KEY)
         String exchangePassword = validatePropEnv(props, errors, EXCHANGE_PASSWORD_ENV_KEY)
-
         String exchangeUrl = validatePropString(props, errors, EXCHANGE_URL_KEY)
+        Boolean exchangeSleepOnConnectionError = validatePropBoolean(props, errors, EXCHANGE_SLEEP_ON_CONNECTION_ERROR)
+
         String googleClientSecretJsonFilePath = validatePropString(props, errors, GOOGLE_CLIENT_SECRET_JSON_KEY)
         String googleCalendarName = validatePropString(props, errors, GOOGLE_CALENDAR_NAME_KEY)
 
@@ -91,6 +93,7 @@ class UserConfigReader {
                 exchangeUserName: exchangeUserName,
                 exchangePassword: exchangePassword,
                 exchangeUrl: exchangeUrl,
+                exchangeSleepOnConnectionError: exchangeSleepOnConnectionError,
                 googleClientSecretJsonFilePath: googleClientSecretJsonFilePath,
                 googleCalendarName: googleCalendarName,
                 totalSyncDays: totalSyncDays,

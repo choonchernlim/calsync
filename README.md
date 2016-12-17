@@ -61,6 +61,20 @@ exchange.password.env=CALSYNC_EXCHANGE_PASSWORD
 # Accepted value: string.
 exchange.url=https://[EXCHANGE_SERVER]/ews/exchange.asmx
 
+# Sleep on Exchange connection error.
+#
+# When set to `false`, an exception is thrown when failing to connect against Exchange server.
+#
+# When set to `true`, CalSync will swallow the thrown connection exception and re-attempt
+# on next sync if `next.sync.in.minutes` is greater than 0. This is useful if you are only
+# able to connect against Exchange server within work firewall.
+#
+# Ensure `exchange.url` is set correctly first before enabling this feature so that you
+# are able to connect against Exchange server.
+#
+# Accepted value: true, false.
+exchange.sleep.on.connection.error=false
+
 # File path to Google client_secret.json.
 #
 # Accepted value: string.

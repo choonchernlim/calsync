@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.0 - 2016-12-16
+
+* `exchange.sleep.on.connection.error` = Whether to suppress thrown Exchange connection error or not.
+
 ## 0.3.0 - 2016-12-15
 
 * Handled all-day event.
