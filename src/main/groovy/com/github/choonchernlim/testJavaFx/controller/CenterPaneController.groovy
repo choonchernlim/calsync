@@ -1,9 +1,15 @@
 package com.github.choonchernlim.testJavaFx.controller
 
+import com.github.choonchernlim.testJavaFx.constant.FxmlEnum
+import com.github.choonchernlim.testJavaFx.service.FxmlLoaderService
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
+import javafx.scene.control.Dialog
 import javafx.scene.control.PasswordField
+import javafx.scene.layout.BorderPane
 import javafx.scene.text.Text
+
+import javax.inject.Inject
 
 final class CenterPaneController {
     @FXML
@@ -13,7 +19,22 @@ final class CenterPaneController {
     private Text actiontarget
 
     @FXML
-    protected void handleSubmitButtonAction(ActionEvent event) {
+    private BorderPane main
+
+    private final FxmlLoaderService fxmlLoaderService
+
+    @Inject
+    CenterPaneController(final FxmlLoaderService fxmlLoaderService) {
+        this.fxmlLoaderService = fxmlLoaderService
+    }
+
+    @FXML
+    protected void handleSubmitButtonAction(ActionEvent actionEvent) {
         actiontarget.setText("Sign in button pressed")
+    }
+
+    void handleOpenDialog(ActionEvent actionEvent) {
+        Dialog dialog = fxmlLoaderService.load(FxmlEnum.CONFIGURATION_DIALOG)
+        dialog.showAndWait()
     }
 }

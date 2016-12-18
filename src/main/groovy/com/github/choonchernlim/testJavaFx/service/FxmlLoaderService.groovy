@@ -6,7 +6,6 @@ import com.google.common.io.Resources
 import com.google.inject.Injector
 import javafx.fxml.FXMLLoader
 import javafx.fxml.JavaFXBuilderFactory
-import javafx.scene.Parent
 import javafx.util.Callback
 
 import javax.inject.Inject
@@ -28,7 +27,7 @@ final class FxmlLoaderService {
      * @param fxmlEnum FXML Enum
      * @return Node
      */
-    Parent load(final FxmlEnum fxmlEnum) {
+    def <T> T load(final FxmlEnum fxmlEnum) {
         try {
             return FXMLLoader.load(Resources.getResource(fxmlEnum.getPath()),
                                    null,
@@ -43,7 +42,7 @@ final class FxmlLoaderService {
                                    })
         }
         catch (IOException e) {
-            throw new RuntimeException("Unable to load FXML from path: " + fxmlEnum.getPath(), e)
+            throw new RuntimeException("Unable to loadParent FXML from path: " + fxmlEnum.getPath(), e)
         }
     }
 }

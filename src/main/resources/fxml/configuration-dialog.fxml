@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Dialog?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<Dialog xmlns:fx="http://javafx.com/fxml" headerText="Configuration"
+        fx:controller="com.github.choonchernlim.testJavaFx.controller.ConfigurationDialogController">
+    <dialogPane>
+        <DialogPane prefWidth="800" prefHeight="600">
+            <content>
+                <GridPane hgap="10" vgap="10" gridLinesVisible="true">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="30"/>
+                        <ColumnConstraints percentWidth="70"/>
+                    </columnConstraints>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="sleepOnConnectionError"/>
+                        <ToggleGroup fx:id="includeCanceledEvents"/>
+                        <ToggleGroup fx:id="includeEventBody"/>
+
+                        <!-- TODO testing tooltip -->
+                        <Tooltip fx:id="tooltip">
+                            <text>
+                                asdasd asda sdaskdajdhakjh
+                            </text>
+                        </Tooltip>
+                    </fx:define>
+
+                    <!-- EXCHANGE SERVER -->
+
+                    <Text text="Exchange Server"
+                          GridPane.columnIndex="0" GridPane.rowIndex="0"
+                    />
+
+                    <Label text="User Environment Variable" tooltip="$tooltip"
+                           GridPane.columnIndex="0" GridPane.rowIndex="1"
+                    />
+                    <ChoiceBox
+                            GridPane.columnIndex="1" GridPane.rowIndex="1"
+                    />
+
+                    <Label text="Password Environment Variable"
+                           GridPane.columnIndex="0" GridPane.rowIndex="2"
+                    />
+                    <ChoiceBox
+                            GridPane.columnIndex="1" GridPane.rowIndex="2"
+                    />
+
+                    <Label text="Web Service URL"
+                           GridPane.columnIndex="0" GridPane.rowIndex="3"
+                    />
+                    <TextField
+                            GridPane.columnIndex="1" GridPane.rowIndex="3"
+                    />
+
+                    <Label text="Sleep On Connection Error"
+                           GridPane.columnIndex="0" GridPane.rowIndex="4"
+                    />
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <ToggleButton text="Yes" toggleGroup="$sleepOnConnectionError"/>
+                        <ToggleButton text="No" toggleGroup="$sleepOnConnectionError"/>
+                    </HBox>
+
+                    <!-- GOOGLE CALENDAR -->
+
+                    <Text text="Google Calendar"
+                          GridPane.columnIndex="0" GridPane.rowIndex="5"
+                    />
+
+                    <Label text="Calendar Name"
+                           GridPane.columnIndex="0" GridPane.rowIndex="6"
+                    />
+                    <TextField
+                            GridPane.columnIndex="1" GridPane.rowIndex="6"
+                    />
+
+                    <Label text="Client Secret File"
+                           GridPane.columnIndex="0" GridPane.rowIndex="7"
+                    />
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="7">
+                        <TextField fx:id="clientSecretFile" disable="true" prefWidth="800"/>
+                        <Button text="..." onAction="#handleClientSecretFileChooser"/>
+                    </HBox>
+
+                    <!-- GENERAL -->
+
+                    <Text text="General"
+                          GridPane.columnIndex="0" GridPane.rowIndex="8"
+                    />
+
+                    <Label text="Total Sync (in Days)"
+                           GridPane.columnIndex="0" GridPane.rowIndex="9"
+                    />
+                    <TextField
+                            GridPane.columnIndex="1" GridPane.rowIndex="9"
+                    />
+
+                    <Label text="Next Sync (in Minutes)"
+                           GridPane.columnIndex="0" GridPane.rowIndex="10"
+                    />
+                    <TextField
+                            GridPane.columnIndex="1" GridPane.rowIndex="10"
+                    />
+
+                    <Label text="Include Canceled Events"
+                           GridPane.columnIndex="0" GridPane.rowIndex="11"
+                    />
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="11">
+                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents"/>
+                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents"/>
+                    </HBox>
+
+                    <Label text="Include Event Body"
+                           GridPane.columnIndex="0" GridPane.rowIndex="12"
+                    />
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="12">
+                        <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
+                        <ToggleButton text="No" toggleGroup="$includeEventBody"/>
+                    </HBox>
+                </GridPane>
+            </content>
+            <buttonTypes>
+                <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
+                <ButtonType buttonData="OK_DONE" text="OK"/>
+            </buttonTypes>
+        </DialogPane>
+    </dialogPane>
+</Dialog>

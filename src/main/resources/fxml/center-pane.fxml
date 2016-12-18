@@ -3,14 +3,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Text?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_CENTER" hgap="10"
           vgap="10" xmlns="http://javafx.com/javafx/8.0.112"
           fx:controller="com.github.choonchernlim.testJavaFx.controller.CenterPaneController">
@@ -18,108 +11,7 @@
         <Insets top="25" right="25" bottom="25" left="25"/>
     </padding>
 
-    <fx:define>
-        <ToggleGroup fx:id="sleepOnConnectionError"/>
-        <ToggleGroup fx:id="includeCanceledEvents"/>
-        <ToggleGroup fx:id="includeEventBody"/>
-    </fx:define>
-
-    <Text text="Configuration"
-          GridPane.columnIndex="0" GridPane.rowIndex="0"
-    />
-
-    <!-- EXCHANGE SERVER -->
-
-    <Text text="Exchange Server"
-          GridPane.columnIndex="0" GridPane.rowIndex="1"
-    />
-
-    <Label text="User Environment Variable"
-           GridPane.columnIndex="0" GridPane.rowIndex="2"
-    />
-    <ChoiceBox
-            GridPane.columnIndex="1" GridPane.rowIndex="2"
-    />
-
-    <Label text="Password Environment Variable"
-           GridPane.columnIndex="0" GridPane.rowIndex="3"
-    />
-    <ChoiceBox
-            GridPane.columnIndex="1" GridPane.rowIndex="3"
-    />
-
-    <Label text="Web Service URL"
-           GridPane.columnIndex="0" GridPane.rowIndex="4"
-    />
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="4"
-    />
-
-    <Label text="Sleep On Connection Error"
-           GridPane.columnIndex="0" GridPane.rowIndex="5"
-    />
-    <HBox GridPane.columnIndex="1" GridPane.rowIndex="5">
-        <ToggleButton text="Yes" toggleGroup="$sleepOnConnectionError"/>
-        <ToggleButton text="No" toggleGroup="$sleepOnConnectionError"/>
-    </HBox>
-
-    <!-- GOOGLE CALENDAR -->
-
-    <Text text="Google Calendar"
-          GridPane.columnIndex="0" GridPane.rowIndex="6"
-    />
-
-    <Label text="Calendar Name"
-           GridPane.columnIndex="0" GridPane.rowIndex="7"
-    />
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="7"
-    />
-
-    <Label text="Client Secret File"
-           GridPane.columnIndex="0" GridPane.rowIndex="8"
-    />
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="8"
-    />
-
-    <!-- GENERAL -->
-
-    <Text text="General"
-          GridPane.columnIndex="0" GridPane.rowIndex="9"
-    />
-
-    <Label text="Total Sync (in Days)"
-           GridPane.columnIndex="0" GridPane.rowIndex="10"
-    />
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="10"
-    />
-
-    <Label text="Next Sync (in Minutes)"
-           GridPane.columnIndex="0" GridPane.rowIndex="11"
-    />
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="11"
-    />
-
-    <Label text="Include Canceled Events"
-           GridPane.columnIndex="0" GridPane.rowIndex="12"
-    />
-    <HBox GridPane.columnIndex="1" GridPane.rowIndex="12">
-        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents"/>
-        <ToggleButton text="No" toggleGroup="$includeCanceledEvents"/>
-    </HBox>
-
-    <Label text="Include Event Body"
-           GridPane.columnIndex="0" GridPane.rowIndex="13"
-    />
-    <HBox GridPane.columnIndex="1" GridPane.rowIndex="13">
-        <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
-        <ToggleButton text="No" toggleGroup="$includeEventBody"/>
-    </HBox>
-
-    <Button text="Save Configuration" onAction="#handleSubmitButtonAction"
-            GridPane.columnIndex="1" GridPane.rowIndex="15"
+    <Button text="Open Dialog" onAction="#handleOpenDialog"
+            GridPane.columnIndex="2" GridPane.rowIndex="15"
     />
 </GridPane>

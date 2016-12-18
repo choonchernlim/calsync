@@ -5,6 +5,7 @@ import com.github.choonchernlim.testJavaFx.event.ShowHideEvent
 import com.github.choonchernlim.testJavaFx.service.FxmlLoaderService
 import com.google.common.eventbus.Subscribe
 import javafx.fxml.FXML
+import javafx.scene.Parent
 import javafx.scene.layout.BorderPane
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,7 +29,8 @@ final class MainController {
         LOGGER.debug("hiding right side from main controller....")
 
         if (event.isShow()) {
-            main.setRight(fxmlLoaderService.load(FxmlEnum.RIGHT_PANE))
+            Parent parent = fxmlLoaderService.load(FxmlEnum.RIGHT_PANE)
+            main.setRight(parent)
         }
         else {
             main.setRight(null)
