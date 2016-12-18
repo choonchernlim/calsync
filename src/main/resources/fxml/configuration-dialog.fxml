@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonType?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Dialog?>
-<?import javafx.scene.control.DialogPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -18,12 +9,13 @@
 <Dialog xmlns:fx="http://javafx.com/fxml" headerText="Configuration"
         fx:controller="com.github.choonchernlim.testJavaFx.controller.ConfigurationDialogController">
     <dialogPane>
-        <DialogPane prefWidth="800" prefHeight="600">
+        <DialogPane prefWidth="1200" prefHeight="800">
             <content>
                 <GridPane hgap="10" vgap="10" gridLinesVisible="true">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="30"/>
-                        <ColumnConstraints percentWidth="70"/>
+                        <ColumnConstraints percentWidth="30"/>
+                        <ColumnConstraints percentWidth="40"/>
                     </columnConstraints>
 
                     <fx:define>
@@ -51,12 +43,20 @@
                     <ChoiceBox
                             GridPane.columnIndex="1" GridPane.rowIndex="1"
                     />
+                    <ProgressIndicator
+                            maxWidth="20" maxHeight="20"
+                            GridPane.columnIndex="2" GridPane.rowIndex="1"
+                    />
 
                     <Label text="Password Environment Variable"
                            GridPane.columnIndex="0" GridPane.rowIndex="2"
                     />
                     <ChoiceBox
                             GridPane.columnIndex="1" GridPane.rowIndex="2"
+                    />
+                    <ProgressIndicator
+                            maxWidth="20" maxHeight="20"
+                            GridPane.columnIndex="2" GridPane.rowIndex="2"
                     />
 
                     <Label text="Web Service URL"
@@ -111,9 +111,20 @@
                     <Label text="Next Sync (in Minutes)"
                            GridPane.columnIndex="0" GridPane.rowIndex="10"
                     />
-                    <TextField
-                            GridPane.columnIndex="1" GridPane.rowIndex="10"
-                    />
+                    <!--<TextField-->
+                    <!--GridPane.columnIndex="1" GridPane.rowIndex="10"-->
+                    <!--/>-->
+
+                    <Spinner editable="true"
+                             GridPane.columnIndex="1" GridPane.rowIndex="10"
+                    >
+                        <valueFactory>
+                            <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
+                                <min>0</min>
+                                <max>60</max>
+                            </javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
+                        </valueFactory>
+                    </Spinner>
 
                     <Label text="Include Canceled Events"
                            GridPane.columnIndex="0" GridPane.rowIndex="11"
@@ -130,6 +141,17 @@
                         <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
                         <ToggleButton text="No" toggleGroup="$includeEventBody"/>
                     </HBox>
+                    <Label wrapText="true"
+                           GridPane.columnIndex="0" GridPane.rowIndex="13" GridPane.columnSpan="3"
+                    >
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in est pellentesque ante
+                        convallis cursus. Aliquam erat volutpat. Maecenas ac dui purus. Suspendisse potenti. Nulla
+                        lobortis mauris in tellus sollicitudin, nec fringilla ligula tincidunt. Curabitur at justo nec
+                        nunc porta interdum non id nisi. Proin scelerisque erat lacinia, gravida leo at, viverra dolor.
+                        Morbi hendrerit diam eget neque finibus, sit amet commodo leo tincidunt. Quisque porttitor leo
+                        nisl, at malesuada elit aliquam non. Cras scelerisque nibh diam, eu fringilla ipsum sagittis in.
+                        Suspendisse bibendum quam et risus aliquam, et convallis felis porttitor. Etiam a mi est.
+                    </Label>
                 </GridPane>
             </content>
             <buttonTypes>
