@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Dialog xmlns:fx="http://javafx.com/fxml" headerText="Configuration"
+<Dialog xmlns:fx="http://javafx.com/fxml"
+        headerText="Configuration"
         fx:controller="com.github.choonchernlim.testJavaFx.controller.ConfigurationDialogController">
     <dialogPane>
         <DialogPane prefWidth="1200" prefHeight="800">
@@ -158,10 +159,8 @@
                     </Label>
                 </GridPane>
             </content>
-            <buttonTypes>
-                <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
-                <ButtonType buttonData="OK_DONE" text="OK"/>
-            </buttonTypes>
+            <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
+            <ButtonType buttonData="OK_DONE" text="OK"/>
         </DialogPane>
     </dialogPane>
 </Dialog>
