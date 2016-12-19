@@ -1,4 +1,4 @@
-package com.github.choonchernlim.testJavaFx.constant
+package com.github.choonchernlim.calsync.ui.core
 
 enum FxmlEnum {
     MAIN("fxml/main.fxml"),

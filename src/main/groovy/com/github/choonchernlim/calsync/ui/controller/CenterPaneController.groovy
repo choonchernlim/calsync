@@ -1,7 +1,7 @@
-package com.github.choonchernlim.testJavaFx.controller
+package com.github.choonchernlim.calsync.ui.controller
 
-import com.github.choonchernlim.testJavaFx.constant.FxmlEnum
-import com.github.choonchernlim.testJavaFx.service.FxmlLoaderService
+import com.github.choonchernlim.calsync.ui.core.FxmlEnum
+import com.github.choonchernlim.calsync.ui.core.FxmlLoaderService
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control.Dialog

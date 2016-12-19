@@ -1,4 +1,4 @@
-package com.github.choonchernlim.testJavaFx.guice
+package com.github.choonchernlim.calsync.ui.core
 
 import com.google.common.eventbus.EventBus
 import com.google.inject.AbstractModule

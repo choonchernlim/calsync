@@ -1,4 +1,4 @@
-package com.github.choonchernlim.testJavaFx.event
+package com.github.choonchernlim.calsync.ui.event
 
 final class ShowHideEvent {
     private final boolean show

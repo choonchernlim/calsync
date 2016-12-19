@@ -8,7 +8,7 @@
     src: url("/font/Roboto-Regular.ttf");
 }
 
-.root, Label {
+.root {
     -fx-font-family: "Roboto";
     -fx-text-fill: #333;
 }
@@ -26,7 +26,7 @@ ProgressIndicator {
 
 .label-muted {
     -fx-font-size: 0.9em;
-    -fx-text-fill: gray;
+    -fx-text-fill: #999;
 }
 
 .label-icon-green {

@@ -1,17 +1,14 @@
-package com.github.choonchernlim.testJavaFx.main
+package com.github.choonchernlim.calsync.ui.core
 
-import com.github.choonchernlim.testJavaFx.constant.FxmlEnum
-import com.github.choonchernlim.testJavaFx.guice.GuiceModule
-import com.github.choonchernlim.testJavaFx.service.FxmlLoaderService
 import com.google.inject.Guice
 import com.google.inject.Injector
 import javafx.application.Application
 import javafx.scene.control.Dialog
 import javafx.stage.Stage
 
-final class Main extends Application {
+final class App extends Application {
     static void main(String[] args) {
-        launch(Main, args)
+        launch(App, args)
     }
 
     @Override

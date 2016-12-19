@@ -1,6 +1,6 @@
-package com.github.choonchernlim.testJavaFx.controller
+package com.github.choonchernlim.calsync.ui.controller
 
-import com.github.choonchernlim.testJavaFx.event.ShowHideEvent
+import com.github.choonchernlim.calsync.ui.event.ShowHideEvent
 import com.google.common.eventbus.EventBus
 import javafx.fxml.FXML
 import org.slf4j.Logger

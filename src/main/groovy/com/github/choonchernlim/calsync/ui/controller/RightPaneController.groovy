@@ -1,4 +1,4 @@
-package com.github.choonchernlim.testJavaFx.controller
+package com.github.choonchernlim.calsync.ui.controller
 
 import javafx.event.ActionEvent
 import javafx.fxml.FXML

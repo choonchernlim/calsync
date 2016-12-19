@@ -1,6 +1,5 @@
-package com.github.choonchernlim.testJavaFx.service
+package com.github.choonchernlim.calsync.ui.core
 
-import com.github.choonchernlim.testJavaFx.constant.FxmlEnum
 import com.google.common.eventbus.EventBus
 import com.google.common.io.Resources
 import com.google.inject.Injector
@@ -30,7 +29,7 @@ final class FxmlLoaderService {
     def <T> T load(final FxmlEnum fxmlEnum) {
         try {
             return FXMLLoader.load(Resources.getResource(fxmlEnum.getPath()),
-                                   ResourceBundle.getBundle('calsync'),
+                                   ResourceBundle.getBundle('app'),
                                    new JavaFXBuilderFactory(),
                                    new Callback<Class<?>, Object>() {
                                        @Override

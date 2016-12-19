@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import java.net.URL?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:id="main"
-            fx:controller="com.github.choonchernlim.testJavaFx.controller.MainController">
+            fx:controller="com.github.choonchernlim.calsync.ui.controller.MainController">
     <stylesheets>
         <URL value="@../css/app.css"/>
     </stylesheets>
