@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <Dialog xmlns:fx="http://javafx.com/fxml"
         headerText="Configuration"
@@ -15,11 +15,16 @@
             <stylesheets>
                 <URL value="@../css/app.css"/>
             </stylesheets>
+
             <content>
-                <GridPane hgap="10" vgap="10" gridLinesVisible="true">
+                <GridPane hgap="10" vgap="10" gridLinesVisible="false">
+                    <padding>
+                        <Insets top="10" right="25" bottom="25" left="25"/>
+                    </padding>
+
                     <columnConstraints>
-                        <ColumnConstraints percentWidth="30"/>
-                        <ColumnConstraints percentWidth="30"/>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="40"/>
                         <ColumnConstraints percentWidth="40"/>
                     </columnConstraints>
 
@@ -38,8 +43,8 @@
 
                     <!-- EXCHANGE SERVER -->
 
-                    <Text text="Exchange Server"
-                          GridPane.columnIndex="0" GridPane.rowIndex="0"
+                    <Label text="Exchange Server" styleClass="label-title"
+                           GridPane.columnIndex="0" GridPane.rowIndex="0"
                     />
 
                     <Label text="User Environment Variable" tooltip="$tooltip"
@@ -81,8 +86,8 @@
 
                     <!-- GOOGLE CALENDAR -->
 
-                    <Text text="Google Calendar"
-                          GridPane.columnIndex="0" GridPane.rowIndex="5"
+                    <Label text="Google Calendar" styleClass="label-title"
+                           GridPane.columnIndex="0" GridPane.rowIndex="5"
                     />
 
                     <Label text="Calendar Name"
@@ -102,8 +107,8 @@
 
                     <!-- GENERAL -->
 
-                    <Text text="General"
-                          GridPane.columnIndex="0" GridPane.rowIndex="8"
+                    <Label text="General" styleClass="label-title"
+                           GridPane.columnIndex="0" GridPane.rowIndex="8"
                     />
 
                     <Label text="Total Sync (in Days)"
@@ -146,7 +151,7 @@
                         <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
                         <ToggleButton text="No" toggleGroup="$includeEventBody"/>
                     </HBox>
-                    <Label wrapText="true"
+                    <Label wrapText="true" styleClass="label-muted"
                            GridPane.columnIndex="0" GridPane.rowIndex="13" GridPane.columnSpan="3"
                     >
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in est pellentesque ante
