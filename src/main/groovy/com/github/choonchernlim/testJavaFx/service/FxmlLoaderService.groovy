@@ -30,7 +30,7 @@ final class FxmlLoaderService {
     def <T> T load(final FxmlEnum fxmlEnum) {
         try {
             return FXMLLoader.load(Resources.getResource(fxmlEnum.getPath()),
-                                   null,
+                                   ResourceBundle.getBundle('calsync'),
                                    new JavaFXBuilderFactory(),
                                    new Callback<Class<?>, Object>() {
                                        @Override

@@ -10,7 +10,6 @@ import javafx.scene.control.Dialog
 import javafx.stage.Stage
 
 final class Main extends Application {
-
     static void main(String[] args) {
         launch(Main, args)
     }
@@ -25,7 +24,7 @@ final class Main extends Application {
 
 //        final Parent root = fxmlLoaderService.load(FxmlEnum.MAIN)
 //
-//        primaryStage.setTitle("FXML Welcome")
+//        primaryStage.setTitle('FXML Welcome')
 //        primaryStage.setScene(new Scene(root))
 //        primaryStage.setMinWidth(800)
 //        primaryStage.setMinHeight(600)

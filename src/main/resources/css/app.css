@@ -1,6 +1,35 @@
-.root {
-    /*-fx-font-family: "Arial";*/
+@font-face {
+    font-family: "FontAwesome";
+    src: url("/font/fontawesome-webfont.ttf");
+
 }
+
+/*.root {*/
+/*!*-fx-font-family: "Arial";*!*/
+/*}*/
+
+ProgressIndicator {
+    -fx-max-width: 15;
+    -fx-max-height: 15;
+}
+
+Label {
+    -fx-font-family: 'FontAwesome';
+}
+
+.label-icon-green {
+    -fx-font-size: 16;
+    -fx-text-fill: green;
+}
+
+.label-icon-red {
+    -fx-font-size: 16;
+    -fx-text-fill: red;
+}
+
+/*.fa-label {*/
+/*-fx-font-family: "FontAwesome";*/
+/*}*/
 
 /*.label {*/
 /*-fx-font-size: 12px;*/
