@@ -29,17 +29,19 @@ ProgressIndicator {
     -fx-text-fill: #999;
 }
 
-.label-icon-green {
+.label-title-icon-green {
     -fx-font-family: 'FontAwesome';
     -fx-font-size: 1.2em;
+    -fx-padding: 20 0 10 0;
     -fx-text-fill: green;
 }
 
-.label-icon-red {
-    -fx-font-family: 'FontAwesome';
-    -fx-font-size: 1.2em;
-    -fx-text-fill: red;
-}
+/*.label-title-icon-red {*/
+/*-fx-font-family: 'FontAwesome';*/
+/*-fx-font-size: 1.2em;*/
+/*-fx-padding: 20 0 10 0;*/
+/*-fx-text-fill: red;*/
+/*}*/
 
 /*.button:hover {*/
 /*-fx-background-color: linear-gradient(#2A5058, #61a2b1);*/

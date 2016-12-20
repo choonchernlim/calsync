@@ -11,12 +11,16 @@
         headerText="Configuration"
         fx:controller="com.github.choonchernlim.calsync.ui.controller.ConfigurationDialogController">
     <dialogPane>
-        <DialogPane prefWidth="1200" prefHeight="800">
+        <DialogPane prefWidth="1000" prefHeight="700">
             <stylesheets>
                 <URL value="@../css/app.css"/>
             </stylesheets>
 
             <content>
+                <!-- TODO DELETE!-->
+                <!--<ProgressIndicator GridPane.columnIndex="2" GridPane.rowIndex="1"/>-->
+                <!--<Label text="%fa.check.circle" styleClass="label-title-icon-green" GridPane.rowIndex="3" GridPane.columnIndex="2"/>-->
+
                 <GridPane hgap="10" vgap="10" gridLinesVisible="false">
                     <padding>
                         <Insets top="10" right="25" bottom="25" left="25"/>
@@ -24,110 +28,139 @@
 
                     <columnConstraints>
                         <ColumnConstraints percentWidth="20"/>
-                        <ColumnConstraints percentWidth="40"/>
-                        <ColumnConstraints percentWidth="40"/>
+                        <ColumnConstraints percentWidth="30"/>
+                        <ColumnConstraints percentWidth="20"/>
+                        <ColumnConstraints percentWidth="30"/>
                     </columnConstraints>
 
                     <fx:define>
                         <ToggleGroup fx:id="sleepOnConnectionError"/>
                         <ToggleGroup fx:id="includeCanceledEvents"/>
                         <ToggleGroup fx:id="includeEventBody"/>
-
-                        <!-- TODO testing tooltip -->
-                        <Tooltip fx:id="tooltip">
-                            <text>
-                                asdasd asda sdaskdajdhakjh
-                            </text>
-                        </Tooltip>
                     </fx:define>
 
                     <!-- EXCHANGE SERVER -->
 
                     <Label text="Exchange Server" styleClass="label-title"
-                           GridPane.columnIndex="0" GridPane.rowIndex="0"
+                           GridPane.rowIndex="0" GridPane.columnIndex="0"
                     />
+                    <Label text="%fa.check.circle" styleClass="label-title-icon-green"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    </Label>
 
-                    <Label text="User Environment Variable" tooltip="$tooltip"
-                           GridPane.columnIndex="0" GridPane.rowIndex="1"
+                    <Label text="User"
+                           GridPane.rowIndex="1" GridPane.columnIndex="0"
                     />
                     <ChoiceBox
-                            GridPane.columnIndex="1" GridPane.rowIndex="1"
+                            GridPane.rowIndex="1" GridPane.columnIndex="1"
                     />
-                    <ProgressIndicator GridPane.columnIndex="2" GridPane.rowIndex="1"/>
 
-                    <Label text="Password Environment Variable"
-                           GridPane.columnIndex="0" GridPane.rowIndex="2"
+                    <Label text="Password"
+                           GridPane.rowIndex="1" GridPane.columnIndex="2"
                     />
                     <ChoiceBox
-                            GridPane.columnIndex="1" GridPane.rowIndex="2"
+                            GridPane.rowIndex="1" GridPane.columnIndex="3"
                     />
-                    <ProgressIndicator GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                    <HBox GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4">
+                        <Label wrapText="true" styleClass="label-muted">
+                            Select environment variables that represent your Exchange user and password.
+                            If they don't exist, create them first and re-run this app.
+                        </Label>
+                    </HBox>
+
 
                     <Label text="Web Service URL"
-                           GridPane.columnIndex="0" GridPane.rowIndex="3"
+                           GridPane.rowIndex="3" GridPane.columnIndex="0"
                     />
                     <TextField
-                            GridPane.columnIndex="1" GridPane.rowIndex="3"
+                            GridPane.rowIndex="3" GridPane.columnIndex="1"
                     />
-                    <Label text="%fa.check.circle" styleClass="label-icon-green"
-                           GridPane.columnIndex="2" GridPane.rowIndex="3"
-                    />
-
-                    <Label text="Sleep On Connection Error"
-                           GridPane.columnIndex="0" GridPane.rowIndex="4"
-                    />
-                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4">
-                        <ToggleButton text="Yes" toggleGroup="$sleepOnConnectionError"/>
-                        <ToggleButton text="No" toggleGroup="$sleepOnConnectionError"/>
+                    <HBox GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            For example: https://[EXCHANGE_SERVER]/ews/exchange.asmx
+                        </Label>
                     </HBox>
-                    <Label text="%fa.times.circle" styleClass="label-icon-red"
-                           GridPane.columnIndex="2" GridPane.rowIndex="4"
-                    />
 
                     <!-- GOOGLE CALENDAR -->
 
                     <Label text="Google Calendar" styleClass="label-title"
-                           GridPane.columnIndex="0" GridPane.rowIndex="5"
+                           GridPane.rowIndex="6" GridPane.columnIndex="0"
                     />
+                    <Label text="%fa.check.circle" styleClass="label-title-icon-green"
+                           GridPane.rowIndex="6" GridPane.columnIndex="1">
+                    </Label>
+
 
                     <Label text="Calendar Name"
-                           GridPane.columnIndex="0" GridPane.rowIndex="6"
+                           GridPane.rowIndex="7" GridPane.columnIndex="0"
                     />
-                    <TextField
-                            GridPane.columnIndex="1" GridPane.rowIndex="6"
+                    <TextField maxWidth="200"
+                               GridPane.rowIndex="7" GridPane.columnIndex="1"
                     />
+                    <HBox GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            A new Google calendar name. Because CalSync performs one-way sync from Exchange calendar to
+                            Google calendar, it will wipe any existing events in Google calendar if they don't match
+                            events from Exchange calendar.
+                        </Label>
+                    </HBox>
+
 
                     <Label text="Client Secret File"
-                           GridPane.columnIndex="0" GridPane.rowIndex="7"
+                           GridPane.rowIndex="7" GridPane.columnIndex="2"
                     />
-                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <HBox GridPane.rowIndex="7" GridPane.columnIndex="3">
                         <TextField fx:id="clientSecretFile" disable="true" prefWidth="800"/>
                         <Button text="..." onAction="#handleClientSecretFileChooser"/>
+                    </HBox>
+                    <HBox GridPane.rowIndex="8" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            File path to Google client_secret.json.
+                        </Label>
                     </HBox>
 
                     <!-- GENERAL -->
 
                     <Label text="General" styleClass="label-title"
-                           GridPane.columnIndex="0" GridPane.rowIndex="8"
+                           GridPane.rowIndex="10" GridPane.columnIndex="0"
                     />
+
 
                     <Label text="Total Sync (in Days)"
-                           GridPane.columnIndex="0" GridPane.rowIndex="9"
+                           GridPane.rowIndex="11" GridPane.columnIndex="0"
                     />
-                    <TextField
-                            GridPane.columnIndex="1" GridPane.rowIndex="9"
+                    <Spinner GridPane.rowIndex="11" GridPane.columnIndex="1" maxWidth="75">
+                        <valueFactory>
+                            <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
+                                <min>1</min>
+                                <max>60</max>
+                            </javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
+                        </valueFactory>
+                    </Spinner>
+                    <HBox GridPane.rowIndex="12" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            Total days to sync events from current day.
+                        </Label>
+                    </HBox>
+
+                    <Label text="Include Canceled Events"
+                           GridPane.rowIndex="11" GridPane.columnIndex="2"
                     />
+                    <HBox GridPane.rowIndex="11" GridPane.columnIndex="3">
+                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents"/>
+                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents"/>
+                    </HBox>
+                    <HBox GridPane.rowIndex="12" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            Whether to include events marked as "canceled" or not.
+                        </Label>
+                    </HBox>
+
 
                     <Label text="Next Sync (in Minutes)"
-                           GridPane.columnIndex="0" GridPane.rowIndex="10"
+                           GridPane.rowIndex="13" GridPane.columnIndex="0"
                     />
-                    <!--<TextField-->
-                    <!--GridPane.columnIndex="1" GridPane.rowIndex="10"-->
-                    <!--/>-->
-
-                    <Spinner editable="true"
-                             GridPane.columnIndex="1" GridPane.rowIndex="10"
-                    >
+                    <Spinner GridPane.rowIndex="13" GridPane.columnIndex="1" maxWidth="75">
                         <valueFactory>
                             <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                                 <min>0</min>
@@ -135,33 +168,25 @@
                             </javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                         </valueFactory>
                     </Spinner>
-
-                    <Label text="Include Canceled Events"
-                           GridPane.columnIndex="0" GridPane.rowIndex="11"
-                    />
-                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="11">
-                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents"/>
-                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents"/>
+                    <HBox GridPane.rowIndex="14" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            Next sync in minutes, or 0 to disable next run.
+                        </Label>
                     </HBox>
 
+
                     <Label text="Include Event Body"
-                           GridPane.columnIndex="0" GridPane.rowIndex="12"
+                           GridPane.rowIndex="13" GridPane.columnIndex="2"
                     />
-                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="12">
+                    <HBox GridPane.rowIndex="13" GridPane.columnIndex="3">
                         <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
                         <ToggleButton text="No" toggleGroup="$includeEventBody"/>
                     </HBox>
-                    <Label wrapText="true" styleClass="label-muted"
-                           GridPane.columnIndex="0" GridPane.rowIndex="13" GridPane.columnSpan="3"
-                    >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in est pellentesque ante
-                        convallis cursus. Aliquam erat volutpat. Maecenas ac dui purus. Suspendisse potenti. Nulla
-                        lobortis mauris in tellus sollicitudin, nec fringilla ligula tincidunt. Curabitur at justo nec
-                        nunc porta interdum non id nisi. Proin scelerisque erat lacinia, gravida leo at, viverra dolor.
-                        Morbi hendrerit diam eget neque finibus, sit amet commodo leo tincidunt. Quisque porttitor leo
-                        nisl, at malesuada elit aliquam non. Cras scelerisque nibh diam, eu fringilla ipsum sagittis in.
-                        Suspendisse bibendum quam et risus aliquam, et convallis felis porttitor. Etiam a mi est.
-                    </Label>
+                    <HBox GridPane.rowIndex="14" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                        <Label wrapText="true" styleClass="label-muted">
+                            Whether to include detailed event body or not.
+                        </Label>
+                    </HBox>
                 </GridPane>
             </content>
             <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
