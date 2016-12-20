@@ -36,6 +36,10 @@ ProgressIndicator {
     -fx-text-fill: green;
 }
 
+.form-field-error {
+    -fx-border-color: darkred;
+}
+
 /*.label-title-icon-red {*/
 /*-fx-font-family: 'FontAwesome';*/
 /*-fx-font-size: 1.2em;*/

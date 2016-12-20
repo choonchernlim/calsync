@@ -51,15 +51,15 @@
                     <Label text="User"
                            GridPane.rowIndex="1" GridPane.columnIndex="0"
                     />
-                    <ChoiceBox
-                            GridPane.rowIndex="1" GridPane.columnIndex="1"
+                    <ChoiceBox fx:id="exchangeUserEnv" onAction="#onExchangeUserEnvAction"
+                               GridPane.rowIndex="1" GridPane.columnIndex="1"
                     />
 
                     <Label text="Password"
                            GridPane.rowIndex="1" GridPane.columnIndex="2"
                     />
-                    <ChoiceBox
-                            GridPane.rowIndex="1" GridPane.columnIndex="3"
+                    <ChoiceBox fx:id="exchangePasswordEnv" onAction="#onExchangePasswordEnvAction"
+                               GridPane.rowIndex="1" GridPane.columnIndex="3"
                     />
                     <HBox GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4">
                         <Label wrapText="true" styleClass="label-muted">
