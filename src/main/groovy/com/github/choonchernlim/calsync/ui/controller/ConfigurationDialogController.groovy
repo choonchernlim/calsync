@@ -79,13 +79,13 @@ final class ConfigurationDialogController implements Initializable {
         // TODO mock for now to test flow
         if (isExchangeInfoValid()) {
             println 'all okay!'
-            exchangePending.visible = false
+            //exchangePending.visible = false
             exchangeFailed.visible = false
             exchangeSuccess.visible = true
         }
         else {
             println 'not okay!'
-            exchangePending.visible = false
+            //exchangePending.visible = false
             exchangeSuccess.visible = false
             exchangeFailed.visible = true
         }
@@ -93,6 +93,7 @@ final class ConfigurationDialogController implements Initializable {
 
     // TODO replace with real service
     boolean isExchangeInfoValid() {
+        //sleep(2000)
         return false
     }
 

@@ -1,5 +1,8 @@
-package com.github.choonchernlim.calsync.ui.core
+package com.github.choonchernlim.calsync.ui
 
+import com.github.choonchernlim.calsync.ui.core.FxmlEnum
+import com.github.choonchernlim.calsync.ui.core.FxmlLoaderService
+import com.github.choonchernlim.calsync.ui.core.GuiceModule
 import com.google.inject.Guice
 import com.google.inject.Injector
 import javafx.application.Application

@@ -40,10 +40,12 @@
                     <Label text="Exchange Server" styleClass="label-title"
                            GridPane.rowIndex="0" GridPane.columnIndex="0"
                     />
-                    <HBox fx:id="exchangePending" alignment="CENTER_LEFT" visible="true"
+                    <HBox fx:id="exchangePending" alignment="CENTER_LEFT" visible="false"
                           GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
                     >
-                        <ProgressIndicator/>
+                        <HBox styleClass="hbox-progress-indicator">
+                            <ProgressIndicator/>
+                        </HBox>
                         <Label text=" Connecting..." styleClass="label-title"/>
                     </HBox>
                     <HBox fx:id="exchangeSuccess" alignment="CENTER_LEFT" visible="false"

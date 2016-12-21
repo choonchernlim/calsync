@@ -43,6 +43,12 @@
     -fx-text-fill: red;
 }
 
+.hbox-progress-indicator {
+    -fx-padding: 10 0 0 0;
+    -fx-max-height: 25;
+    -fx-max-width: 25;
+}
+
 /* to take account of 2px border bottom from `.form-field-error` to prevent form field from growing/shrinking. */
 .form-field {
     -fx-pref-height: 27;

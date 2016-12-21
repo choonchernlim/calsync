@@ -191,7 +191,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.7.0</version>
                 <configuration>
-                    <mainClass>com.github.choonchernlim.calsync.ui.core.App</mainClass>
+                    <mainClass>com.github.choonchernlim.calsync.ui.App</mainClass>
                     <vendor>Choon-Chern Lim</vendor>
                     <verbose>true</verbose>
                     <appName>${project.artifactId}</appName>
