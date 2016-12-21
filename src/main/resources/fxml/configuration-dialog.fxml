@@ -51,14 +51,14 @@
                     <Label text="User"
                            GridPane.rowIndex="1" GridPane.columnIndex="0"
                     />
-                    <ChoiceBox fx:id="exchangeUserEnv" onAction="#onExchangeUserEnvAction"
+                    <ChoiceBox fx:id="exchangeUserEnv" styleClass="form-field"
                                GridPane.rowIndex="1" GridPane.columnIndex="1"
                     />
 
                     <Label text="Password"
                            GridPane.rowIndex="1" GridPane.columnIndex="2"
                     />
-                    <ChoiceBox fx:id="exchangePasswordEnv" onAction="#onExchangePasswordEnvAction"
+                    <ChoiceBox fx:id="exchangePasswordEnv" styleClass="form-field"
                                GridPane.rowIndex="1" GridPane.columnIndex="3"
                     />
                     <HBox GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4">
@@ -72,12 +72,16 @@
                     <Label text="Web Service URL"
                            GridPane.rowIndex="3" GridPane.columnIndex="0"
                     />
-                    <TextField
-                            GridPane.rowIndex="3" GridPane.columnIndex="1"
-                    />
+                    <HBox GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2"
+                          alignment="CENTER_LEFT"
+                    >
+                        <Label text="https://"/>
+                        <TextField fx:id="exchangeServer" styleClass="form-field"/>
+                        <Label text="/ews/exchange.asmx"/>
+                    </HBox>
                     <HBox GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-muted">
-                            For example: https://[EXCHANGE_SERVER]/ews/exchange.asmx
+                            Specify Exchange server name.
                         </Label>
                     </HBox>
 
@@ -94,7 +98,7 @@
                     <Label text="Calendar Name"
                            GridPane.rowIndex="7" GridPane.columnIndex="0"
                     />
-                    <TextField maxWidth="200"
+                    <TextField maxWidth="200" styleClass="form-field"
                                GridPane.rowIndex="7" GridPane.columnIndex="1"
                     />
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
@@ -110,8 +114,8 @@
                            GridPane.rowIndex="7" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="7" GridPane.columnIndex="3">
-                        <TextField fx:id="clientSecretFile" disable="true" prefWidth="800"/>
-                        <Button text="..." onAction="#handleClientSecretFileChooser"/>
+                        <TextField fx:id="clientSecretFile" disable="true" prefWidth="800" styleClass="form-field"/>
+                        <Button text="..." onAction="#handleClientSecretFileChooser" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-muted">
@@ -129,7 +133,7 @@
                     <Label text="Total Sync (in Days)"
                            GridPane.rowIndex="11" GridPane.columnIndex="0"
                     />
-                    <Spinner GridPane.rowIndex="11" GridPane.columnIndex="1" maxWidth="75">
+                    <Spinner GridPane.rowIndex="11" GridPane.columnIndex="1" maxWidth="75" styleClass="form-field">
                         <valueFactory>
                             <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                                 <min>1</min>
@@ -147,8 +151,8 @@
                            GridPane.rowIndex="11" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="11" GridPane.columnIndex="3">
-                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents"/>
-                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents"/>
+                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents" styleClass="form-field"/>
+                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="12" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-muted">
@@ -160,7 +164,7 @@
                     <Label text="Next Sync (in Minutes)"
                            GridPane.rowIndex="13" GridPane.columnIndex="0"
                     />
-                    <Spinner GridPane.rowIndex="13" GridPane.columnIndex="1" maxWidth="75">
+                    <Spinner GridPane.rowIndex="13" GridPane.columnIndex="1" maxWidth="75" styleClass="form-field">
                         <valueFactory>
                             <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                                 <min>0</min>
@@ -179,8 +183,8 @@
                            GridPane.rowIndex="13" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="13" GridPane.columnIndex="3">
-                        <ToggleButton text="Yes" toggleGroup="$includeEventBody"/>
-                        <ToggleButton text="No" toggleGroup="$includeEventBody"/>
+                        <ToggleButton text="Yes" toggleGroup="$includeEventBody" styleClass="form-field"/>
+                        <ToggleButton text="No" toggleGroup="$includeEventBody" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="14" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-muted">

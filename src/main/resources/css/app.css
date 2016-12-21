@@ -36,8 +36,14 @@ ProgressIndicator {
     -fx-text-fill: green;
 }
 
+/* to take account of 2px border bottom from `.form-field-error` to prevent form field from growing/shrinking. */
+.form-field {
+    -fx-pref-height: 27;
+}
+
 .form-field-error {
-    -fx-border-color: darkred;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: red;
 }
 
 /*.label-title-icon-red {*/
