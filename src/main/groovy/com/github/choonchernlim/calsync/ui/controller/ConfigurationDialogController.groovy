@@ -6,6 +6,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Control
 import javafx.scene.control.TextField
+import javafx.scene.layout.HBox
 import javafx.stage.FileChooser
 
 final class ConfigurationDialogController implements Initializable {
@@ -23,6 +24,15 @@ final class ConfigurationDialogController implements Initializable {
     @FXML
     TextField clientSecretFile
 
+    @FXML
+    HBox exchangePending
+
+    @FXML
+    HBox exchangeSuccess
+
+    @FXML
+    HBox exchangeFailed
+
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
         def envs = System.getenv().keySet().sort()
@@ -32,15 +42,14 @@ final class ConfigurationDialogController implements Initializable {
 
         exchangeUserEnv.selectionModel.selectedItemProperty().addListener(
                 {
-                    observable, oldValue, newValue ->
-                        handleFieldErrorStyle(newValue, exchangeUserEnv)
+                    observable, oldValue, newValue -> validateExchangeInfo()
                 } as ChangeListener<String>
         )
 
         exchangePasswordEnv.selectionModel.selectedItemProperty().addListener(
                 {
-                    observable, oldValue, newValue ->
-                        handleFieldErrorStyle(newValue, exchangePasswordEnv)
+                    observable, oldValue, newValue -> validateExchangeInfo()
+
                 } as ChangeListener<String>
         )
 
@@ -48,12 +57,43 @@ final class ConfigurationDialogController implements Initializable {
                 {
                     observable, offFocus, onFocus ->
                         if (offFocus) {
-                            handleFieldErrorStyle(exchangeServer.text, exchangeServer)
+                            validateExchangeInfo()
                         }
                 } as ChangeListener<Boolean>
         )
 
-        handleFieldErrorStyle(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
+        validate(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
+    }
+
+    void validateExchangeInfo() {
+        boolean isAllValid = validate(exchangeUserEnv.value, exchangeUserEnv)
+        isAllValid &= validate(exchangePasswordEnv.value, exchangePasswordEnv)
+        isAllValid &= validate(exchangeServer.text, exchangeServer)
+
+        if (!isAllValid) {
+            return
+        }
+
+        exchangePending.visible = true
+
+        // TODO mock for now to test flow
+        if (isExchangeInfoValid()) {
+            println 'all okay!'
+            exchangePending.visible = false
+            exchangeFailed.visible = false
+            exchangeSuccess.visible = true
+        }
+        else {
+            println 'not okay!'
+            exchangePending.visible = false
+            exchangeSuccess.visible = false
+            exchangeFailed.visible = true
+        }
+    }
+
+    // TODO replace with real service
+    boolean isExchangeInfoValid() {
+        return false
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
@@ -72,13 +112,15 @@ final class ConfigurationDialogController implements Initializable {
         }
     }
 
-    private static void handleFieldErrorStyle(truthy, Control... formFields) {
+    private static boolean validate(truthy, Control... formFields) {
         if (truthy) {
             removeErrorStyleClass(formFields)
         }
         else {
             addErrorStyleClass(formFields)
         }
+
+        return truthy
     }
 
     private static void addErrorStyleClass(Control... formFields) {

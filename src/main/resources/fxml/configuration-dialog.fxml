@@ -17,10 +17,6 @@
             </stylesheets>
 
             <content>
-                <!-- TODO DELETE!-->
-                <!--<ProgressIndicator GridPane.columnIndex="2" GridPane.rowIndex="1"/>-->
-                <!--<Label text="%fa.check.circle" styleClass="label-title-icon-green" GridPane.rowIndex="3" GridPane.columnIndex="2"/>-->
-
                 <GridPane hgap="10" vgap="10" gridLinesVisible="false">
                     <padding>
                         <Insets top="10" right="25" bottom="25" left="25"/>
@@ -44,9 +40,24 @@
                     <Label text="Exchange Server" styleClass="label-title"
                            GridPane.rowIndex="0" GridPane.columnIndex="0"
                     />
-                    <Label text="%fa.check.circle" styleClass="label-title-icon-green"
-                           GridPane.rowIndex="0" GridPane.columnIndex="1">
-                    </Label>
+                    <HBox fx:id="exchangePending" alignment="CENTER_LEFT" visible="true"
+                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
+                    >
+                        <ProgressIndicator/>
+                        <Label text=" Connecting..." styleClass="label-title"/>
+                    </HBox>
+                    <HBox fx:id="exchangeSuccess" alignment="CENTER_LEFT" visible="false"
+                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
+                    >
+                        <Label text="%fa.check.circle" styleClass="label-title-ok"/>
+                        <Label text=" Connection Successful!" styleClass="label-title-ok"/>
+                    </HBox>
+                    <HBox fx:id="exchangeFailed" alignment="CENTER_LEFT" visible="false"
+                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
+                    >
+                        <Label text="%fa.times.circle" styleClass="label-title-error"/>
+                        <Label text=" Connection Failed!" styleClass="label-title-error"/>
+                    </HBox>
 
                     <Label text="User"
                            GridPane.rowIndex="1" GridPane.columnIndex="0"
@@ -90,7 +101,7 @@
                     <Label text="Google Calendar" styleClass="label-title"
                            GridPane.rowIndex="6" GridPane.columnIndex="0"
                     />
-                    <Label text="%fa.check.circle" styleClass="label-title-icon-green"
+                    <Label text="%fa.check.circle" styleClass="label-title-ok"
                            GridPane.rowIndex="6" GridPane.columnIndex="1">
                     </Label>
 
