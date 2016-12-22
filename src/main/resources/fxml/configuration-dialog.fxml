@@ -40,25 +40,22 @@
                     <Label text="Exchange Server" styleClass="label-title"
                            GridPane.rowIndex="0" GridPane.columnIndex="0"
                     />
-                    <HBox fx:id="exchangePending" alignment="CENTER_LEFT" visible="false"
-                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
-                    >
-                        <HBox styleClass="hbox-progress-indicator">
-                            <ProgressIndicator/>
+                    <HBox fx:id="exchangeMessage" alignment="CENTER_LEFT"
+                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3">
+                        <HBox userData="PENDING" alignment="CENTER_LEFT">
+                            <HBox styleClass="hbox-progress-indicator">
+                                <ProgressIndicator/>
+                            </HBox>
+                            <Label text=" Connecting..." styleClass="label-title"/>
                         </HBox>
-                        <Label text=" Connecting..." styleClass="label-title"/>
-                    </HBox>
-                    <HBox fx:id="exchangeSuccess" alignment="CENTER_LEFT" visible="false"
-                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
-                    >
-                        <Label text="%fa.check.circle" styleClass="label-title-ok"/>
-                        <Label text=" Connection Successful!" styleClass="label-title-ok"/>
-                    </HBox>
-                    <HBox fx:id="exchangeFailed" alignment="CENTER_LEFT" visible="false"
-                          GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"
-                    >
-                        <Label text="%fa.times.circle" styleClass="label-title-error"/>
-                        <Label text=" Connection Failed!" styleClass="label-title-error"/>
+                        <HBox userData="SUCCESS" alignment="CENTER_LEFT">
+                            <Label text="%fa.check.circle" styleClass="label-title-ok"/>
+                            <Label text=" Connection Successful!" styleClass="label-title-ok"/>
+                        </HBox>
+                        <HBox userData="ERROR" alignment="CENTER_LEFT">
+                            <Label text="%fa.times.circle" styleClass="label-title-error"/>
+                            <Label text=" Connection Failed!" styleClass="label-title-error"/>
+                        </HBox>
                     </HBox>
 
                     <Label text="User"

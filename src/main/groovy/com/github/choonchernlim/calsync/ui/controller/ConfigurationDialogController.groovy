@@ -15,6 +15,10 @@ import rx.schedulers.Schedulers
 final class ConfigurationDialogController implements Initializable {
     private static final String FORM_FIELD_ERROR_STYLE = 'form-field-error'
 
+    enum MessageTypeEnum {
+        NONE, PENDING, SUCCESS, ERROR
+    }
+
     @FXML
     ChoiceBox<String> exchangeUserEnv
 
@@ -28,13 +32,7 @@ final class ConfigurationDialogController implements Initializable {
     TextField clientSecretFile
 
     @FXML
-    HBox exchangePending
-
-    @FXML
-    HBox exchangeSuccess
-
-    @FXML
-    HBox exchangeFailed
+    HBox exchangeMessage
 
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
@@ -66,6 +64,31 @@ final class ConfigurationDialogController implements Initializable {
         )
 
         validate(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
+
+        // hide all messages
+        showMessage(exchangeMessage, MessageTypeEnum.NONE)
+    }
+
+    private void showMessage(HBox hBox, MessageTypeEnum messageTypeEnum) {
+        assert hBox
+        assert messageTypeEnum
+
+        // - hide all message components first
+        // - find matching message type, use `findAll` instead of `find` for chain-ability
+        // - show matched message
+        //
+        // `managed` has to be set to `false` to ensure the non-visible component doesn't take up space.
+        // See http://stackoverflow.com/questions/28558165/javafx-setvisible-doesnt-hide-the-element
+        hBox.getChildren().
+                each {
+                    it.visible = false
+                    it.managed = false
+                }.
+                findAll { it.userData == messageTypeEnum.toString() }.
+                each {
+                    it.visible = true
+                    it.managed = true
+                }
     }
 
     void validateExchangeInfo() {
@@ -77,33 +100,26 @@ final class ConfigurationDialogController implements Initializable {
             return
         }
 
-        exchangeFailed.visible = false
-        exchangeSuccess.visible = false
-        exchangePending.visible = true
+        showMessage(exchangeMessage, MessageTypeEnum.PENDING)
 
         isValid().
                 subscribeOn(Schedulers.newThread()).
                 subscribe(new Action1<Boolean>() {
                     @Override
                     void call(final Boolean isValid) {
-                        // TODO mock for now to test flow
                         if (isValid) {
                             println 'all okay!'
-                            exchangePending.visible = false
-                            exchangeFailed.visible = false
-                            exchangeSuccess.visible = true
+                            showMessage(exchangeMessage, MessageTypeEnum.SUCCESS)
                         }
                         else {
                             println 'not okay!'
-                            exchangePending.visible = false
-                            exchangeSuccess.visible = false
-                            exchangeFailed.visible = true
+                            showMessage(exchangeMessage, MessageTypeEnum.ERROR)
                         }
                     }
                 })
     }
 
-
+    // TODO replace with real API
     Observable<Boolean> isValid() {
         return Observable.fromCallable {
             sleep(2000)
