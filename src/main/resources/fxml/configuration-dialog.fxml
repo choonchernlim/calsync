@@ -42,19 +42,17 @@
                     />
                     <HBox fx:id="exchangeMessage" alignment="CENTER_LEFT"
                           GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3">
-                        <HBox userData="PENDING" alignment="CENTER_LEFT">
-                            <HBox styleClass="hbox-progress-indicator">
-                                <ProgressIndicator/>
-                            </HBox>
-                            <Label text=" Connecting..." styleClass="label-title"/>
+                        <HBox userData="PENDING">
+                            <Label text="%fa.hourglass.half" styleClass="label-title-icon,muted"/>
+                            <Label text=" Connecting..." styleClass="label-title,muted"/>
                         </HBox>
-                        <HBox userData="SUCCESS" alignment="CENTER_LEFT">
-                            <Label text="%fa.check.circle" styleClass="label-title-ok"/>
-                            <Label text=" Connection Successful!" styleClass="label-title-ok"/>
+                        <HBox userData="SUCCESS">
+                            <Label text="%fa.check.circle" styleClass="label-title-icon,success"/>
+                            <Label text=" Connection Successful!" styleClass="label-title-icon,success"/>
                         </HBox>
-                        <HBox userData="ERROR" alignment="CENTER_LEFT">
-                            <Label text="%fa.times.circle" styleClass="label-title-error"/>
-                            <Label text=" Connection Failed!" styleClass="label-title-error"/>
+                        <HBox userData="ERROR">
+                            <Label text="%fa.times.circle" styleClass="label-title-icon,error"/>
+                            <Label text=" Connection Failed!" styleClass="label-title-icon,error"/>
                         </HBox>
                     </HBox>
 
@@ -72,7 +70,7 @@
                                GridPane.rowIndex="1" GridPane.columnIndex="3"
                     />
                     <HBox GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Select environment variables that represent your Exchange user and password.
                             If they don't exist, create them first and re-run this app.
                         </Label>
@@ -90,7 +88,7 @@
                         <Label text="/ews/exchange.asmx"/>
                     </HBox>
                     <HBox GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Specify Exchange server name.
                         </Label>
                     </HBox>
@@ -100,7 +98,7 @@
                     <Label text="Google Calendar" styleClass="label-title"
                            GridPane.rowIndex="6" GridPane.columnIndex="0"
                     />
-                    <Label text="%fa.check.circle" styleClass="label-title-ok"
+                    <Label text="%fa.check.circle" styleClass="label-title-icon,success"
                            GridPane.rowIndex="6" GridPane.columnIndex="1">
                     </Label>
 
@@ -112,7 +110,7 @@
                                GridPane.rowIndex="7" GridPane.columnIndex="1"
                     />
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             A new Google calendar name. Because CalSync performs one-way sync from Exchange calendar to
                             Google calendar, it will wipe any existing events in Google calendar if they don't match
                             events from Exchange calendar.
@@ -128,7 +126,7 @@
                         <Button text="..." onAction="#handleClientSecretFileChooser" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="2" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             File path to Google client_secret.json.
                         </Label>
                     </HBox>
@@ -152,7 +150,7 @@
                         </valueFactory>
                     </Spinner>
                     <HBox GridPane.rowIndex="12" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Total days to sync events from current day.
                         </Label>
                     </HBox>
@@ -165,7 +163,7 @@
                         <ToggleButton text="No" toggleGroup="$includeCanceledEvents" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="12" GridPane.columnIndex="2" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Whether to include events marked as "canceled" or not.
                         </Label>
                     </HBox>
@@ -183,7 +181,7 @@
                         </valueFactory>
                     </Spinner>
                     <HBox GridPane.rowIndex="14" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Next sync in minutes, or 0 to disable next run.
                         </Label>
                     </HBox>
@@ -197,7 +195,7 @@
                         <ToggleButton text="No" toggleGroup="$includeEventBody" styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="14" GridPane.columnIndex="2" GridPane.columnSpan="2">
-                        <Label wrapText="true" styleClass="label-muted">
+                        <Label wrapText="true" styleClass="label-small,muted">
                             Whether to include detailed event body or not.
                         </Label>
                     </HBox>

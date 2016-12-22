@@ -22,31 +22,29 @@
     -fx-font-size: 1.2em;
     -fx-padding: 20 0 10 0;
     -fx-text-fill: black;
+    -fx-max-height: 1.2em;
 }
 
-.label-muted {
+.label-small {
     -fx-font-size: 0.9em;
+}
+
+.muted {
     -fx-text-fill: #999;
 }
 
-.label-title-ok {
+.label-title-icon {
     -fx-font-family: 'FontAwesome';
     -fx-font-size: 1.2em;
     -fx-padding: 20 0 10 0;
+}
+
+.success {
     -fx-text-fill: green;
 }
 
-.label-title-error {
-    -fx-font-family: 'FontAwesome';
-    -fx-font-size: 1.2em;
-    -fx-padding: 20 0 10 0;
+.error {
     -fx-text-fill: red;
-}
-
-.hbox-progress-indicator {
-    -fx-padding: 10 0 0 0;
-    -fx-max-height: 25;
-    -fx-max-width: 25;
 }
 
 /* to take account of 2px border bottom from `.form-field-error` to prevent form field from growing/shrinking. */
