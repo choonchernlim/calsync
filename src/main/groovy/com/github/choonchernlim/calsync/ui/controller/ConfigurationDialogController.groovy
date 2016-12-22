@@ -8,6 +8,9 @@ import javafx.scene.control.Control
 import javafx.scene.control.TextField
 import javafx.scene.layout.HBox
 import javafx.stage.FileChooser
+import rx.Observable
+import rx.functions.Action1
+import rx.schedulers.Schedulers
 
 final class ConfigurationDialogController implements Initializable {
     private static final String FORM_FIELD_ERROR_STYLE = 'form-field-error'
@@ -74,27 +77,38 @@ final class ConfigurationDialogController implements Initializable {
             return
         }
 
+        exchangeFailed.visible = false
+        exchangeSuccess.visible = false
         exchangePending.visible = true
 
-        // TODO mock for now to test flow
-        if (isExchangeInfoValid()) {
-            println 'all okay!'
-            //exchangePending.visible = false
-            exchangeFailed.visible = false
-            exchangeSuccess.visible = true
-        }
-        else {
-            println 'not okay!'
-            //exchangePending.visible = false
-            exchangeSuccess.visible = false
-            exchangeFailed.visible = true
-        }
+        isValid().
+                subscribeOn(Schedulers.newThread()).
+                subscribe(new Action1<Boolean>() {
+                    @Override
+                    void call(final Boolean isValid) {
+                        // TODO mock for now to test flow
+                        if (isValid) {
+                            println 'all okay!'
+                            exchangePending.visible = false
+                            exchangeFailed.visible = false
+                            exchangeSuccess.visible = true
+                        }
+                        else {
+                            println 'not okay!'
+                            exchangePending.visible = false
+                            exchangeSuccess.visible = false
+                            exchangeFailed.visible = true
+                        }
+                    }
+                })
     }
 
-    // TODO replace with real service
-    boolean isExchangeInfoValid() {
-        //sleep(2000)
-        return false
+
+    Observable<Boolean> isValid() {
+        return Observable.fromCallable {
+            sleep(2000)
+            return true
+        }
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
