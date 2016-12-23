@@ -7,7 +7,6 @@ import javafx.scene.control.*
 import javafx.scene.layout.HBox
 import javafx.stage.FileChooser
 import rx.Observable
-import rx.functions.Action1
 import rx.schedulers.Schedulers
 
 final class ConfigurationDialogController implements Initializable {
@@ -31,10 +30,16 @@ final class ConfigurationDialogController implements Initializable {
     TextField exchangeServer
 
     @FXML
+    TextField calendarName
+
+    @FXML
     TextField clientSecretFile
 
     @FXML
     HBox exchangeMessage
+
+    @FXML
+    HBox googleMessage
 
     @FXML
     ToggleGroup includeEventBodyToggleGroup
@@ -74,13 +79,95 @@ final class ConfigurationDialogController implements Initializable {
                 } as ChangeListener<Boolean>
         )
 
+        clientSecretFile.textProperty().addListener(
+                {
+                    observable, oldValue, newValue ->
+                        if (newValue) {
+                            validateGoogleInfo()
+                        }
+
+                } as ChangeListener<String>
+        )
+
+        calendarName.focusedProperty().addListener(
+                {
+                    observable, offFocus, onFocus ->
+                        if (offFocus) {
+                            validateGoogleInfo()
+                        }
+                } as ChangeListener<Boolean>
+        )
+
         setupToggleGroupAsRadioButtons(setValue(includeCanceledEventsToggleGroup, ValueEnum.NO))
         setupToggleGroupAsRadioButtons(setValue(includeEventBodyToggleGroup, ValueEnum.NO))
 
-        validate(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
+        validateFormFields(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
+        validateFormFields(false, calendarName, clientSecretFile)
 
         // hide all messages
         showMessage(exchangeMessage, MessageTypeEnum.NONE)
+        showMessage(googleMessage, MessageTypeEnum.NONE)
+    }
+
+    void validateExchangeInfo() {
+        boolean isAllValid = validateFormFields(exchangeUserEnv.value, exchangeUserEnv)
+        isAllValid &= validateFormFields(exchangePasswordEnv.value, exchangePasswordEnv)
+        isAllValid &= validateFormFields(exchangeServer.text, exchangeServer)
+
+        if (!isAllValid) {
+            return
+        }
+
+        showMessage(exchangeMessage, MessageTypeEnum.PENDING)
+
+        isExchangeValid().subscribe { isValid ->
+            isExchangeValid = isValid
+            showMessage(exchangeMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
+        }
+    }
+
+    void validateGoogleInfo() {
+        boolean isAllValid = validateFormFields(calendarName.text, calendarName)
+        isAllValid &= validateFormFields(clientSecretFile.text, clientSecretFile)
+
+        if (!isAllValid) {
+            return
+        }
+
+        showMessage(googleMessage, MessageTypeEnum.PENDING)
+
+        isGoogleValid().subscribe { isValid ->
+            isGoogleValid = isValid
+            showMessage(googleMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
+        }
+    }
+
+    // TODO replace with real API
+    static Observable<Boolean> isExchangeValid() {
+        return Observable.fromCallable {
+            sleep(2000)
+            return true
+        }.subscribeOn(Schedulers.newThread())
+    }
+
+    // TODO replace with real API
+    static Observable<Boolean> isGoogleValid() {
+        return Observable.fromCallable {
+            sleep(2000)
+            return false
+        }.subscribeOn(Schedulers.newThread())
+    }
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    void handleClientSecretFileChooser() {
+        final FileChooser fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
+        fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
+
+        final File selectedFile = fileChooser.showOpenDialog(null)
+
+        if (selectedFile != null) {
+            clientSecretFile.text = selectedFile.toString()
+        }
     }
 
     /**
@@ -90,7 +177,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param valueEnum Value to be selected
      * @return Toggle Group
      */
-    static ToggleGroup setValue(ToggleGroup toggleGroup, ValueEnum valueEnum) {
+    private static ToggleGroup setValue(ToggleGroup toggleGroup, ValueEnum valueEnum) {
         assert toggleGroup
         assert valueEnum
 
@@ -126,7 +213,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param hBox Container
      * @param messageTypeEnum Message to be displayed
      */
-    private void showMessage(HBox hBox, MessageTypeEnum messageTypeEnum) {
+    private static void showMessage(HBox hBox, MessageTypeEnum messageTypeEnum) {
         assert hBox
         assert messageTypeEnum
 
@@ -148,59 +235,14 @@ final class ConfigurationDialogController implements Initializable {
                 }
     }
 
-    void validateExchangeInfo() {
-        boolean isAllValid = validate(exchangeUserEnv.value, exchangeUserEnv)
-        isAllValid &= validate(exchangePasswordEnv.value, exchangePasswordEnv)
-        isAllValid &= validate(exchangeServer.text, exchangeServer)
-
-        if (!isAllValid) {
-            return
-        }
-
-        showMessage(exchangeMessage, MessageTypeEnum.PENDING)
-
-        isValid().
-                subscribeOn(Schedulers.newThread()).
-                subscribe(new Action1<Boolean>() {
-                    @Override
-                    void call(final Boolean isValid) {
-                        if (isValid) {
-                            println 'all okay!'
-                            showMessage(exchangeMessage, MessageTypeEnum.SUCCESS)
-                        }
-                        else {
-                            println 'not okay!'
-                            showMessage(exchangeMessage, MessageTypeEnum.ERROR)
-                        }
-                    }
-                })
-    }
-
-    // TODO replace with real API
-    Observable<Boolean> isValid() {
-        return Observable.fromCallable {
-            sleep(2000)
-            return true
-        }
-    }
-
-    @SuppressWarnings("GrMethodMayBeStatic")
-    void handleClientSecretFileChooser() {
-        final FileChooser fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
-        fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
-
-        final File selectedFile = fileChooser.showOpenDialog(null)
-
-        if (selectedFile != null) {
-            println 'selected ' + selectedFile
-            clientSecretFile.text = selectedFile.toString()
-        }
-        else {
-            println 'canceled'
-        }
-    }
-
-    private static boolean validate(truthy, Control... formFields) {
+    /**
+     * Sets error styling on form fields if not truthy. Otherwise, remove error styling.
+     *
+     * @param truthy Truthy condition
+     * @param formFields Form fields
+     * @return Truthy
+     */
+    private static boolean validateFormFields(truthy, Control... formFields) {
         if (truthy) {
             removeErrorStyleClass(formFields)
         }
@@ -211,6 +253,11 @@ final class ConfigurationDialogController implements Initializable {
         return truthy
     }
 
+    /**
+     * Adds error styling on form fields if they don't have one applied.
+     *
+     * @param formFields Form fields
+     */
     private static void addErrorStyleClass(Control... formFields) {
         assert formFields
 
@@ -219,6 +266,11 @@ final class ConfigurationDialogController implements Initializable {
                 each { it.styleClass.add(FORM_FIELD_ERROR_STYLE) }
     }
 
+    /**
+     * Removes error styling on form fields.
+     *
+     * @param formFields Form fields
+     */
     private static void removeErrorStyleClass(Control... formFields) {
         assert formFields
 

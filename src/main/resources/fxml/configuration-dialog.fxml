@@ -97,15 +97,26 @@
                     <Label text="Google Calendar" styleClass="label-title"
                            GridPane.rowIndex="6" GridPane.columnIndex="0"
                     />
-                    <Label text="%fa.check.circle" styleClass="label-title-icon,success"
-                           GridPane.rowIndex="6" GridPane.columnIndex="1">
-                    </Label>
-
+                    <HBox fx:id="googleMessage" alignment="CENTER_LEFT"
+                          GridPane.rowIndex="6" GridPane.columnIndex="1" GridPane.columnSpan="3">
+                        <HBox userData="PENDING">
+                            <Label text="%fa.hourglass.half" styleClass="label-title-icon,muted"/>
+                            <Label text=" Connecting..." styleClass="label-title,muted"/>
+                        </HBox>
+                        <HBox userData="SUCCESS">
+                            <Label text="%fa.check.circle" styleClass="label-title-icon,success"/>
+                            <Label text=" Connection Successful!" styleClass="label-title-icon,success"/>
+                        </HBox>
+                        <HBox userData="ERROR">
+                            <Label text="%fa.times.circle" styleClass="label-title-icon,error"/>
+                            <Label text=" Connection Failed!" styleClass="label-title-icon,error"/>
+                        </HBox>
+                    </HBox>
 
                     <Label text="Calendar Name"
                            GridPane.rowIndex="7" GridPane.columnIndex="0"
                     />
-                    <TextField maxWidth="200" styleClass="form-field"
+                    <TextField fx:id="calendarName" maxWidth="200" styleClass="form-field"
                                GridPane.rowIndex="7" GridPane.columnIndex="1"
                     />
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
