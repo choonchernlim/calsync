@@ -3,9 +3,7 @@ package com.github.choonchernlim.calsync.ui.controller
 import javafx.beans.value.ChangeListener
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.control.ChoiceBox
-import javafx.scene.control.Control
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.HBox
 import javafx.stage.FileChooser
 import rx.Observable
@@ -17,6 +15,10 @@ final class ConfigurationDialogController implements Initializable {
 
     enum MessageTypeEnum {
         NONE, PENDING, SUCCESS, ERROR
+    }
+
+    enum ValueEnum {
+        YES, NO
     }
 
     @FXML
@@ -33,6 +35,15 @@ final class ConfigurationDialogController implements Initializable {
 
     @FXML
     HBox exchangeMessage
+
+    @FXML
+    ToggleGroup includeEventBodyToggleGroup
+
+    @FXML
+    ToggleGroup includeCanceledEventsToggleGroup
+
+    boolean isExchangeValid = false
+    boolean isGoogleValid = false
 
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
@@ -63,12 +74,58 @@ final class ConfigurationDialogController implements Initializable {
                 } as ChangeListener<Boolean>
         )
 
+        setupToggleGroupAsRadioButtons(setValue(includeCanceledEventsToggleGroup, ValueEnum.NO))
+        setupToggleGroupAsRadioButtons(setValue(includeEventBodyToggleGroup, ValueEnum.NO))
+
         validate(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
 
         // hide all messages
         showMessage(exchangeMessage, MessageTypeEnum.NONE)
     }
 
+    /**
+     * Sets a value for Toogle Group.
+     *
+     * @param toggleGroup Toggle Group
+     * @param valueEnum Value to be selected
+     * @return Toggle Group
+     */
+    static ToggleGroup setValue(ToggleGroup toggleGroup, ValueEnum valueEnum) {
+        assert toggleGroup
+        assert valueEnum
+
+        toggleGroup.toggles.find { it.userData == valueEnum.toString() }.selected = true
+
+        return toggleGroup
+    }
+
+    /**
+     * Prevents user from deselecting the same selected toggle button.
+     *
+     * @param toggleGroup Toggle group
+     * @return Toggle group
+     */
+    private static ToggleGroup setupToggleGroupAsRadioButtons(ToggleGroup toggleGroup) {
+        assert toggleGroup
+
+        toggleGroup.selectedToggleProperty().addListener(
+                {
+                    observable, oldToggleButton, newToggleButton ->
+                        if (!newToggleButton && oldToggleButton) {
+                            oldToggleButton.selected = true
+                        }
+                } as ChangeListener<Toggle>
+        )
+
+        return toggleGroup
+    }
+
+    /**
+     * Displays the intended message from the container.
+     *
+     * @param hBox Container
+     * @param messageTypeEnum Message to be displayed
+     */
     private void showMessage(HBox hBox, MessageTypeEnum messageTypeEnum) {
         assert hBox
         assert messageTypeEnum

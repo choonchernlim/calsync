@@ -30,9 +30,8 @@
                     </columnConstraints>
 
                     <fx:define>
-                        <ToggleGroup fx:id="sleepOnConnectionError"/>
-                        <ToggleGroup fx:id="includeCanceledEvents"/>
-                        <ToggleGroup fx:id="includeEventBody"/>
+                        <ToggleGroup fx:id="includeCanceledEventsToggleGroup"/>
+                        <ToggleGroup fx:id="includeEventBodyToggleGroup"/>
                     </fx:define>
 
                     <!-- EXCHANGE SERVER -->
@@ -159,8 +158,10 @@
                            GridPane.rowIndex="11" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="11" GridPane.columnIndex="3">
-                        <ToggleButton text="Yes" toggleGroup="$includeCanceledEvents" styleClass="form-field"/>
-                        <ToggleButton text="No" toggleGroup="$includeCanceledEvents" styleClass="form-field"/>
+                        <ToggleButton text="Yes" userData="YES" toggleGroup="$includeCanceledEventsToggleGroup"
+                                      styleClass="form-field"/>
+                        <ToggleButton text="No" userData="NO" toggleGroup="$includeCanceledEventsToggleGroup"
+                                      styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="12" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-small,muted">
@@ -191,8 +192,10 @@
                            GridPane.rowIndex="13" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="13" GridPane.columnIndex="3">
-                        <ToggleButton text="Yes" toggleGroup="$includeEventBody" styleClass="form-field"/>
-                        <ToggleButton text="No" toggleGroup="$includeEventBody" styleClass="form-field"/>
+                        <ToggleButton text="Yes" userData="YES" toggleGroup="$includeEventBodyToggleGroup"
+                                      styleClass="form-field"/>
+                        <ToggleButton text="No" userData="NO" toggleGroup="$includeEventBodyToggleGroup"
+                                      styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="14" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-small,muted">
