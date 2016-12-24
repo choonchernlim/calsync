@@ -27,8 +27,10 @@ final class ConfigurationDialogController implements Initializable {
         EXCHANGE, GOOGLE
     }
 
+    final ObservableMap<ValidationEnum, Boolean> validationResultMap = FXCollections.observableHashMap()
+
     @FXML
-    Dialog dialog
+    Dialog<ButtonType> dialog
 
     @FXML
     ChoiceBox<String> exchangeUserEnv
@@ -66,27 +68,27 @@ final class ConfigurationDialogController implements Initializable {
     @FXML
     Spinner<Integer> nextSyncInMinutes
 
-    ObservableMap<ValidationEnum, Boolean> fieldValidationProperty = FXCollections.observableHashMap()
-
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
         initializeExchangeServerSection()
         initializeGoogleCalendarSection()
         initializeGeneralSection()
+        initializeDialogButtons()
+    }
 
-        ValidationEnum.values().each { fieldValidationProperty.put(it, false) }
-        fieldValidationProperty.addListener(
+    private void initializeDialogButtons() {
+        // add 2 buttons to the dialog: OK and CANCEL
+        dialog.dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
+
+        // disable OK button if any validation result fails, otherwise enable it
+        validationResultMap.addListener(
                 { change ->
-                    def hasErrors = fieldValidationProperty.values().contains(false)
-                    println "hasErrors " + hasErrors
-                    // TODO on error, disable OK button
-                    // dialog.getDialogPane().lookupButton(ButtonType.OK).disable = hasErrors
-//                    dialog.getDialogPane().buttonTypes.each { println it }
-//                    println dialog.getDialogPane().lookupButton(ButtonType.OK)
-//                    dialog.getDialogPane().buttonTypes.
-//                            find { it.buttonData == ButtonBar.ButtonData.OK_DONE }.disable = hasErrors
-                } as MapChangeListener<ValidationEnum, Boolean>
+                    dialog.dialogPane.lookupButton(ButtonType.OK).disable = validationResultMap.containsValue(false)
+                } as MapChangeListener
         )
+
+        // initialize validation result map
+        ValidationEnum.values().each { setValidationResult(it, false) }
     }
 
     private void initializeExchangeServerSection() {
@@ -131,6 +133,8 @@ final class ConfigurationDialogController implements Initializable {
     }
 
     private void validateExchangeInfo() {
+        setValidationResult(ValidationEnum.EXCHANGE, false)
+
         boolean isAllValid = validateFormFields(exchangeUserEnv.value, exchangeUserEnv)
         isAllValid &= validateFormFields(exchangePasswordEnv.value, exchangePasswordEnv)
         isAllValid &= validateFormFields(exchangeServer.text, exchangeServer)
@@ -142,12 +146,14 @@ final class ConfigurationDialogController implements Initializable {
         showMessage(exchangeMessage, MessageTypeEnum.PENDING)
 
         isExchangeValid().subscribe { isValid ->
-            fieldValidationProperty.put(ValidationEnum.EXCHANGE, isValid)
+            setValidationResult(ValidationEnum.EXCHANGE, isValid)
             showMessage(exchangeMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
         }
     }
 
     private void validateGoogleInfo() {
+        setValidationResult(ValidationEnum.GOOGLE, false)
+
         boolean isAllValid = validateFormFields(calendarName.text, calendarName)
         isAllValid &= validateFormFields(clientSecretFile.text, clientSecretFile)
 
@@ -158,7 +164,7 @@ final class ConfigurationDialogController implements Initializable {
         showMessage(googleMessage, MessageTypeEnum.PENDING)
 
         isGoogleValid().subscribe { isValid ->
-            fieldValidationProperty.put(ValidationEnum.GOOGLE, isValid)
+            setValidationResult(ValidationEnum.GOOGLE, isValid)
             showMessage(googleMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
         }
     }
@@ -166,7 +172,7 @@ final class ConfigurationDialogController implements Initializable {
     // TODO replace with real API
     static Observable<Boolean> isExchangeValid() {
         return Observable.fromCallable {
-            sleep(2000)
+            sleep(1000)
             return true
         }.subscribeOn(Schedulers.newThread())
     }
@@ -174,22 +180,16 @@ final class ConfigurationDialogController implements Initializable {
     // TODO replace with real API
     static Observable<Boolean> isGoogleValid() {
         return Observable.fromCallable {
-            sleep(2000)
-            return false
+            sleep(1000)
+            return true
         }.subscribeOn(Schedulers.newThread())
     }
 
-//    @SuppressWarnings("GrMethodMayBeStatic")
-//    void handleClientSecretFileChooser() {
-//        final FileChooser fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
-//        fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
-//
-//        final File selectedFile = fileChooser.showOpenDialog(null)
-//
-//        if (selectedFile != null) {
-//            clientSecretFile.text = selectedFile.toString()
-//        }
-//    }
+    private void setValidationResult(final ValidationEnum validationEnum, final boolean isValid) {
+        assert validationEnum
+
+        validationResultMap.put(validationEnum, isValid)
+    }
 
     /**
      * Sets a value for Toogle Group.

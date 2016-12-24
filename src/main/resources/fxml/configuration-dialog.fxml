@@ -219,8 +219,6 @@
                     </HBox>
                 </GridPane>
             </content>
-            <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
-            <ButtonType buttonData="OK_DONE" text="OK"/>
         </DialogPane>
     </dialogPane>
 </Dialog>
