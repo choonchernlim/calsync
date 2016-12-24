@@ -151,7 +151,9 @@
                     <Label text="Total Sync (in Days)"
                            GridPane.rowIndex="11" GridPane.columnIndex="0"
                     />
-                    <Spinner GridPane.rowIndex="11" GridPane.columnIndex="1" maxWidth="75" styleClass="form-field">
+                    <Spinner fx:id="totalSyncInDays" styleClass="form-field"
+                             GridPane.rowIndex="11" GridPane.columnIndex="1" maxWidth="75"
+                    >
                         <valueFactory>
                             <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                                 <min>1</min>
@@ -184,7 +186,9 @@
                     <Label text="Next Sync (in Minutes)"
                            GridPane.rowIndex="13" GridPane.columnIndex="0"
                     />
-                    <Spinner GridPane.rowIndex="13" GridPane.columnIndex="1" maxWidth="75" styleClass="form-field">
+                    <Spinner fx:id="nextSyncInMinutes" styleClass="form-field"
+                             GridPane.rowIndex="13" GridPane.columnIndex="1" maxWidth="75"
+                    >
                         <valueFactory>
                             <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory>
                                 <min>0</min>

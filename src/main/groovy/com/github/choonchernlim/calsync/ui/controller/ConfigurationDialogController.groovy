@@ -47,69 +47,53 @@ final class ConfigurationDialogController implements Initializable {
     @FXML
     ToggleGroup includeCanceledEventsToggleGroup
 
+    @FXML
+    Spinner<Integer> totalSyncInDays
+
+    @FXML
+    Spinner<Integer> nextSyncInMinutes
+
     boolean isExchangeValid = false
     boolean isGoogleValid = false
 
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
+        initializeExchangeServerSection()
+        initializeGoogleCalendarSection()
+        initializeGeneralSection()
+    }
+
+    private void initializeExchangeServerSection() {
         def envs = System.getenv().keySet().sort()
 
         exchangeUserEnv.items.addAll(envs)
         exchangePasswordEnv.items.addAll(envs)
 
-        exchangeUserEnv.selectionModel.selectedItemProperty().addListener(
-                {
-                    observable, oldValue, newValue -> validateExchangeInfo()
-                } as ChangeListener<String>
-        )
-
-        exchangePasswordEnv.selectionModel.selectedItemProperty().addListener(
-                {
-                    observable, oldValue, newValue -> validateExchangeInfo()
-
-                } as ChangeListener<String>
-        )
-
-        exchangeServer.focusedProperty().addListener(
-                {
-                    observable, offFocus, onFocus ->
-                        if (offFocus) {
-                            validateExchangeInfo()
-                        }
-                } as ChangeListener<Boolean>
-        )
-
-        clientSecretFile.textProperty().addListener(
-                {
-                    observable, oldValue, newValue ->
-                        if (newValue) {
-                            validateGoogleInfo()
-                        }
-
-                } as ChangeListener<String>
-        )
-
-        calendarName.focusedProperty().addListener(
-                {
-                    observable, offFocus, onFocus ->
-                        if (offFocus) {
-                            validateGoogleInfo()
-                        }
-                } as ChangeListener<Boolean>
-        )
-
-        setupToggleGroupAsRadioButtons(setValue(includeCanceledEventsToggleGroup, ValueEnum.NO))
-        setupToggleGroupAsRadioButtons(setValue(includeEventBodyToggleGroup, ValueEnum.NO))
+        exchangeUserEnv.selectionModel.selectedItemProperty().addListener(onChange { validateExchangeInfo() })
+        exchangePasswordEnv.selectionModel.selectedItemProperty().addListener(onChange { validateExchangeInfo() })
+        exchangeServer.focusedProperty().addListener(onOffFocus { validateExchangeInfo() })
 
         validateFormFields(false, exchangeUserEnv, exchangePasswordEnv, exchangeServer)
-        validateFormFields(false, calendarName, clientSecretFile)
-
-        // hide all messages
         showMessage(exchangeMessage, MessageTypeEnum.NONE)
+    }
+
+    private void initializeGoogleCalendarSection() {
+        clientSecretFile.textProperty().addListener(onChange { validateGoogleInfo() })
+        calendarName.focusedProperty().addListener(onOffFocus { validateGoogleInfo() })
+
+        validateFormFields(false, calendarName, clientSecretFile)
         showMessage(googleMessage, MessageTypeEnum.NONE)
     }
 
-    void validateExchangeInfo() {
+    private void initializeGeneralSection() {
+        totalSyncInDays.valueFactory.value = 7
+        nextSyncInMinutes.valueFactory.value = 15
+
+        setupToggleGroupAsRadioButtons(setValue(includeCanceledEventsToggleGroup, ValueEnum.NO))
+        setupToggleGroupAsRadioButtons(setValue(includeEventBodyToggleGroup, ValueEnum.NO))
+    }
+
+    private void validateExchangeInfo() {
         boolean isAllValid = validateFormFields(exchangeUserEnv.value, exchangeUserEnv)
         isAllValid &= validateFormFields(exchangePasswordEnv.value, exchangePasswordEnv)
         isAllValid &= validateFormFields(exchangeServer.text, exchangeServer)
@@ -126,7 +110,7 @@ final class ConfigurationDialogController implements Initializable {
         }
     }
 
-    void validateGoogleInfo() {
+    private void validateGoogleInfo() {
         boolean isAllValid = validateFormFields(calendarName.text, calendarName)
         isAllValid &= validateFormFields(clientSecretFile.text, clientSecretFile)
 
@@ -177,7 +161,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param valueEnum Value to be selected
      * @return Toggle Group
      */
-    private static ToggleGroup setValue(ToggleGroup toggleGroup, ValueEnum valueEnum) {
+    private static ToggleGroup setValue(final ToggleGroup toggleGroup, final ValueEnum valueEnum) {
         assert toggleGroup
         assert valueEnum
 
@@ -192,7 +176,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param toggleGroup Toggle group
      * @return Toggle group
      */
-    private static ToggleGroup setupToggleGroupAsRadioButtons(ToggleGroup toggleGroup) {
+    private static ToggleGroup setupToggleGroupAsRadioButtons(final ToggleGroup toggleGroup) {
         assert toggleGroup
 
         toggleGroup.selectedToggleProperty().addListener(
@@ -213,7 +197,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param hBox Container
      * @param messageTypeEnum Message to be displayed
      */
-    private static void showMessage(HBox hBox, MessageTypeEnum messageTypeEnum) {
+    private static void showMessage(final HBox hBox, final MessageTypeEnum messageTypeEnum) {
         assert hBox
         assert messageTypeEnum
 
@@ -242,7 +226,7 @@ final class ConfigurationDialogController implements Initializable {
      * @param formFields Form fields
      * @return Truthy
      */
-    private static boolean validateFormFields(truthy, Control... formFields) {
+    private static boolean validateFormFields(final Object truthy, final Control... formFields) {
         if (truthy) {
             removeErrorStyleClass(formFields)
         }
@@ -258,7 +242,7 @@ final class ConfigurationDialogController implements Initializable {
      *
      * @param formFields Form fields
      */
-    private static void addErrorStyleClass(Control... formFields) {
+    private static void addErrorStyleClass(final Control... formFields) {
         assert formFields
 
         formFields.
@@ -271,11 +255,34 @@ final class ConfigurationDialogController implements Initializable {
      *
      * @param formFields Form fields
      */
-    private static void removeErrorStyleClass(Control... formFields) {
+    private static void removeErrorStyleClass(final Control... formFields) {
         assert formFields
 
         formFields.each { it.styleClass.remove(FORM_FIELD_ERROR_STYLE) }
     }
 
-
+    /**
+     * Returns on change listener.
+     *
+     * @param closure Code to trigger on change
+     * @return Listener
+     */
+    private static ChangeListener<String> onChange(final Closure closure) {
+        return {
+            observable, oldValue, newValue -> closure.call()
+        }
+    }
+    /**
+     * Returns on off-focus listener.
+     *
+     * @param closure Code to trigger on off focus
+     * @return Listener
+     */
+    private static ChangeListener<Boolean> onOffFocus(final Closure closure) {
+        return { observable, offFocus, onFocus ->
+            if (offFocus) {
+                closure.call()
+            }
+        }
+    }
 }
