@@ -1,6 +1,9 @@
 package com.github.choonchernlim.calsync.ui.controller
 
 import javafx.beans.value.ChangeListener
+import javafx.collections.FXCollections
+import javafx.collections.MapChangeListener
+import javafx.collections.ObservableMap
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.*
@@ -20,6 +23,13 @@ final class ConfigurationDialogController implements Initializable {
         YES, NO
     }
 
+    enum ValidationEnum {
+        EXCHANGE, GOOGLE
+    }
+
+    @FXML
+    Dialog dialog
+
     @FXML
     ChoiceBox<String> exchangeUserEnv
 
@@ -34,6 +44,9 @@ final class ConfigurationDialogController implements Initializable {
 
     @FXML
     TextField clientSecretFile
+
+    @FXML
+    Button clientSecretFileButton
 
     @FXML
     HBox exchangeMessage
@@ -53,14 +66,27 @@ final class ConfigurationDialogController implements Initializable {
     @FXML
     Spinner<Integer> nextSyncInMinutes
 
-    boolean isExchangeValid = false
-    boolean isGoogleValid = false
+    ObservableMap<ValidationEnum, Boolean> fieldValidationProperty = FXCollections.observableHashMap()
 
     @Override
     void initialize(final URL location, final ResourceBundle resources) {
         initializeExchangeServerSection()
         initializeGoogleCalendarSection()
         initializeGeneralSection()
+
+        ValidationEnum.values().each { fieldValidationProperty.put(it, false) }
+        fieldValidationProperty.addListener(
+                { change ->
+                    def hasErrors = fieldValidationProperty.values().contains(false)
+                    println "hasErrors " + hasErrors
+                    // TODO on error, disable OK button
+                    // dialog.getDialogPane().lookupButton(ButtonType.OK).disable = hasErrors
+//                    dialog.getDialogPane().buttonTypes.each { println it }
+//                    println dialog.getDialogPane().lookupButton(ButtonType.OK)
+//                    dialog.getDialogPane().buttonTypes.
+//                            find { it.buttonData == ButtonBar.ButtonData.OK_DONE }.disable = hasErrors
+                } as MapChangeListener<ValidationEnum, Boolean>
+        )
     }
 
     private void initializeExchangeServerSection() {
@@ -78,6 +104,17 @@ final class ConfigurationDialogController implements Initializable {
     }
 
     private void initializeGoogleCalendarSection() {
+        clientSecretFileButton.onAction = { event ->
+            def fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
+            fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
+
+            def selectedFile = fileChooser.showOpenDialog(null)
+
+            if (selectedFile) {
+                clientSecretFile.text = selectedFile.toString()
+            }
+        }
+
         clientSecretFile.textProperty().addListener(onChange { validateGoogleInfo() })
         calendarName.focusedProperty().addListener(onOffFocus { validateGoogleInfo() })
 
@@ -105,7 +142,7 @@ final class ConfigurationDialogController implements Initializable {
         showMessage(exchangeMessage, MessageTypeEnum.PENDING)
 
         isExchangeValid().subscribe { isValid ->
-            isExchangeValid = isValid
+            fieldValidationProperty.put(ValidationEnum.EXCHANGE, isValid)
             showMessage(exchangeMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
         }
     }
@@ -121,7 +158,7 @@ final class ConfigurationDialogController implements Initializable {
         showMessage(googleMessage, MessageTypeEnum.PENDING)
 
         isGoogleValid().subscribe { isValid ->
-            isGoogleValid = isValid
+            fieldValidationProperty.put(ValidationEnum.GOOGLE, isValid)
             showMessage(googleMessage, isValid ? MessageTypeEnum.SUCCESS : MessageTypeEnum.ERROR)
         }
     }
@@ -142,17 +179,17 @@ final class ConfigurationDialogController implements Initializable {
         }.subscribeOn(Schedulers.newThread())
     }
 
-    @SuppressWarnings("GrMethodMayBeStatic")
-    void handleClientSecretFileChooser() {
-        final FileChooser fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
-        fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
-
-        final File selectedFile = fileChooser.showOpenDialog(null)
-
-        if (selectedFile != null) {
-            clientSecretFile.text = selectedFile.toString()
-        }
-    }
+//    @SuppressWarnings("GrMethodMayBeStatic")
+//    void handleClientSecretFileChooser() {
+//        final FileChooser fileChooser = new FileChooser(initialDirectory: new File(System.getProperty('user.home')))
+//        fileChooser.extensionFilters.add(new FileChooser.ExtensionFilter('JSON', '*.json'))
+//
+//        final File selectedFile = fileChooser.showOpenDialog(null)
+//
+//        if (selectedFile != null) {
+//            clientSecretFile.text = selectedFile.toString()
+//        }
+//    }
 
     /**
      * Sets a value for Toogle Group.

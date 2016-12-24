@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import java.net.URL?>
-<Dialog xmlns:fx="http://javafx.com/fxml"
+<Dialog xmlns:fx="http://javafx.com/fxml" fx:id="dialog"
         headerText="Configuration"
         fx:controller="com.github.choonchernlim.calsync.ui.controller.ConfigurationDialogController">
     <dialogPane>
@@ -133,7 +133,7 @@
                     />
                     <HBox GridPane.rowIndex="7" GridPane.columnIndex="3">
                         <TextField fx:id="clientSecretFile" disable="true" prefWidth="800" styleClass="form-field"/>
-                        <Button text="..." onAction="#handleClientSecretFileChooser" styleClass="form-field"/>
+                        <Button fx:id="clientSecretFileButton" text="..." styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="2" GridPane.columnSpan="2">
                         <Label wrapText="true" styleClass="label-small,muted">
