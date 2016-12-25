@@ -17,7 +17,7 @@
             </stylesheets>
 
             <content>
-                <GridPane hgap="10" vgap="10" gridLinesVisible="false">
+                <GridPane hgap="10" vgap="10">
                     <padding>
                         <Insets top="10" right="25" bottom="25" left="25"/>
                     </padding>
@@ -132,7 +132,9 @@
                            GridPane.rowIndex="7" GridPane.columnIndex="2"
                     />
                     <HBox GridPane.rowIndex="7" GridPane.columnIndex="3">
-                        <TextField fx:id="clientSecretFile" disable="true" prefWidth="800" styleClass="form-field"/>
+                        <TextField fx:id="clientSecretFile" disable="true" prefWidth="400" styleClass="form-field"
+                                   style="-fx-opacity: 1; "
+                        />
                         <Button fx:id="clientSecretFileButton" text="..." styleClass="form-field"/>
                     </HBox>
                     <HBox GridPane.rowIndex="8" GridPane.columnIndex="2" GridPane.columnSpan="2">
