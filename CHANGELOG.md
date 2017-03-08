@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.1 - 2017-03-08
+
+* Fixed problem where all-day Exchange event from previous day gets created every time CalSync runs.                      
+
 ## 0.4.0 - 2016-12-16
 
 * `exchange.sleep.on.connection.error` = Whether to suppress thrown Exchange connection error or not.
