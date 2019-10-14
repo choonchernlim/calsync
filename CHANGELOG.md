@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.5.0 - 2019-10-14
+
+* FEATURE - Added respond type (Accepted, Declined, Unresponded, Tentative, Organizer, Unknown) on Google event title.
+* BUG - Excluded `reminderMinutesBeforeStart` from CalSyncEvent's equals and hashcode to get `equals` to match properly. This prevents "same" Google/Exchange events from being deleted/recreated again and again.
+  
 ## 0.4.1 - 2017-03-08
 
 * Fixed problem where all-day Exchange event from previous day gets created every time CalSync runs.                      

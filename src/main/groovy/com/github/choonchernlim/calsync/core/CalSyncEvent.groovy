@@ -9,7 +9,7 @@ import org.joda.time.DateTime
  *
  * Equals/HashCode allows a quick diff between calendar events.
  */
-@EqualsAndHashCode(excludes = ['googleEventId'])
+@EqualsAndHashCode(excludes = ['googleEventId', 'reminderMinutesBeforeStart'])
 @ToString(includeNames = true)
 class CalSyncEvent {
     DateTime startDateTime

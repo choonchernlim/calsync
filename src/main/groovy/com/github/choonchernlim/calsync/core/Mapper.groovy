@@ -5,6 +5,7 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.EventReminder
+import microsoft.exchange.webservices.data.core.enumeration.property.MeetingResponseType
 import microsoft.exchange.webservices.data.core.service.item.Appointment
 import microsoft.exchange.webservices.data.property.complex.MessageBody
 import org.apache.commons.lang3.StringEscapeUtils
@@ -19,6 +20,15 @@ import org.jsoup.safety.Whitelist
  */
 class Mapper {
     static final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MMM dd '@' hh:mm a")
+
+    private static final Map<MeetingResponseType, String> MY_RESPONSE_TYPE = [
+            (MeetingResponseType.Accept)            : 'ACCEPTED',
+            (MeetingResponseType.Decline)           : 'DECLINED',
+            (MeetingResponseType.NoResponseReceived): 'UNRESPONDED',
+            (MeetingResponseType.Tentative)         : 'TENTATIVE',
+            (MeetingResponseType.Organizer)         : 'ORGANIZER',
+            (MeetingResponseType.Unknown)           : 'UNKNOWN',
+    ]
 
     /**
      * Maps Google EventDateTime to Joda DateTime.
@@ -178,7 +188,7 @@ class Mapper {
         return new ExchangeEvent(
                 startDateTime: new org.joda.time.DateTime(appointment.start),
                 endDateTime: new org.joda.time.DateTime(appointment.end),
-                subject: appointment.subject,
+                subject: "${MY_RESPONSE_TYPE[appointment.myResponseType]} - ${appointment.subject}",
                 location: appointment.location,
                 reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart,
                 body: toPlainText(MessageBody.getStringFromMessageBody(appointment.body)),

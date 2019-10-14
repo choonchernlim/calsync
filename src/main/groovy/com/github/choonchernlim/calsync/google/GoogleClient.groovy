@@ -126,6 +126,8 @@ class GoogleClient {
         return client.events().
                 list(calendarId).
                 setMaxResults(2500).
+                setOrderBy('startTime').
+                setSingleEvents(true). // expand reoccurring event as one-off events
                 setTimeMin(Mapper.toGoogleDateTime(startDateTime)).
                 setTimeMax(Mapper.toGoogleDateTime(endDateTime)).
                 execute()

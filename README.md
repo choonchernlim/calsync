@@ -6,7 +6,7 @@ Syncs events from Exchange calendar to Google calendar.
 
 * Exchange account
 * Google account
-* Java 1.7
+* Java 1.8
 
 ## Getting Started
 
