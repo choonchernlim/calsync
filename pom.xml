@@ -4,17 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.github.choonchernlim</groupId>
-        <artifactId>build-reports</artifactId>
-        <version>0.3.5</version>
-    </parent>
-
     <groupId>com.github.choonchernlim</groupId>
     <artifactId>calsync</artifactId>
     <version>0.5.0</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <jdk.version>1.8</jdk.version>
         <groovy.version>2.5.8</groovy.version>
         <groovy-eclipse-compiler.version>3.5.0-01</groovy-eclipse-compiler.version>
@@ -159,7 +156,6 @@
                 </executions>
             </plugin>
 
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -184,6 +180,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.class</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
