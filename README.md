@@ -1,6 +1,6 @@
 # CalSync [![Build Status](https://travis-ci.org/choonchernlim/calsync.svg?branch=master)](https://travis-ci.org/choonchernlim/calsync)
 
-Syncs events from Exchange calendar to Google calendar.
+Syncs events from Microsoft Exchange calendar to Google calendar.
 
 ## Prerequisites
 
@@ -47,6 +47,7 @@ generated for you.
 
 ```properties
 # Environment variable name containing Exchange user name value.
+# If you are using Office 365, the user name value should be your email address.
 #
 # Accepted value: string.
 exchange.username.env=CALSYNC_EXCHANGE_USERNAME
@@ -57,6 +58,7 @@ exchange.username.env=CALSYNC_EXCHANGE_USERNAME
 exchange.password.env=CALSYNC_EXCHANGE_PASSWORD
 
 # Exchange web service URL.
+# If you are using Office 365, the URL should be https://outlook.office365.com/ews/exchange.asmx
 #
 # Accepted value: string.
 exchange.url=https://[EXCHANGE_SERVER]/ews/exchange.asmx
