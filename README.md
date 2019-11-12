@@ -4,7 +4,7 @@ Syncs events from Microsoft Exchange calendar to Google calendar.
 
 ## Prerequisites
 
-* Exchange account
+* Microsoft Exchange account
 * Google account
 * Java 1.8
 
