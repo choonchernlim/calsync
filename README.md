@@ -14,13 +14,20 @@ Syncs events from Microsoft Exchange calendar to Google calendar.
 
 * Enable Google Calendar API (steps provided by Google):-
     * Use [this wizard](https://console.developers.google.com/start/api?id=calendar) to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
-    * On the **Add credentials to your project** page, click the **Cancel** button.
-    * At the top of the page, select the **OAuth consent screen** tab. Select an **Email address**, enter a **Product name** if not already set, and click the **Save** button.
-    * Select the **Credentials** tab, click the **Create credentials** button and select **OAuth client ID**.
-    * Select the application type **Other**, enter the name "Google Calendar API", and click the **Create** button.
-    * Click **OK** to dismiss the resulting dialog.
-    * Click the "Download JSON" button to the right of the client ID.
-    * Rename it `client_secret.json`.
+    * On the **Add credentials to your project** page, click **Cancel**.
+    * Select the **OAuth consent screen** tab. 
+        * Click **EDIT APP** link.
+        * Specify **Application name** (if missing).
+        * Select an **Email address**. 
+        * Click **Save**.
+    * Select the **Credentials** tab.
+        * Click the **Create credentials**
+        * Select **OAuth client ID**.
+        * Application type: **Desktop app**
+        * Name: **Google Calendar API**
+        * Click **Create**.
+    * Click **Download** icon to the right of the client ID.
+    * Rename downloaded JSON file as `client_secret.json`.
 
 * Place `client_secret.json` beside `calsync.jar`.
     
