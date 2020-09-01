@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.0 - 2020-09-01
+
+* Dependency updates.
+* Minor refactoring on Google API auth.
+
 ## 0.5.0 - 2019-10-14
 
 * FEATURE - Added respond type (Accepted, Declined, Unresponded, Tentative, Organizer, Unknown) on Google event title.
