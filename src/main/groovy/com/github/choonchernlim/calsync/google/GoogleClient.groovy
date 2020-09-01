@@ -74,14 +74,14 @@ class GoogleClient {
                     '/path/to/client_secrets.json')
         }
 
-        // set up authorization code flow
+        // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, jsonFactory, clientSecrets, [CalendarScopes.CALENDAR]).
-                setDataStoreFactory(dataStoreFactory)
-                .build()
-
-        // configure
-        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize('user')
+                setDataStoreFactory(dataStoreFactory).
+                setAccessType("offline").
+                build()
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build()
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
 
         return new com.google.api.services.calendar.Calendar.Builder(httpTransport, jsonFactory, credential).
                 setApplicationName(Constant.PROJECT_ID).
