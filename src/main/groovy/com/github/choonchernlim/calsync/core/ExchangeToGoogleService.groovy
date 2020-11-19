@@ -33,8 +33,8 @@ class ExchangeToGoogleService {
         assert userConfig
 
         DateTime dateTimeNow = dateTimeNowSupplier.get()
-        DateTime startDateTime = dateTimeNow.withTimeAtStartOfDay()
-        DateTime endDateTime = startDateTime.plusDays(userConfig.totalSyncDays).minusMillis(1)
+        DateTime startDateTime = dateTimeNow.minusDays(userConfig.totalSyncDaysPast).withTimeAtStartOfDay()
+        DateTime endDateTime = dateTimeNow.withTimeAtStartOfDay().plusDays(userConfig.totalSyncDays).minusMillis(1)
 
         exchangeService.init(userConfig)
         googleService.init(userConfig)
@@ -75,8 +75,8 @@ class ExchangeToGoogleService {
                 batchDeletedEvents(googleEvents.findAll { !exchangeEvents.contains(it) }).
                 batchNewEvents(exchangeEvents.findAll { !googleEvents.contains(it) } << new CalSyncEvent(
                         subject: "CalSync - Last Sync: ${Mapper.humanReadableDateTime(dateTimeNow)}",
-                        startDateTime: startDateTime,
-                        endDateTime: startDateTime.plusDays(1),
+                        startDateTime: dateTimeNow.withTimeAtStartOfDay(),
+                        endDateTime: dateTimeNow.withTimeAtStartOfDay().plusDays(1),
                         isAllDayEvent: true
                 )).
                 executeBatch(calendarId)
