@@ -46,7 +46,8 @@ class ExchangeToGoogleService {
                     startDateTime,
                     endDateTime,
                     userConfig.includeCanceledEvents,
-                    userConfig.includeEventBody)
+                    userConfig.includeEventBody,
+                    userConfig.includeEventAttendees)
         }
         catch (ServiceRequestException e) {
             // on connection exception, suppress exception if user says so

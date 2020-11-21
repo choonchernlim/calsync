@@ -40,10 +40,12 @@ class ExchangeService {
             DateTime startDateTime,
             DateTime endDateTime,
             Boolean includeCanceledEvents,
-            Boolean includeEventBody) {
+            Boolean includeEventBody,
+            Boolean includeAttendees) {
         assert startDateTime && endDateTime && startDateTime <= endDateTime
         assert includeCanceledEvents != null
         assert includeEventBody != null
+        assert includeAttendees != null
 
         LOGGER.info(
                 "Retrieving events from ${Mapper.humanReadableDateTime(startDateTime)} to ${Mapper.humanReadableDateTime(endDateTime)}...")
@@ -57,7 +59,7 @@ class ExchangeService {
             LOGGER.info("\tTotal events after excluding canceled events: ${exchangeEvents.size()}...")
         }
 
-        return exchangeEvents.collect { Mapper.toCalSyncEvent(it, includeEventBody) }
+        return exchangeEvents.collect { Mapper.toCalSyncEvent(it, includeEventBody, includeAttendees) }
     }
 }
 

@@ -3,10 +3,13 @@ package com.github.choonchernlim.calsync.core
 import com.github.choonchernlim.calsync.exchange.ExchangeEvent
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventAttendee
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.EventReminder
+import microsoft.exchange.webservices.data.core.enumeration.property.LegacyFreeBusyStatus
 import microsoft.exchange.webservices.data.core.enumeration.property.MeetingResponseType
 import microsoft.exchange.webservices.data.core.service.item.Appointment
+import microsoft.exchange.webservices.data.property.complex.AttendeeCollection
 import microsoft.exchange.webservices.data.property.complex.MessageBody
 import org.apache.commons.lang3.StringEscapeUtils
 import org.joda.time.format.DateTimeFormat
@@ -20,15 +23,6 @@ import org.jsoup.safety.Whitelist
  */
 class Mapper {
     static final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MMM dd '@' hh:mm a")
-
-    private static final Map<MeetingResponseType, String> MY_RESPONSE_TYPE = [
-            (MeetingResponseType.Accept)            : 'ACCEPTED',
-            (MeetingResponseType.Decline)           : 'DECLINED',
-            (MeetingResponseType.NoResponseReceived): 'UNRESPONDED',
-            (MeetingResponseType.Tentative)         : 'TENTATIVE',
-            (MeetingResponseType.Organizer)         : 'ORGANIZER',
-            (MeetingResponseType.Unknown)           : 'UNKNOWN',
-    ]
 
     /**
      * Maps Google EventDateTime to Joda DateTime.
@@ -97,6 +91,26 @@ class Mapper {
     static CalSyncEvent toCalSyncEvent(Event event) {
         assert event
 
+        def attendees = event.getAttendees()
+                .collect {
+                    def response = CalSyncEvent.Attendee.Response.NO_RESPONSE
+                    if (it.getResponseStatus() == "accepted") {
+                        response = CalSyncEvent.Attendee.Response.ACCEPTED
+                    } else if (it.getResponseStatus() == "declined") {
+                        response = CalSyncEvent.Attendee.Response.DECLINED
+                    } else if (it.getResponseStatus() == "tentative") {
+                        response = CalSyncEvent.Attendee.Response.TENTATIVE
+                    }
+
+                    new CalSyncEvent.Attendee(
+                            address: it.getEmail().toLowerCase(), // address might be lowercased by Google
+                            name: it.getDisplayName(),
+                            response: response,
+                            isOptional: it.isOptional()
+                    )
+                }
+                .sort { it.address } // sort because Google might return attendees in a different order
+
         return new CalSyncEvent(
                 googleEventId: event.getId(),
                 startDateTime: toJodaDateTime(event.getStart()),
@@ -105,7 +119,11 @@ class Mapper {
                 location: event.getLocation(),
                 reminderMinutesBeforeStart: event.getReminders()?.getOverrides()?.get(0)?.getMinutes(),
                 body: event.getDescription() ?: null,
-                isAllDayEvent: isAllDayEvent(event)
+                isAllDayEvent: isAllDayEvent(event),
+                attendees: attendees,
+                organizerAddress: event.getOrganizer().getEmail().toLowerCase(), // address might be lowercased by Google
+                organizerName: event.getOrganizer().getDisplayName(),
+                isBusy: event.getTransparency() != "transparent"
         )
     }
 
@@ -121,6 +139,38 @@ class Mapper {
         return event.getStart().getDate() && event.getEnd().getDate()
     }
 
+    static List<ExchangeEvent.Attendee> toExchangeAttendeeList(AttendeeCollection attendeeCollection) {
+        assert attendeeCollection
+
+        return attendeeCollection.collect {
+            new ExchangeEvent.Attendee(
+                    address: it.address,
+                    name: it.name,
+                    response: it.responseType.name()
+            )
+        }
+    }
+
+    static CalSyncEvent.Attendee toCalSyncAttendee(ExchangeEvent.Attendee attendee, Boolean optional) {
+        assert attendee
+
+        def response = CalSyncEvent.Attendee.Response.NO_RESPONSE
+        if (attendee.response == MeetingResponseType.Accept.name()) {
+            response = CalSyncEvent.Attendee.Response.ACCEPTED
+        } else if (attendee.response == MeetingResponseType.Decline.name()) {
+            response = CalSyncEvent.Attendee.Response.DECLINED
+        } else if (attendee.response == MeetingResponseType.Tentative.name()) {
+            response = CalSyncEvent.Attendee.Response.TENTATIVE
+        }
+
+        new CalSyncEvent.Attendee(
+                address: attendee.address.toLowerCase(), // address might be lowercased by Google
+                name: attendee.name,
+                response: response,
+                isOptional: optional
+        )
+    }
+
     /**
      * Maps Exchange Event to CalSyncEvent.
      *
@@ -128,18 +178,29 @@ class Mapper {
      * @param includeEventBody Whether to include event body or not
      * @return CalSyncEvent
      */
-    static CalSyncEvent toCalSyncEvent(ExchangeEvent exchangeEvent, Boolean includeEventBody) {
+    static CalSyncEvent toCalSyncEvent(ExchangeEvent exchangeEvent, Boolean includeEventBody, Boolean includeAttendees) {
         assert exchangeEvent
         assert includeEventBody != null
+        assert includeAttendees != null
+
+        def attendees = includeAttendees ? exchangeEvent.requiredAttendees.collect {
+            toCalSyncAttendee(it, false)
+        } + exchangeEvent.optionalAttendees.collect {
+            toCalSyncAttendee(it, true)
+        }.sort { it.address } : [] // sort because Google might return attendees in a different order
 
         return new CalSyncEvent(
                 startDateTime: exchangeEvent.startDateTime,
                 endDateTime: exchangeEvent.endDateTime,
                 subject: exchangeEvent.subject,
                 location: exchangeEvent.location,
-                reminderMinutesBeforeStart: exchangeEvent.reminderMinutesBeforeStart,
+                reminderMinutesBeforeStart: exchangeEvent.isReminderSet ? exchangeEvent.reminderMinutesBeforeStart : null,
                 body: includeEventBody ? exchangeEvent.body : null,
-                isAllDayEvent: exchangeEvent.isAllDayEvent
+                isAllDayEvent: exchangeEvent.isAllDayEvent,
+                attendees: attendees,
+                organizerAddress: exchangeEvent.organizerAddress.toLowerCase(), // address might be lowercased by Google
+                organizerName: exchangeEvent.organizerName,
+                isBusy: exchangeEvent.isBusy
         )
     }
 
@@ -164,6 +225,32 @@ class Mapper {
                         ]
                 ) : null
 
+        def attendees = calSyncEvent.attendees.collect {
+            def isOrganizer = it.address == calSyncEvent.organizerAddress
+
+            def response = "needsAction"
+            if (it.response == CalSyncEvent.Attendee.Response.ACCEPTED) {
+                response = "accepted"
+            } else if (it.response == CalSyncEvent.Attendee.Response.DECLINED) {
+                response = "declined"
+            } else if (it.response == CalSyncEvent.Attendee.Response.TENTATIVE) {
+                response = "tentative"
+            }
+
+            def name = it.name
+            if (isOrganizer) {
+                name = "$name (Organizer)"
+            }
+
+            new EventAttendee(
+                    email: it.address,
+                    displayName: name,
+                    responseStatus: response,
+                    optional: it.isOptional,
+                    organizer: isOrganizer
+            )
+        }
+
         return new Event(
                 id: calSyncEvent.googleEventId,
                 start: toGoogleEventDateTime(calSyncEvent.isAllDayEvent, calSyncEvent.startDateTime),
@@ -171,7 +258,13 @@ class Mapper {
                 summary: calSyncEvent.subject,
                 location: calSyncEvent.location,
                 reminders: reminders,
-                description: calSyncEvent.body
+                description: calSyncEvent.body,
+                attendees: attendees,
+                transparency: calSyncEvent.isBusy ? "opaque" : "transparent",
+                organizer: new Event.Organizer(
+                        email: calSyncEvent.organizerAddress,
+                        displayName: calSyncEvent.organizerName
+                )
         )
     }
 
@@ -188,12 +281,18 @@ class Mapper {
         return new ExchangeEvent(
                 startDateTime: new org.joda.time.DateTime(appointment.start),
                 endDateTime: new org.joda.time.DateTime(appointment.end),
-                subject: "${MY_RESPONSE_TYPE[appointment.myResponseType]} - ${appointment.subject}",
+                subject: appointment.subject,
                 location: appointment.location,
+                isReminderSet: appointment.isReminderSet,
                 reminderMinutesBeforeStart: appointment.reminderMinutesBeforeStart,
                 body: toPlainText(MessageBody.getStringFromMessageBody(appointment.body)),
                 isCanceled: appointment.isCancelled,
-                isAllDayEvent: appointment.isAllDayEvent
+                isAllDayEvent: appointment.isAllDayEvent,
+                optionalAttendees: toExchangeAttendeeList(appointment.optionalAttendees),
+                requiredAttendees: toExchangeAttendeeList(appointment.requiredAttendees),
+                organizerAddress: appointment.organizer.address,
+                organizerName: appointment.organizer.name,
+                isBusy: appointment.legacyFreeBusyStatus == LegacyFreeBusyStatus.Busy
         )
     }
 
