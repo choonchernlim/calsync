@@ -16,6 +16,7 @@ class UserConfigReader {
     static final String GOOGLE_CLIENT_SECRET_JSON_KEY = 'google.client.secret.json.file.path'
     static final String GOOGLE_CALENDAR_NAME_KEY = 'google.calendar.name'
     static final String TOTAL_SYNC_IN_DAYS_KEY = 'total.sync.in.days'
+    static final String TOTAL_SYNC_IN_DAYS_PAST_KEY = 'total.sync.in.days.past'
     static final String NEXT_SYNC_IN_MINUTES_KEY = 'next.sync.in.minutes'
     static final String INCLUDE_CANCELED_EVENTS_KEY = 'include.canceled.events'
     static final String INCLUDE_EVENT_BODY_KEY = 'include.event.body'
@@ -78,6 +79,12 @@ class UserConfigReader {
             errors.add("${TOTAL_SYNC_IN_DAYS_KEY}: Must be greater than 0.")
         }
 
+        Integer totalSyncDaysPast = validatePropInteger(props, errors, TOTAL_SYNC_IN_DAYS_PAST_KEY)
+
+        if (totalSyncDaysPast != null && totalSyncDaysPast < 0) {
+            errors.add("${TOTAL_SYNC_IN_DAYS_PAST_KEY}: Must be greater than or equal to 0.")
+        }
+
         Integer nextSyncInMinutes = validatePropInteger(props, errors, NEXT_SYNC_IN_MINUTES_KEY)
 
         Boolean includeCanceledEvents = validatePropBoolean(props, errors, INCLUDE_CANCELED_EVENTS_KEY)
@@ -97,6 +104,7 @@ class UserConfigReader {
                 googleClientSecretJsonFilePath: googleClientSecretJsonFilePath,
                 googleCalendarName: googleCalendarName,
                 totalSyncDays: totalSyncDays,
+                totalSyncDaysPast: totalSyncDaysPast,
                 nextSyncInMinutes: nextSyncInMinutes,
                 includeCanceledEvents: includeCanceledEvents,
                 includeEventBody: includeEventBody

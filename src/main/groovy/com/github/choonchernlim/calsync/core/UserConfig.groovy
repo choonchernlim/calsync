@@ -14,6 +14,7 @@ class UserConfig {
     String googleClientSecretJsonFilePath
     String googleCalendarName
     Integer totalSyncDays
+    Integer totalSyncDaysPast
     Integer nextSyncInMinutes
     Boolean includeCanceledEvents
     Boolean includeEventBody

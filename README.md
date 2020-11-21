@@ -101,6 +101,11 @@ google.calendar.name=Outlook
 # Accepted value: integer greater than 0.
 total.sync.in.days=7
 
+# Total days to sync past events from current day, or 0 to not sync past events.
+#
+# Accepted value: integer greater than or equal to 0.
+total.sync.in.days.past=7
+
 # Next sync in minutes, or 0 to disable next run.
 #
 # Accepted value: integer.
