@@ -19,6 +19,7 @@ class UserConfigReader {
     static final String NEXT_SYNC_IN_MINUTES_KEY = 'next.sync.in.minutes'
     static final String INCLUDE_CANCELED_EVENTS_KEY = 'include.canceled.events'
     static final String INCLUDE_EVENT_BODY_KEY = 'include.event.body'
+    static final String INCLUDE_EVENT_ATTENDEES_KEY = 'include.event.attendees'
 
     /**
      * Returns user config.
@@ -82,6 +83,7 @@ class UserConfigReader {
 
         Boolean includeCanceledEvents = validatePropBoolean(props, errors, INCLUDE_CANCELED_EVENTS_KEY)
         Boolean includeEventBody = validatePropBoolean(props, errors, INCLUDE_EVENT_BODY_KEY)
+        Boolean includeEventAttendees = validatePropBoolean(props, errors, INCLUDE_EVENT_ATTENDEES_KEY)
 
         if (!errors.isEmpty()) {
             throw new CalSyncException(
@@ -99,7 +101,8 @@ class UserConfigReader {
                 totalSyncDays: totalSyncDays,
                 nextSyncInMinutes: nextSyncInMinutes,
                 includeCanceledEvents: includeCanceledEvents,
-                includeEventBody: includeEventBody
+                includeEventBody: includeEventBody,
+                includeEventAttendees: includeEventAttendees
         )
     }
 

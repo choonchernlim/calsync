@@ -17,4 +17,5 @@ class UserConfig {
     Integer nextSyncInMinutes
     Boolean includeCanceledEvents
     Boolean includeEventBody
+    Boolean includeEventAttendees
 }

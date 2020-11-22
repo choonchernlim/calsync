@@ -9,8 +9,20 @@ class ExchangeEvent {
     DateTime endDateTime
     String subject
     String location
+    Boolean isReminderSet
     Integer reminderMinutesBeforeStart
     String body
     Boolean isCanceled
     Boolean isAllDayEvent
+    List<Attendee> optionalAttendees
+    List<Attendee> requiredAttendees
+    String organizerAddress
+    String organizerName
+    Boolean isBusy
+
+    static class Attendee {
+        String address
+        String name
+        String response
+    }
 }
