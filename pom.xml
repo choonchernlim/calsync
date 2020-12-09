@@ -13,7 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jdk.version>1.8</jdk.version>
-        <groovy.version>3.0.5</groovy.version>
+        <groovy.version>3.0.7</groovy.version>
         <groovy-eclipse-compiler.version>3.6.0-03</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>3.0.5-01</groovy-eclipse-batch.version>
     </properties>
